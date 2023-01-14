@@ -1,2 +1,7 @@
 .vs/
+temp/
+bin/
 
+*.sln
+*.vcxproj
+*.vcxproj.user
