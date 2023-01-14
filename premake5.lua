@@ -11,3 +11,5 @@ configurations {
 }
 
 include "launcher"
+include "engine"
+include "editor"
