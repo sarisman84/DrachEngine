@@ -1,15 +1,21 @@
 #include "main.h"
 #include <iostream>
-void Engine::OnStart()
-{
-	std::cout << "This is a test :) \n";
-}
+
 
 void Engine::OnUpdate()
 {
+
 }
 
+void Engine::OnStart(StartContext& const someData)
+{
+	
+}
 
+void Engine::OnWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	
+}
 
 extern "C"
 {

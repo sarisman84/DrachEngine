@@ -5,9 +5,9 @@
 class Engine : public EngineInterface
 {
 public:
-	// Inherited via EngineInterface
-	virtual void OnStart() override;
 	virtual void OnUpdate() override;
+	virtual void OnStart(StartContext& const someData) override;
+	virtual void OnWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
 };
 
 

@@ -17,7 +17,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
+BOOL                InitInstance(HINSTANCE, int, HWND&);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
@@ -63,14 +63,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 
-	if (engineAPI)
-		engineAPI->OnStart();
+
+
 	// Start
 	// Perform application initialization:
-	if (!InitInstance(hInstance, nCmdShow))
+	HWND winIns;
+	if (!InitInstance(hInstance, nCmdShow, winIns))
 	{
 		return FALSE;
 	}
+	StartContext data = { };
+	data.myWindowsInstance = &winIns;
+	
+	RECT clientRect;
+	GetClientRect(winIns, &clientRect);
+
+	data.myWindowWidth = clientRect.right - clientRect.left;
+	data.myWindowHeight = clientRect.bottom - clientRect.top;
+
+	if (engineAPI)
+		engineAPI->OnStart(data);
+
+	SetWindowLongPtr(winIns, GWLP_USERDATA, (LONG_PTR)(engineAPI));
 
 	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DRACHLAUNCHER));
 
@@ -130,20 +144,20 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        In this function, we save the instance handle in a global variable and
 //        create and display the main program window.
 //
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow, HWND& anOutput)
 {
 	hInst = hInstance; // Store instance handle in our global variable
 
-	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+	anOutput = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
-	if (!hWnd)
+	if (!anOutput)
 	{
 		return FALSE;
 	}
 
-	ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
+	ShowWindow(anOutput, nCmdShow);
+	UpdateWindow(anOutput);
 
 	return TRUE;
 }
@@ -160,6 +174,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+
+	EngineInterface* interface = (EngineInterface*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	if (interface)
+	{
+		interface->OnWinProc(hWnd, message, wParam, lParam);
+	}
 	switch (message)
 	{
 	case WM_COMMAND:
