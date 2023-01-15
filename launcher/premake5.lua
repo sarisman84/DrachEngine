@@ -15,7 +15,11 @@ objdir(directory.tempOutput .. prjName)
 targetname("%{prj.name}_%{cfg.buildcfg}")
 
 debugdir (directory.workingDirectory)
-
+dependson
+{
+    "Editor",
+    "Engine"
+}
 files 
 {
     "source/**.h",

@@ -1,7 +1,9 @@
 .vs/
 temp/
 bin/
+lib/
 
 *.sln
 *.vcxproj
-*.vcxproj.user
+*.user
+*.filters

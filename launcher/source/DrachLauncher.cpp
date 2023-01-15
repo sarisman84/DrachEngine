@@ -72,9 +72,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	{
 		return FALSE;
 	}
-	StartContext data = { };
-	data.myWindowsInstance = &winIns;
-	
+	StartContext data = { winIns };
+
 	RECT clientRect;
 	GetClientRect(winIns, &clientRect);
 

@@ -1,9 +1,10 @@
 include "../Premake/common.lua"
 
+group("Engine")
 project "Engine"
 location "."
 kind "SharedLib"
-language  "C++"
+language "C++"
 cppdialect "C++20"
 
 output = "%{cfg.buildcfg}"
@@ -14,18 +15,49 @@ targetdir(directory.engineOutput)
 objdir(directory.tempOutput .. prjName)
 targetname("%{prj.name}_%{cfg.buildcfg}")
 
-debugdir (directory.engineOutput)
+debugdir(directory.engineOutput)
+local vendor_source = directory.engine_vendor .. "source/"
+local foundFiles = os.matchfiles(vendor_source .. "*")
+if #foundFiles > 0 then
+    links {"Vendor[Engine]"}
+end
+links {"d3d11.lib"}
 
-files 
-{
-    "source/**.h",
-    "source/**.hpp",
-    "source/**.cpp",
-}
 
-flags {
-    "MultiProcessorCompile"
-}
+
+if #foundFiles > 0 then
+    libdirs {directory.engine_lib}
+end
+includedirs {directory.engine_vendor .. "source/", "source/"}
+
+files {"source/**.h", "source/**.hpp", "source/**.cpp", "source/**.hlsl", "source/**.hlsli"}
+
+flags {"MultiProcessorCompile"}
+
+shadermodel("5.0")
+
+local shaderOutput = directory.engineOutput .. "shaders/"
+
+filter("files:**.hlsl")
+flags("ExcludeFromBuild")
+shaderobjectfileoutput(shaderOutput .. "%{file.basename}" .. ".cso")
+
+filter("files:**PS.hlsl")
+removeflags("ExcludeFromBuild")
+shadertype("Pixel")
+
+filter("files:**VS.hlsl")
+removeflags("ExcludeFromBuild")
+shadertype("Vertex")
+
+filter("files:**GS.hlsl")
+removeflags("ExcludeFromBuild")
+shadertype("Geometry")
+
+-- Warnings as errors
+shaderoptions({"/WX"})
+
+include "vendor"
 
 filter "configurations:Debug"
 defines "_DEBUG"

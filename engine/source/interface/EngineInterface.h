@@ -3,12 +3,12 @@
 
 struct StartContext
 {
-	HWND* myWindowsInstance;
+	HWND& myWindowsInstance;
 	int myWindowWidth;
 	int myWindowHeight;
 };
 
-class EngineInterface 
+class EngineInterface
 {
 public:
 	virtual void OnStart(StartContext& const someData) = 0;

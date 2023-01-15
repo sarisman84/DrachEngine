@@ -1,0 +1,9 @@
+[submodule "editor/vendor/source/imgui"]
+	path = editor/vendor/source/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "editor/vendor/source/imguizmo"]
+	path = editor/vendor/source/imguizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo
+[submodule "editor/vendor/source/imnodes"]
+	path = editor/vendor/source/imnodes
+	url = https://github.com/Nelarius/imnodes

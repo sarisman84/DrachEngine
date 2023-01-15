@@ -2,7 +2,7 @@
 #include <wtypes.h>
 struct StartContext
 {
-	HWND* myWindowsInstance;
+	HWND& myWindowsInstance;
 	int myWindowWidth;
 	int myWindowHeight;
 };
