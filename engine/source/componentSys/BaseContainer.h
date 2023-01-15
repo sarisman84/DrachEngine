@@ -1,3 +1,10 @@
 #pragma once
 
-class BaseContainer {};
+class BaseContainer {
+public:
+	unsigned long id;
+	BaseContainer(unsigned long id) : id(id) {}
+
+
+	static unsigned long GenerateID();
+};

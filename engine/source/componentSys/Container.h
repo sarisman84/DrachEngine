@@ -7,7 +7,9 @@
 template<typename ComponentType>
 class Container : BaseContainer {
 public:
-	Container() : container() {}
+	static unsigned long id;
+
+	Container() : container(), BaseContainer(id = GenerateID()) {}
 	~Container() {
 		for (auto& [entity, component] : container) {//free all components
 			delete component;
@@ -16,8 +18,9 @@ public:
 
 	ComponentType* Get(const Entity anEntity) const {
 		auto itr = container.find(anEntity);
-		if (itr == container.end())//didnt find any
+		if (itr == container.end()) {//didnt find any
 			return nullptr;
+		}
 		return itr->second;
 		//return container[anEntity];
 	}
@@ -32,3 +35,7 @@ private:
 	//TODO: use an Sparse Set
 	std::unordered_map<Entity, ComponentType*> container;
 };
+
+
+template<typename ComponentType>
+unsigned long Container<ComponentType>::id = 0;

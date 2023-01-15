@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include <cassert>
+#include <iostream>
 
 #include "Entity.h"
 #include "Container.h"
@@ -31,7 +33,7 @@ public:
 	Container<ComponentType>* GetContainer() const {
 		//do an O(n) thing to find the correct container
 		for (BaseContainer* container : containers) {
-			if (std::is_same<Container<ComponentType>, decltype(container)>())
+			if (Container<ComponentType>::id == container->id)
 				return (Container<ComponentType>*)container;
 		}
 		return nullptr;
