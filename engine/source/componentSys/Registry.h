@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include <unordered_map>
 #include <cassert>
 #include <iostream>
 
@@ -25,19 +25,24 @@ public:
 		Container<ComponentType>* container = GetContainer<ComponentType>();
 		if (!container) {
 			container = new Container<ComponentType>();//create new container
-			containers.push_back((BaseContainer*)container);
+			containers[container->id] = (BaseContainer*)container;
 		}
 		return container->Add(anEntity);
 	}
 
 	template<typename ComponentType>
+	void Remove(const Entity anEntity) {
+		Container<ComponentType>* container = GetContainer<ComponentType>();
+		if (container)
+			container->Remove(anEntity);
+	}
+
+
+	template<typename ComponentType>
 	Container<ComponentType>* GetContainer() const {
-		//do an O(n) thing to find the correct container
-		for (BaseContainer* container : containers) {//TODO: make this more efficient
-			if (Container<ComponentType>::id == container->id)
-				return (Container<ComponentType>*)container;
-		}
-		return nullptr;
+		if (!containers.contains(Container<ComponentType>::id))//there is no container of that type
+			return nullptr;
+		return (Container<ComponentType>*)containers.at(Container<ComponentType>::id);
 	}
 
 
@@ -48,5 +53,5 @@ public:
 
 
 private:
-	std::vector<BaseContainer*> containers;
+	std::unordered_map<unsigned long, BaseContainer*> containers;
 };

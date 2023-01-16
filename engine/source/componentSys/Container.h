@@ -31,11 +31,10 @@ public:
 		return container[anEntity];
 	}
 
-	void Remove(const Entity anEntity) {
-		auto itr = container.find(anEntity);
-		if (itr == container.end())//didnt find any
+	virtual void Remove (const Entity anEntity) override {
+		if (!container.contains(anEntity))
 			return;
-		delete itr->second;//NOTE: not accounting for duplicates
+		delete container[anEntity];//NOTE: not accounting for duplicates
 		container.erase(anEntity);
 	}
 

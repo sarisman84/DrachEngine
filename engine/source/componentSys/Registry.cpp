@@ -15,6 +15,8 @@ Entity Registry::CreateEntity() const {
 	return generationID++;
 }
 
-void Registry::DestroyEntity(const Entity anEntity) {
-	//TODO: implement
+void Registry::DestroyEntity(const Entity anEntity) {//destroys all components coupled to this entity
+	for (auto& [id, container] : containers) {
+		container->Remove(anEntity);
+	}
 }
