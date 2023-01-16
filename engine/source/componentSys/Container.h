@@ -31,7 +31,7 @@ public:
 		return container[anEntity];
 	}
 
-	virtual void Remove (const Entity anEntity) override {
+	void Remove (const Entity anEntity) override {
 		if (!container.contains(anEntity))
 			return;
 		delete container[anEntity];//NOTE: not accounting for duplicates
@@ -39,7 +39,7 @@ public:
 	}
 
 private:
-	//TODO: use an Sparse Set
+	//NOTE: use an Sparse Set, if the quick clearing of all elements will ever be required
 	std::unordered_map<Entity, ComponentType*> container;
 };
 
