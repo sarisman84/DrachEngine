@@ -8,3 +8,13 @@ Registry::~Registry() {
 		delete containers[i];
 	}
 }
+
+
+Entity Registry::CreateEntity() const {
+	static unsigned long generationID = 0;
+	return generationID++;
+}
+
+void Registry::DestroyEntity(const Entity anEntity) {
+	//TODO: implement
+}

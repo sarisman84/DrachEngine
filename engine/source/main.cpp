@@ -1,5 +1,4 @@
 #include "main.h"
-#include <iostream>
 #include <d3d11.h>
 #include "logging/Logger.h"
 #include <string>
@@ -20,12 +19,11 @@ void Engine::OnStart(StartContext& const someData)
 
 
 	//TESTING THE REGISTRY
-	std::cout << "START" << std::endl;
 
 	Registry reg = Registry();
 	//TODO: make entities in the registry
-	Entity A = 0;
-	Entity B = 2;
+	Entity A = reg.CreateEntity();
+	Entity B = reg.CreateEntity();
 	reg.Add<float>(A);
 	reg.Add<TestComponent>(A)->name = "As comp";
 	reg.Add<TestComponent>(B)->name = "Bs comp";

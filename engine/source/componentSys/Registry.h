@@ -11,6 +11,7 @@ public:
 	Registry();
 	~Registry();
 
+//-------------- COMPONENT MANAGEMENT -------------------
 	template<typename ComponentType>
 	ComponentType* Get(const Entity anEntity) const {
 		Container<ComponentType>* container = GetContainer<ComponentType>();
@@ -32,12 +33,19 @@ public:
 	template<typename ComponentType>
 	Container<ComponentType>* GetContainer() const {
 		//do an O(n) thing to find the correct container
-		for (BaseContainer* container : containers) {
+		for (BaseContainer* container : containers) {//TODO: make this more efficient
 			if (Container<ComponentType>::id == container->id)
 				return (Container<ComponentType>*)container;
 		}
 		return nullptr;
 	}
+
+
+
+//----------------- ENTITY MANAGEMENT ------------------
+	Entity CreateEntity() const;
+	void DestroyEntity(const Entity anEntity);
+
 
 private:
 	std::vector<BaseContainer*> containers;

@@ -6,5 +6,5 @@ public:
 	BaseContainer(unsigned long id) : id(id) {}
 
 
-	static unsigned long GenerateID();
+	static unsigned long GenerateID(unsigned long& id);
 };

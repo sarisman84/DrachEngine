@@ -9,7 +9,7 @@ class Container : BaseContainer {
 public:
 	static unsigned long id;
 
-	Container() : container(), BaseContainer(id = GenerateID()) {}
+	Container() : container(), BaseContainer(GenerateID(id)) {}
 	~Container() {
 		for (auto& [entity, component] : container) {//free all components
 			delete component;
@@ -29,6 +29,14 @@ public:
 		//NOTE: not accounting for duplicates
 		container[anEntity] = new ComponentType();
 		return container[anEntity];
+	}
+
+	void Remove(const Entity anEntity) {
+		auto itr = container.find(anEntity);
+		if (itr == container.end())//didnt find any
+			return;
+		delete itr->second;//NOTE: not accounting for duplicates
+		container.erase(anEntity);
 	}
 
 private:
