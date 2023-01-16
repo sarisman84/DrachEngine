@@ -2,6 +2,7 @@
 #include <d3d11.h>
 #include <cassert>
 #pragma comment(lib, "d3d11.lib")
+#include "logging/Logger.h"
 
 GraphicsEngine::GraphicsEngine(HWND& const anWindowsInstance, const unsigned int aWidth, const unsigned int aHeight, const unsigned int aRefreshRate)
 {
@@ -23,6 +24,7 @@ GraphicsEngine::GraphicsEngine(HWND& const anWindowsInstance, const unsigned int
 	HRESULT result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, NULL, 0, D3D11_SDK_VERSION, &desc, &swapChain, &device, NULL, &deviceContext);
 
 	assert(result == S_OK && "Failed to create Swap Chain, Device and Device Context!");
+	LOG("Successfully created Swap chain, Device and Device Context!");
 }
 
 void GraphicsEngine::DrawTo(RenderTarget* const aTarget, DepthStencil* const aDepthBuffer)
@@ -31,6 +33,9 @@ void GraphicsEngine::DrawTo(RenderTarget* const aTarget, DepthStencil* const aDe
 		deviceContext->OMSetRenderTargets(1, aTarget->GetAddressOf(), aDepthBuffer->Get());
 	else
 		deviceContext->OMSetRenderTargets(1, aTarget->GetAddressOf(), nullptr);
+
+
+	LOG("Switched Render Target!");
 }
 
 void GraphicsEngine::DrawToBackBuffer()
