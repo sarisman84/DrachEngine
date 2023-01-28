@@ -1,5 +1,5 @@
 #include "main.h"
-#include <d3d11.h>
+
 #include "logging/Logger.h"
 #include <string>
 #include <typeinfo>
@@ -7,6 +7,7 @@
 #include "componentSys/Registry.h"
 #include "componentSys/TestComponent.h"
 
+#include "graphics/GraphicsEngine.h"
 void Engine::OnUpdate()
 {
 	
@@ -14,7 +15,7 @@ void Engine::OnUpdate()
 
 void Engine::OnStart(StartContext& const someData)
 {
-	myGraphicsEngine.reset(new GraphicsEngine(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120));
+	myGraphicsEngine.reset(new drach::GraphicsEngine(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120));
 	LOG("Engine Initialized!");
 
 

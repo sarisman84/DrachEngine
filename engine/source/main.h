@@ -1,8 +1,14 @@
 #pragma once
 #include "interface/EngineInterface.h"
-#include "graphics/GraphicsEngine.h"
+
 
 #include <memory>
+
+
+namespace drach
+{
+	class GraphicsEngine;
+}
 
 
 template<typename T, int N>
@@ -19,7 +25,7 @@ public:
 	void OnStart(StartContext& const someData) override;
 	void OnWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
 private:
-	std::unique_ptr<GraphicsEngine> myGraphicsEngine;
+	std::unique_ptr<drach::GraphicsEngine> myGraphicsEngine;
 };
 
 
