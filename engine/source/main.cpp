@@ -22,7 +22,7 @@ void Engine::OnStart(StartContext& const someData)
 	//TESTING THE REGISTRY
 
 	Registry reg = Registry();
-	//TODO: make entities in the registry
+
 	Entity A = reg.CreateEntity();
 	Entity B = reg.CreateEntity();
 	reg.Add<float>(A);
