@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include "Vector.h"
+#include "CommonUtilities.h"
 namespace drach
 {
 	template<typename T>
@@ -27,6 +28,8 @@ namespace drach
 		Vector3<T> operator*(const Vector2<T>& aVector2);
 		Vector3<T> operator/(const Vector3<T>& aVector3);
 		Vector3<T> operator/(const Vector2<T>& aVector2);
+		Vector3<T> operator*(const T& aVal);
+		Vector3<T> operator/(const T& aVal);
 	public:
 		void operator+=(const Vector3<T>& aVector3);
 		void operator+=(const Vector2<T>& aVector2);
@@ -40,15 +43,19 @@ namespace drach
 	public:
 		static Vector3<T> Cross(const Vector3<T>& aLhs, const Vector3<T>& aRhs);
 		static float Dot(const Vector3<T>& aLhs, const Vector3<T>& aRhs);
+		static float DotNormalized(const Vector3<T>& aLhs, const Vector3<T>& aRhs);
 		static Vector3<T> Clamp(const Vector3<T>& aSource, const Vector3<T>& aMin, const Vector3<T>& aMax);
 		static Vector3<T> ClampLength(const Vector3<T>& aSource, const float aMin, const float aMax);
 		static Vector3<T> Lerp(const Vector3<T>& aSource, const Vector3<T>& aTarget, const float aPercentage);
 	public:
-		float Length() override;
-		float RawLength() override;
+		float FastLength();
+		float Length();
+		float RawLength();
+
 		Vector3<T> GetNormalized();
 		void Normalize();
-
+		Vector3<T> GetFastNormalized();
+		void FastNormalize();
 	private:
 		T x;
 		T y;
@@ -60,14 +67,22 @@ namespace drach
 	template<typename T>
 	inline Vector3<T> Vector3<T>::Cross(const Vector3<T>& aLhs, const Vector3<T>& aRhs)
 	{
-		return Vector3<T>();
+		Vector3<T> r;
+		r.x = aLhs.y * aRhs.z - aLhs.z * aRhs.y;
+		r.y = aLhs.z * aRhs.x - aLhs.x * aRhs.z;
+		r.z = aLhs.x * aRhs.y - aLhs.y * aRhs.x;
+		return r;
 	}
 	template<typename T>
 	inline float Vector3<T>::Dot(const Vector3<T>& aLhs, const Vector3<T>& aRhs)
 	{
+		return aLhs.x * aRhs.x + aLhs.y * aRhs.y + aLhs.z * aRhs.z;
+	}
+	template<typename T>
+	inline float Vector3<T>::DotNormalized(const Vector3<T>& aLhs, const Vector3<T>& aRhs)
+	{
 		float lengthProduct = aLhs.Length() * aRhs.Length();
-		float dot = aLhs.x * aRhs.x + aLhs.y * aRhs.y + aLhs.z * aRhs.z;
-		return dot / lengthProduct;
+		return Dot(aLhs, aRhs) / lengthProduct;
 	}
 	template<typename T>
 	inline Vector3<T> Vector3<T>::Clamp(const Vector3<T>& aSource, const Vector3<T>& aMin, const Vector3<T>& aMax)
@@ -99,6 +114,12 @@ namespace drach
 		return aSource + (aTarget - aSource) * aPercentage;
 	}
 	template<typename T>
+	inline float Vector3<T>::FastLength()
+	{
+		return 1.0f / drach::qSqrt(RawLength());
+
+	}
+	template<typename T>
 	inline float Vector3<T>::Length()
 	{
 		return std::sqrt(RawLength());
@@ -111,11 +132,58 @@ namespace drach
 	template<typename T>
 	inline Vector3<T> Vector3<T>::GetNormalized()
 	{
-		return Vector3<T>();
+		Vector3<T> result = *this;
+
+		float length = result.Length();
+
+		if (length == 0)
+		{
+			return result;
+		}
+
+		return result / length;
 	}
 	template<typename T>
 	inline void Vector3<T>::Normalize()
 	{
+		float length = Length();
+
+		if (length == 0)
+		{
+			return;
+		}
+
+		x /= length;
+		y /= length;
+		z /= length;
+	}
+	template<typename T>
+	inline Vector3<T> Vector3<T>::GetFastNormalized()
+	{
+		Vector3<T> result = *this;
+
+		float length = result.FastLength();
+
+		if (length == 0)
+		{
+			return result;
+		}
+
+		return result / length;
+	}
+	template<typename T>
+	inline void Vector3<T>::FastNormalize()
+	{
+		float length = FastLength();
+
+		if (length == 0)
+		{
+			return;
+		}
+
+		x /= length;
+		y /= length;
+		z /= length;
 	}
 	template<typename T>
 	inline Vector3<T>::Vector3() : x(T()), y(T()), z(T())
@@ -130,6 +198,16 @@ namespace drach
 	{
 	}
 	template<typename T>
+	inline Vector3<T>::Vector3(const Vector3<T>& aVector3) : x(aVector3.x), y(aVector3.y), z(aVector3.z)
+	{
+
+	}
+	template<typename T>
+	inline Vector3<T>::Vector3(Vector3<T>&& aVector3) : x(std::move(aVector3.x)), y(std::move(aVector3.y)), z(std::move(aVector3.z))
+	{
+
+	}
+	template<typename T>
 	inline Vector3<T> Vector3<T>::operator=(const Vector3<T>& aVector3)
 	{
 		x = aVector3.x;
@@ -141,9 +219,9 @@ namespace drach
 	template<typename T>
 	inline Vector3<T> Vector3<T>::operator=(Vector3<T>&& aVector3)
 	{
-		x = aVector3.x;
-		y = aVector3.y;
-		z = aVector3.z;
+		x = std::move(aVector3.x);
+		y = std::move(aVector3.y);
+		z = std::move(aVector3.z);
 
 		return *this;
 	}
@@ -186,6 +264,16 @@ namespace drach
 	inline Vector3<T> Vector3<T>::operator/(const Vector2<T>& aVector2)
 	{
 		return { x / aVector2.x, y / aVector2.y, z };
+	}
+	template<typename T>
+	inline Vector3<T> Vector3<T>::operator*(const T& aVal)
+	{
+		return { x * aVal, y * aVal, z * aVal };
+	}
+	template<typename T>
+	inline Vector3<T> Vector3<T>::operator/(const T& aVal)
+	{
+		return { x / aVal, y / aVal, z / aVal };
 	}
 	template<typename T>
 	inline void Vector3<T>::operator+=(const Vector3<T>& aVector3)
@@ -239,4 +327,9 @@ namespace drach
 		x /= aVector2.x;
 		y /= aVector2.y;
 	}
+
+
+	typedef Vector3<float> Vector3f;
+	typedef Vector3<int> Vector3i;
+	typedef Vector3<uint32_t> uVector3i;
 }

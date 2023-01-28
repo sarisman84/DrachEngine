@@ -1,10 +1,3 @@
 #pragma once
-namespace drach
-{
-	class Vector
-	{
-	public:
-		virtual float Length() = 0;
-		virtual float RawLength() = 0;
-	};
-}
+#include "Vector2.h"
+#include "Vector3.h"

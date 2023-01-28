@@ -11,7 +11,7 @@ namespace drach
 	};
 
 	// Fast Inverse Square Root function
-	float invSqrt(float x) {
+	float qSqrt(float x) {
 		FloatIntConverter converter;
 		float x2;
 		const float threehalfs = 1.5f;
