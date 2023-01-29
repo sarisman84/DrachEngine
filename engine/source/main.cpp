@@ -7,6 +7,8 @@
 #include "componentSys/Registry.h"
 #include "componentSys/TestComponent.h"
 
+#include "util/other/SMap.h"
+
 #include "graphics/GraphicsEngine.h"
 void Engine::OnUpdate()
 {
@@ -26,11 +28,14 @@ void Engine::OnStart(StartContext& const someData)
 	Entity A = reg.CreateEntity();
 	Entity B = reg.CreateEntity();
 	reg.Add<float>(A);
-	reg.Add<TestComponent>(A)->name = "As comp";
-	reg.Add<TestComponent>(B)->name = "Bs comp";
+	reg.Add<TestComponent>(A).name = "As comp";
+	reg.Add<TestComponent>(B).name = "Bs comp";
 
 	reg.Get<TestComponent>(A)->printName();
 	reg.Get<TestComponent>(B)->printName();
+
+	reg.DestroyEntity(A);
+	std::cout << reg.Get<TestComponent>(A) << std::endl;
 }
 
 void Engine::OnWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

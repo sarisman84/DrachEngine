@@ -1,7 +1,7 @@
 #pragma once
 #include "BaseContainer.h"
 
-#include <unordered_map>
+#include "util/other/SMap.h"
 #include "Entity.h"
 
 template<typename ComponentType>
@@ -16,31 +16,25 @@ public:
 		}
 	}
 
-	ComponentType* Get(const Entity anEntity) const {
-		auto itr = container.find(anEntity);
-		if (itr == container.end()) {//didnt find any
+	ComponentType* Get(const Entity anEntity) {
+		if (!container.contains(anEntity))
 			return nullptr;
-		}
-		return itr->second;
-		//return container[anEntity];
+		return &container[anEntity];
 	}
 
-	ComponentType* Add(const Entity anEntity) {
+	ComponentType& Add(const Entity anEntity) {
 		//NOTE: not accounting for duplicates
-		container[anEntity] = new ComponentType();
+		container.insert(anEntity, ComponentType());
 		return container[anEntity];
 	}
 
 	void Remove (const Entity anEntity) override {
-		if (!container.contains(anEntity))
-			return;
-		delete container[anEntity];//NOTE: not accounting for duplicates
 		container.erase(anEntity);
 	}
 
 private:
 	//NOTE: use an Sparse Set, if the quick clearing of all elements will ever be required
-	std::unordered_map<Entity, ComponentType*> container;
+	SMap<Entity, ComponentType> container;
 };
 
 

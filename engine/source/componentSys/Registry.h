@@ -21,7 +21,7 @@ public:
 	}
 
 	template<typename ComponentType>
-	ComponentType* Add(const Entity anEntity) {
+	ComponentType& Add(const Entity anEntity) {
 		Container<ComponentType>* container = GetContainer<ComponentType>();
 		if (!container) {
 			container = new Container<ComponentType>();//create new container
