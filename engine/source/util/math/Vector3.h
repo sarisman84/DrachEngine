@@ -1,13 +1,9 @@
 #pragma once
 #include <cmath>
-#include "Vector.h"
+#include "Vector2.h"
 #include "CommonUtilities.h"
 namespace drach
 {
-	template<typename T>
-	class Vector2;
-
-
 	template<typename T>
 	class Vector3 : public Vector
 	{
@@ -31,6 +27,9 @@ namespace drach
 		Vector3<T> operator*(const T& aVal);
 		Vector3<T> operator/(const T& aVal);
 	public:
+		const bool operator==(const Vector3<T>& anOtherVector3);
+		const bool operator!=(const Vector3<T>& anOtherVector3);
+	public:
 		void operator+=(const Vector3<T>& aVector3);
 		void operator+=(const Vector2<T>& aVector2);
 		void operator-=(const Vector3<T>& aVector3);
@@ -50,13 +49,13 @@ namespace drach
 	public:
 		float FastLength();
 		float Length();
-		float RawLength();
+		float SqrLength();
 
 		Vector3<T> GetNormalized();
 		void Normalize();
 		Vector3<T> GetFastNormalized();
 		void FastNormalize();
-	private:
+	public:
 		T x;
 		T y;
 		T z;
@@ -116,16 +115,16 @@ namespace drach
 	template<typename T>
 	inline float Vector3<T>::FastLength()
 	{
-		return 1.0f / drach::qSqrt(RawLength());
+		return 1.0f / drach::qSqrt(SqrLength());
 
 	}
 	template<typename T>
 	inline float Vector3<T>::Length()
 	{
-		return std::sqrt(RawLength());
+		return std::sqrt(SqrLength());
 	}
 	template<typename T>
-	inline float Vector3<T>::RawLength()
+	inline float Vector3<T>::SqrLength()
 	{
 		return x * x + y * y + z * z;
 	}
@@ -274,6 +273,16 @@ namespace drach
 	inline Vector3<T> Vector3<T>::operator/(const T& aVal)
 	{
 		return { x / aVal, y / aVal, z / aVal };
+	}
+	template<typename T>
+	inline const bool Vector3<T>::operator==(const Vector3<T>& anOtherVector3)
+	{
+		return x == anOtherVector3.x && y == anOtherVector3.y && z == anOtherVector3.z;
+	}
+	template<typename T>
+	inline const bool Vector3<T>::operator!=(const Vector3<T>& anOtherVector3)
+	{
+		return x != anOtherVector3.x && y != anOtherVector3.y && z != anOtherVector3.z;
 	}
 	template<typename T>
 	inline void Vector3<T>::operator+=(const Vector3<T>& aVector3)

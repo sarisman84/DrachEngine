@@ -1,96 +1,274 @@
 #pragma once
-
-template<typename T>
-class Vector2
+#include "CommonUtilities.h"
+namespace drach
 {
-public:
-	Vector2(const T x, const T y)
+	template<typename T>
+	class Vector2
 	{
-		this->x = x;
-		this->y = y;
+	public:
+		Vector2();
+		Vector2(const T& anX, const T& anY);
+		Vector2(const Vector2<T>& anOther);
+		Vector2(Vector2<T>&& anOther);
+	public:
+		Vector2<T> operator+(const Vector2<T>& other);
+		Vector2<T> operator-(const Vector2<T>& other);
+		Vector2<T> operator/(const Vector2<T>& other);
+		Vector2<T> operator*(const Vector2<T>& other);
+		Vector2<T> operator/(const T other);
+		Vector2<T> operator*(const T other);
+	public:
+		void operator+=(const Vector2<T>& other);
+		void operator-=(const Vector2<T>& other);
+		void operator/=(const Vector2<T>& other);
+		void operator*=(const Vector2<T>& other);
+		void operator/=(const T other);
+		void operator*=(const T other);
+	public:
+		const bool operator==(const Vector2<T>& anOtherVector2);
+		const bool operator!=(const Vector2<T>& anOtherVector2);
+	public:
+		static float Dot(const Vector2<T>& aLhs, const Vector2<T>& aRhs);
+		static float DotNormalized(const Vector2<T>& aLhs, const Vector2<T>& aRhs);
+		static Vector2<T> Clamp(const Vector2<T>& aSource, const Vector2<T>& aMin, const Vector2<T>& aMax);
+		static Vector2<T> ClampLength(const Vector2<T>& aSource, const float aMin, const float aMax);
+		static Vector2<T> Lerp(const Vector2<T>& aSource, const Vector2<T>& aTarget, const float aPercentage);
+	public:
+		float FastLength();
+		float Length();
+		float SqrLength();
+
+		Vector2<T> GetNormalized();
+		void Normalize();
+		Vector2<T> GetFastNormalized();
+		void FastNormalize();
+	public:
+		T x;
+		T y;
+	};
+	template<typename T>
+	inline Vector2<T>::Vector2()
+		:x(T()), y(T())
+	{
 	}
-	Vector2(const Vector2<T>& other)
+	template<typename T>
+	inline Vector2<T>::Vector2(const T& anX, const T& anY)
+		: x(anX), y(anY)
 	{
-		this->x = other.x;
-		this->y = other.y;
 	}
-	Vector2<T> operator+(const Vector2<T>& other)
+	template<typename T>
+	inline Vector2<T>::Vector2(const Vector2<T>& anOther)
+		: x(anOther.x), y(anOther.y)
 	{
-		Vector2<T> result;
-		result.x += other.x;
-		result.y += other.y;
+	}
+	template<typename T>
+	inline Vector2<T>::Vector2(Vector2<T>&& anOther)
+		: x(std::move(anOther.x)), y(std::move(anOther.y))
+	{
+	}
+	template<typename T>
+	inline Vector2<T> Vector2<T>::operator+(const Vector2<T>& other)
+	{
+		Vector2<T> r;
+		r.x = x + other.x;
+		r.y = y + other.y;
+		return r;
+	}
+	template<typename T>
+	inline Vector2<T> Vector2<T>::operator-(const Vector2<T>& other)
+	{
+		Vector2<T> r;
+		r.x = x - other.x;
+		r.y = y - other.y;
+		return r;
+	}
+	template<typename T>
+	inline Vector2<T> Vector2<T>::operator/(const Vector2<T>& other)
+	{
+		Vector2<T> r;
+		r.x = x / other.x;
+		r.y = y / other.y;
+		return r;
+	}
+	template<typename T>
+	inline Vector2<T> Vector2<T>::operator*(const Vector2<T>& other)
+	{
+		Vector2<T> r;
+		r.x = x * other.x;
+		r.y = y * other.y;
+		return r;
+	}
+	template<typename T>
+	inline Vector2<T> Vector2<T>::operator/(const T other)
+	{
+		Vector2<T> r;
+		r.x = x / other;
+		r.y = y / other;
+		return r;
+	}
+	template<typename T>
+	inline Vector2<T> Vector2<T>::operator*(const T other)
+	{
+		Vector2<T> r;
+		r.x = x * other;
+		r.y = y * other;
+		return r;
+	}
+	template<typename T>
+	inline void Vector2<T>::operator+=(const Vector2<T>& other)
+	{
+		x = x + other.x;
+		y = y + other.y;
+	}
+	template<typename T>
+	inline void Vector2<T>::operator-=(const Vector2<T>& other)
+	{
+		x = x - other.x;
+		y = y - other.y;
+	}
+	template<typename T>
+	inline void Vector2<T>::operator/=(const Vector2<T>& other)
+	{
+		x = x / other.x;
+		y = y / other.y;
+	}
+	template<typename T>
+	inline void Vector2<T>::operator*=(const Vector2<T>& other)
+	{
+		x = x * other.x;
+		y = y * other.y;
+	}
+	template<typename T>
+	inline void Vector2<T>::operator/=(const T other)
+	{
+		x = x / other;
+		y = y / other;
+	}
+	template<typename T>
+	inline void Vector2<T>::operator*=(const T other)
+	{
+		x = x * other;
+		y = y * other;
+	}
+	template<typename T>
+	inline const bool Vector2<T>::operator==(const Vector2<T>& anOtherVector2)
+	{
+		return x == anOtherVector2.x && y == anOtherVector2.y;
+	}
+	template<typename T>
+	inline const bool Vector2<T>::operator!=(const Vector2<T>& anOtherVector2)
+	{
+		return x != anOtherVector2.x && y != anOtherVector2.y;
+	}
+	template<typename T>
+	inline float Vector2<T>::Dot(const Vector2<T>& aLhs, const Vector2<T>& aRhs)
+	{
+		return aLhs.x * aRhs.x + aLhs.y * aRhs.y;
+	}
+	template<typename T>
+	inline float Vector2<T>::DotNormalized(const Vector2<T>& aLhs, const Vector2<T>& aRhs)
+	{
+		float lengthProduct = aLhs.Length() * aRhs.Length();
+		return Dot(aLhs, aRhs) / lengthProduct;
+	}
+	template<typename T>
+	inline Vector2<T> Vector2<T>::Clamp(const Vector2<T>& aSource, const Vector2<T>& aMin, const Vector2<T>& aMax)
+	{
+		Vector2<T> r;
+		r.x = aSource.x < aMin.x ? aMin.x : aSource.x > aMax.x ? aMax.x : aSource.x;
+		r.y = aSource.y < aMin.y ? aMin.y : aSource.y > aMax.y ? aMax.y : aSource.y;
+		return r;
+	}
+	template<typename T>
+	inline Vector2<T> Vector2<T>::ClampLength(const Vector2<T>& aSource, const float aMin, const float aMax)
+	{
+		Vector2<T> result = aSource;
+		float length = aSource.Length();
+
+		if (length < aMin)
+			result = aSource * (aMin / length);
+		else if (length > aMax)
+			result = aSource * (aMax / length);
+
 		return result;
 	}
-	Vector2<T> operator-(const Vector2<T>& other)
+	template<typename T>
+	inline Vector2<T> Vector2<T>::Lerp(const Vector2<T>& aSource, const Vector2<T>& aTarget, const float aPercentage)
 	{
-		Vector2<T> result;
-		result.x -= other.x;
-		result.y -= other.y;
-		return result;
+		return aSource + (aTarget - aSource) * aPercentage;
 	}
-	Vector2<T> operator/(const Vector2<T>& other)
+	template<typename T>
+	inline float Vector2<T>::FastLength()
 	{
-		Vector2<T> result;
-		result.x /= other.x;
-		result.y /= other.y;
-		return result;
+		return 1.0f / drach::qSqrt(SqrLength());
 	}
-	Vector2<T> operator*(const Vector2<T>& other)
+	template<typename T>
+	inline float Vector2<T>::Length()
 	{
-		Vector2<T> result;
-		result.x *= other.x;
-		result.y *= other.y;
-		return result;
+		return std::sqrt(SqrLength());
 	}
-	Vector2<T> operator/(const T other)
+	template<typename T>
+	inline float Vector2<T>::SqrLength()
 	{
-		Vector2<T> result;
-		result.x /= other;
-		result.y /= other;
-		return result;
+		return x * x + y * y;
 	}
-	Vector2<T> operator*(const T other)
+	template<typename T>
+	inline Vector2<T> Vector2<T>::GetNormalized()
 	{
-		Vector2<T> result;
-		result.x *= other;
-		result.y *= other;
-		return result;
+		Vector2<T> result = *this;
+
+		float length = result.Length();
+
+		if (length == 0)
+		{
+			return result;
+		}
+
+		return result / length;
 	}
-	void operator+=(const Vector2<T>& other)
+	template<typename T>
+	inline void Vector2<T>::Normalize()
 	{
-		x += other.x;
-		y += other.y;
+		float length = Length();
+
+		if (length == 0)
+		{
+			return;
+		}
+
+		x /= length;
+		y /= length;
 	}
-	void operator-=(const Vector2<T>& other)
+	template<typename T>
+	inline Vector2<T> Vector2<T>::GetFastNormalized()
 	{
-		x -= other.x;
-		y -= other.y;
+		Vector2<T> result = *this;
+
+		float length = result.FastLength();
+
+		if (length == 0)
+		{
+			return result;
+		}
+
+		return result / length;
+	}
+	template<typename T>
+	inline void Vector2<T>::FastNormalize()
+	{
+		float length = FastLength();
+
+		if (length == 0)
+		{
+			return;
+		}
+
+		x /= length;
+		y /= length;
 	}
 
-	void operator/=(const Vector2<T>& other)
-	{
-		x /= other.x;
-		y /= other.y;
-	}
-
-	void operator*=(const Vector2<T>& other)
-	{
-		x *= other.x;
-		y *= other.y;
-	}
-
-
-	void operator/=(const T other)
-	{
-		x /= other;
-		y /= other;
-	}
-	void operator*=(const T other)
-	{
-		x *= other;
-		y *= other;
-	}
-public:
-	T x;
-	T y;
-};
+	typedef Vector2<float> Vector2f;
+	typedef Vector2<int> Vector2i;
+	typedef Vector2<uint32_t> uVector2i;
+	typedef uVector2i PixelCoord;
+}

@@ -1,0 +1,472 @@
+#pragma once
+#include "CommonUtilities.h"
+#include "Vector4.h"
+#include "Vector3.h"
+
+#include <cassert>
+
+namespace drach
+{
+	enum class RotationAxis
+	{
+		X, Y, Z
+	};
+	template<typename T>
+	class Matrix4x4
+	{
+		union
+		{
+			Vector4<T> myRows[4];
+			T myData[16];
+			T myArray[4][4];
+		};
+	public:
+		Matrix4x4();
+		Matrix4x4(const T someData[16]);
+		Matrix4x4(const Vector4<T> someRows[4]);
+		Matrix4x4(const Matrix4x4<T>& aMatrix);
+		Matrix4x4(Matrix4x4<T>&& aMatrix);
+	public:
+		Matrix4x4<T> operator+(const Matrix4x4<T>& aMatrix);
+		Matrix4x4<T> operator-(const Matrix4x4<T>& aMatrix);
+		Matrix4x4<T> operator*(const Matrix4x4<T>& aMatrix);
+		Matrix4x4<T> operator/(const Matrix4x4<T>& aMatrix);
+	public:
+		void operator+=(const Matrix4x4<T>& aMatrix);
+		void operator-=(const Matrix4x4<T>& aMatrix);
+		void operator*=(const Matrix4x4<T>& aMatrix);
+		void operator/=(const Matrix4x4<T>& aMatrix);
+	public:
+		const bool operator==(const Matrix4x4<T>& aMatrix);
+		const bool operator!=(const Matrix4x4<T>& aMatrix);
+	public:
+		void Decompose(Vector3<T>& aPos, Vector3<T>& aRot, Vector3<T>& aSize);
+		void TRS(const Vector3<T>& aPos, Vector3<T>& aRot, const Vector3<T>& aSize);
+	public:
+		Vector3<T> Forward();
+		Vector3<T> Up();
+		Vector3<T> Right();
+
+		void SetPosition(const Vector3<T>& aVector3);
+		void SetSize(const Vector3<T>& aVector3);
+		void SetRotation(const Vector3<T>& aVector3);
+
+		Vector3<T> GetPosition();
+		Vector3<T> GetSize();
+		Vector3<T> GetRotation();
+
+	public:
+		static Matrix4x4<T> Determinant(const Matrix4x4<T>& aMatrix);
+		static Matrix4x4<T> Transpose(const Matrix4x4<T>& aMatrix);
+		static Matrix4x4<T> GetInverse(const Matrix4x4<T>& aMatrix);
+		static Matrix4x4<T> GetFastInverse(const Matrix4x4<T>& aMatrix);
+
+		static Matrix4x4<T> CreateTranslateMatrix(const Vector3<T>& aPos);
+		static Matrix4x4<T> CreateRotationMatrix(const RotationAxis& anAxis, const T someValueInRadians);
+		static Matrix4x4<T> CreateScaleMatrix(const Vector3<T>& aScale);
+
+	public:
+		T& operator()(const uint32_t aRow, const uint32_t aCollum);
+		Vector4<T> GetRow(const uint32_t anIndex);
+	};
+
+
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::Determinant(const Matrix4x4<T>& aMatrix)
+	{
+		return
+			aMatrix.myArray[0][3] * aMatrix.myArray[1][2] * aMatrix.myArray[2][1] * aMatrix.myArray[3][0] - aMatrix.myArray[0][2] * aMatrix.myArray[1][3] * aMatrix.myArray[2][1] * aMatrix.myArray[3][0] -
+			aMatrix.myArray[0][3] * aMatrix.myArray[1][1] * aMatrix.myArray[2][2] * aMatrix.myArray[3][0] + aMatrix.myArray[0][1] * aMatrix.myArray[1][3] * aMatrix.myArray[2][2] * aMatrix.myArray[3][0] +
+			aMatrix.myArray[0][2] * aMatrix.myArray[1][1] * aMatrix.myArray[2][3] * aMatrix.myArray[3][0] - aMatrix.myArray[0][1] * aMatrix.myArray[1][2] * aMatrix.myArray[2][3] * aMatrix.myArray[3][0] -
+			aMatrix.myArray[0][3] * aMatrix.myArray[1][2] * aMatrix.myArray[2][0] * aMatrix.myArray[3][1] + aMatrix.myArray[0][2] * aMatrix.myArray[1][3] * aMatrix.myArray[2][0] * aMatrix.myArray[3][1] +
+			aMatrix.myArray[0][3] * aMatrix.myArray[1][0] * aMatrix.myArray[2][2] * aMatrix.myArray[3][1] - aMatrix.myArray[0][0] * aMatrix.myArray[1][3] * aMatrix.myArray[2][2] * aMatrix.myArray[3][1] -
+			aMatrix.myArray[0][2] * aMatrix.myArray[1][0] * aMatrix.myArray[2][3] * aMatrix.myArray[3][1] + aMatrix.myArray[0][0] * aMatrix.myArray[1][2] * aMatrix.myArray[2][3] * aMatrix.myArray[3][1] +
+			aMatrix.myArray[0][3] * aMatrix.myArray[1][1] * aMatrix.myArray[2][0] * aMatrix.myArray[3][2] - aMatrix.myArray[0][1] * aMatrix.myArray[1][3] * aMatrix.myArray[2][0] * aMatrix.myArray[3][2] -
+			aMatrix.myArray[0][3] * aMatrix.myArray[1][0] * aMatrix.myArray[2][1] * aMatrix.myArray[3][2] + aMatrix.myArray[0][0] * aMatrix.myArray[1][3] * aMatrix.myArray[2][1] * aMatrix.myArray[3][2] +
+			aMatrix.myArray[0][1] * aMatrix.myArray[1][0] * aMatrix.myArray[2][3] * aMatrix.myArray[3][2] - aMatrix.myArray[0][0] * aMatrix.myArray[1][1] * aMatrix.myArray[2][3] * aMatrix.myArray[3][2] -
+			aMatrix.myArray[0][2] * aMatrix.myArray[1][1] * aMatrix.myArray[2][0] * aMatrix.myArray[3][3] + aMatrix.myArray[0][1] * aMatrix.myArray[1][2] * aMatrix.myArray[2][0] * aMatrix.myArray[3][3] +
+			aMatrix.myArray[0][2] * aMatrix.myArray[1][0] * aMatrix.myArray[2][1] * aMatrix.myArray[3][3] - aMatrix.myArray[0][0] * aMatrix.myArray[1][2] * aMatrix.myArray[2][1] * aMatrix.myArray[3][3] -
+			aMatrix.myArray[0][1] * aMatrix.myArray[1][0] * aMatrix.myArray[2][2] * aMatrix.myArray[3][3] + aMatrix.myArray[0][0] * aMatrix.myArray[1][1] * aMatrix.myArray[2][2] * aMatrix.myArray[3][3];
+	}
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::Transpose(const Matrix4x4<T>& aMatrix)
+	{
+		Matrix4x4<T> r;
+		for (size_t i = 0; i < 4; i++)
+		{
+			for (size_t j = 0; j < 4; j++)
+			{
+				r.myData[j][i] = aMatrix.myData[i][j];
+			}
+		}
+
+		return r;
+	}
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::GetInverse(const Matrix4x4<T>& aMatrix)
+	{
+		T inv[16];
+
+		inv[0] =
+			aMatrix.myData[5] * aMatrix.myData[10] * aMatrix.myData[15] -
+			aMatrix.myData[5] * aMatrix.myData[11] * aMatrix.myData[14] -
+			aMatrix.myData[9] * aMatrix.myData[6] * aMatrix.myData[15] +
+			aMatrix.myData[9] * aMatrix.myData[7] * aMatrix.myData[14] +
+			aMatrix.myData[13] * aMatrix.myData[6] * aMatrix.myData[11] -
+			aMatrix.myData[13] * aMatrix.myData[7] * aMatrix.myData[10];
+
+		inv[4] = -aMatrix.myData[4] * aMatrix.myData[10] * aMatrix.myData[15] +
+			aMatrix.myData[4] * aMatrix.myData[11] * aMatrix.myData[14] +
+			aMatrix.myData[8] * aMatrix.myData[6] * aMatrix.myData[15] -
+			aMatrix.myData[8] * aMatrix.myData[7] * aMatrix.myData[14] -
+			aMatrix.myData[12] * aMatrix.myData[6] * aMatrix.myData[11] +
+			aMatrix.myData[12] * aMatrix.myData[7] * aMatrix.myData[10];
+
+		inv[8] = aMatrix.myData[4] * aMatrix.myData[9] * aMatrix.myData[15] -
+			aMatrix.myData[4] * aMatrix.myData[11] * aMatrix.myData[13] -
+			aMatrix.myData[8] * aMatrix.myData[5] * aMatrix.myData[15] +
+			aMatrix.myData[8] * aMatrix.myData[7] * aMatrix.myData[13] +
+			aMatrix.myData[12] * aMatrix.myData[5] * aMatrix.myData[11] -
+			aMatrix.myData[12] * aMatrix.myData[7] * aMatrix.myData[9];
+
+		inv[12] = -aMatrix.myData[4] * aMatrix.myData[9] * aMatrix.myData[14] +
+			aMatrix.myData[4] * aMatrix.myData[10] * aMatrix.myData[13] +
+			aMatrix.myData[8] * aMatrix.myData[5] * aMatrix.myData[14] -
+			aMatrix.myData[8] * aMatrix.myData[6] * aMatrix.myData[13] -
+			aMatrix.myData[12] * aMatrix.myData[5] * aMatrix.myData[10] +
+			aMatrix.myData[12] * aMatrix.myData[6] * aMatrix.myData[9];
+
+		inv[1] = -aMatrix.myData[1] * aMatrix.myData[10] * aMatrix.myData[15] +
+			aMatrix.myData[1] * aMatrix.myData[11] * aMatrix.myData[14] +
+			aMatrix.myData[9] * aMatrix.myData[2] * aMatrix.myData[15] -
+			aMatrix.myData[9] * aMatrix.myData[3] * aMatrix.myData[14] -
+			aMatrix.myData[13] * aMatrix.myData[2] * aMatrix.myData[11] +
+			aMatrix.myData[13] * aMatrix.myData[3] * aMatrix.myData[10];
+
+		inv[5] = aMatrix.myData[0] * aMatrix.myData[10] * aMatrix.myData[15] -
+			aMatrix.myData[0] * aMatrix.myData[11] * aMatrix.myData[14] -
+			aMatrix.myData[8] * aMatrix.myData[2] * aMatrix.myData[15] +
+			aMatrix.myData[8] * aMatrix.myData[3] * aMatrix.myData[14] +
+			aMatrix.myData[12] * aMatrix.myData[2] * aMatrix.myData[11] -
+			aMatrix.myData[12] * aMatrix.myData[3] * aMatrix.myData[10];
+
+		inv[9] = -aMatrix.myData[0] * aMatrix.myData[9] * aMatrix.myData[15] +
+			aMatrix.myData[0] * aMatrix.myData[11] * aMatrix.myData[13] +
+			aMatrix.myData[8] * aMatrix.myData[1] * aMatrix.myData[15] -
+			aMatrix.myData[8] * aMatrix.myData[3] * aMatrix.myData[13] -
+			aMatrix.myData[12] * aMatrix.myData[1] * aMatrix.myData[11] +
+			aMatrix.myData[12] * aMatrix.myData[3] * aMatrix.myData[9];
+
+		inv[13] = aMatrix.myData[0] * aMatrix.myData[9] * aMatrix.myData[14] -
+			aMatrix.myData[0] * aMatrix.myData[10] * aMatrix.myData[13] -
+			aMatrix.myData[8] * aMatrix.myData[1] * aMatrix.myData[14] +
+			aMatrix.myData[8] * aMatrix.myData[2] * aMatrix.myData[13] +
+			aMatrix.myData[12] * aMatrix.myData[1] * aMatrix.myData[10] -
+			aMatrix.myData[12] * aMatrix.myData[2] * aMatrix.myData[9];
+
+		inv[2] = aMatrix.myData[1] * aMatrix.myData[6] * aMatrix.myData[15] -
+			aMatrix.myData[1] * aMatrix.myData[7] * aMatrix.myData[14] -
+			aMatrix.myData[5] * aMatrix.myData[2] * aMatrix.myData[15] +
+			aMatrix.myData[5] * aMatrix.myData[3] * aMatrix.myData[14] +
+			aMatrix.myData[13] * aMatrix.myData[2] * aMatrix.myData[7] -
+			aMatrix.myData[13] * aMatrix.myData[3] * aMatrix.myData[6];
+
+		inv[6] = -aMatrix.myData[0] * aMatrix.myData[6] * aMatrix.myData[15] +
+			aMatrix.myData[0] * aMatrix.myData[7] * aMatrix.myData[14] +
+			aMatrix.myData[4] * aMatrix.myData[2] * aMatrix.myData[15] -
+			aMatrix.myData[4] * aMatrix.myData[3] * aMatrix.myData[14] -
+			aMatrix.myData[12] * aMatrix.myData[2] * aMatrix.myData[7] +
+			aMatrix.myData[12] * aMatrix.myData[3] * aMatrix.myData[6];
+
+		inv[10] = aMatrix.myData[0] * aMatrix.myData[5] * aMatrix.myData[15] -
+			aMatrix.myData[0] * aMatrix.myData[7] * aMatrix.myData[13] -
+			aMatrix.myData[4] * aMatrix.myData[1] * aMatrix.myData[15] +
+			aMatrix.myData[4] * aMatrix.myData[3] * aMatrix.myData[13] +
+			aMatrix.myData[12] * aMatrix.myData[1] * aMatrix.myData[7] -
+			aMatrix.myData[12] * aMatrix.myData[3] * aMatrix.myData[5];
+
+		inv[14] = -aMatrix.myData[0] * aMatrix.myData[5] * aMatrix.myData[14] +
+			aMatrix.myData[0] * aMatrix.myData[6] * aMatrix.myData[13] +
+			aMatrix.myData[4] * aMatrix.myData[1] * aMatrix.myData[14] -
+			aMatrix.myData[4] * aMatrix.myData[2] * aMatrix.myData[13] -
+			aMatrix.myData[12] * aMatrix.myData[1] * aMatrix.myData[6] +
+			aMatrix.myData[12] * aMatrix.myData[2] * aMatrix.myData[5];
+
+		inv[3] = -aMatrix.myData[1] * aMatrix.myData[6] * aMatrix.myData[11] +
+			aMatrix.myData[1] * aMatrix.myData[7] * aMatrix.myData[10] +
+			aMatrix.myData[5] * aMatrix.myData[2] * aMatrix.myData[11] -
+			aMatrix.myData[5] * aMatrix.myData[3] * aMatrix.myData[10] -
+			aMatrix.myData[9] * aMatrix.myData[2] * aMatrix.myData[7] +
+			aMatrix.myData[9] * aMatrix.myData[3] * aMatrix.myData[6];
+
+		inv[7] = aMatrix.myData[0] * aMatrix.myData[6] * aMatrix.myData[11] -
+			aMatrix.myData[0] * aMatrix.myData[7] * aMatrix.myData[10] -
+			aMatrix.myData[4] * aMatrix.myData[2] * aMatrix.myData[11] +
+			aMatrix.myData[4] * aMatrix.myData[3] * aMatrix.myData[10] +
+			aMatrix.myData[8] * aMatrix.myData[2] * aMatrix.myData[7] -
+			aMatrix.myData[8] * aMatrix.myData[3] * aMatrix.myData[6];
+
+		inv[11] = -aMatrix.myData[0] * aMatrix.myData[5] * aMatrix.myData[11] +
+			aMatrix.myData[0] * aMatrix.myData[7] * aMatrix.myData[9] +
+			aMatrix.myData[4] * aMatrix.myData[1] * aMatrix.myData[11] -
+			aMatrix.myData[4] * aMatrix.myData[3] * aMatrix.myData[9] -
+			aMatrix.myData[8] * aMatrix.myData[1] * aMatrix.myData[7] +
+			aMatrix.myData[8] * aMatrix.myData[3] * aMatrix.myData[5];
+
+		inv[15] = aMatrix.myData[0] * aMatrix.myData[5] * aMatrix.myData[10] -
+			aMatrix.myData[0] * aMatrix.myData[6] * aMatrix.myData[9] -
+			aMatrix.myData[4] * aMatrix.myData[1] * aMatrix.myData[10] +
+			aMatrix.myData[4] * aMatrix.myData[2] * aMatrix.myData[9] +
+			aMatrix.myData[8] * aMatrix.myData[1] * aMatrix.myData[6] -
+			aMatrix.myData[8] * aMatrix.myData[2] * aMatrix.myData[5];
+
+		T det = aMatrix.myData[0] * inv[0] + aMatrix.myData[1] * inv[4] + aMatrix.myData[2] * inv[8] + aMatrix.myData[3] * inv[12];
+
+		//if (det == 0)
+		//	return false;
+
+		det = T(1.0) / det;
+
+		Matrix4x4<T> returnMatrix;
+		for (int i = 0; i < 16; i++)
+		{
+			returnMatrix[i] = inv[i] * det;
+		}
+
+		return returnMatrix;
+	}
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::GetFastInverse(const Matrix4x4<T>& aMatrix)
+	{
+		Matrix4x4<T> inv = aMatrix;
+
+		auto t1 = aMatrix.myRows[0].Dot(aMatrix.myRows[3]);
+		auto t2 = aMatrix.myRows[1].Dot(aMatrix.myRows[3]);
+		auto t3 = aMatrix.myRows[2].Dot(aMatrix.myRows[3]);
+
+		inv.myRows[3] = { 0,0,0,1 };
+
+		inv = Transpose(inv);
+		inv.myRows[3] = { -t1, -t2, -t3, 1 };
+		return inv;
+	}
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::CreateTranslateMatrix(const Vector3<T>& aPos)
+	{
+		return Matrix4x4<T>();
+	}
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::CreateRotationMatrix(const RotationAxis& anAxis, const T someValueInRadians)
+	{
+		return Matrix4x4<T>();
+	}
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::CreateScaleMatrix(const Vector3<T>& aScale)
+	{
+		return Matrix4x4<T>();
+	}
+
+	template<typename T>
+	inline T& Matrix4x4<T>::operator()(const uint32_t aRow, const uint32_t aCollum)
+	{
+	
+
+
+		uint32_t row = aRow - 1;
+		uint32_t collum = aCollum - 1;
+
+		assert(row >= 0 && row < 4 && "Invalid index");
+		assert(collum >= 0 && collum < 4 && "Invalid index");
+		return myArray[aRow - 1][aCollum - 1];
+	}
+
+	template<typename T>
+	inline Vector4<T> Matrix4x4<T>::GetRow(const uint32_t anIndex)
+	{
+		return myRows[anIndex + 1];
+	}
+
+	template<typename T>
+	inline Matrix4x4<T>::Matrix4x4()
+	{
+		myData = { 1,0,0,0,
+				   0,1,0,0,
+				   0,0,1,0,
+				   0,0,0,1 };
+	}
+
+	template<typename T>
+	inline Matrix4x4<T>::Matrix4x4(const T someData[16])
+	{
+		myArray = someData;
+	}
+
+	template<typename T>
+	inline Matrix4x4<T>::Matrix4x4(const Vector4<T> someRows[4])
+	{
+		myRows = someRows;
+	}
+
+	template<typename T>
+	inline Matrix4x4<T>::Matrix4x4(const Matrix4x4<T>& aMatrix)
+	{
+		myData = aMatrix.myData;
+	}
+
+	template<typename T>
+	inline Matrix4x4<T>::Matrix4x4(Matrix4x4<T>&& aMatrix)
+	{
+		for (size_t i = 0; i < 16; i++)
+		{
+			myArray[i] = std::move(aMatrix.myArray[i]);
+		}
+	}
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::operator+(const Matrix4x4<T>& aMatrix)
+	{
+		return Matrix4x4<T>();
+	}
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::operator-(const Matrix4x4<T>& aMatrix)
+	{
+		return Matrix4x4<T>();
+	}
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::operator*(const Matrix4x4<T>& aMatrix)
+	{
+		return Matrix4x4<T>();
+	}
+
+	template<typename T>
+	inline Matrix4x4<T> Matrix4x4<T>::operator/(const Matrix4x4<T>& aMatrix)
+	{
+		return Matrix4x4<T>();
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::operator+=(const Matrix4x4<T>& aMatrix)
+	{
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::operator-=(const Matrix4x4<T>& aMatrix)
+	{
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::operator*=(const Matrix4x4<T>& aMatrix)
+	{
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::operator/=(const Matrix4x4<T>& aMatrix)
+	{
+	}
+
+	template<typename T>
+	inline const bool Matrix4x4<T>::operator==(const Matrix4x4<T>& aMatrix)
+	{
+		return false;
+	}
+
+	template<typename T>
+	inline const bool Matrix4x4<T>::operator!=(const Matrix4x4<T>& aMatrix)
+	{
+		return false;
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::Decompose(Vector3<T>& aPos, Vector3<T>& aRot, Vector3<T>& aSize)
+	{
+		const Matrix4x4<T>& mat = *this;
+		Vector4f scaleX = { mat(1,1),mat(1,2) ,mat(1,3) ,mat(1,4) };
+		Vector4f scaleY = { mat(2,1),mat(2,2) ,mat(2,3) ,mat(2,4) };
+		Vector4f scaleZ = { mat(3,1),mat(3,2) ,mat(3,3) ,mat(3,4) };
+
+		aSize.x = scaleX.Length();
+		aSize.y = scaleY.Length();
+		aSize.z = scaleZ.Length();
+
+		scaleX.Normalize();
+		scaleY.Normalize();
+		scaleZ.Normalize();
+
+		aRot.x = atan2f(scaleY.z, scaleZ.z);
+		aRot.y = atan2f(-scaleX.z, sqrtf(scaleY.z * scaleY.z + scaleZ.z * scaleZ.z));
+		aRot.z = atan2f(scaleX.y, scaleX.x);
+
+		aPos.x = mat.GetPosition().x;
+		aPos.y = mat.GetPosition().y;
+		aPos.z = mat.GetPosition().z;
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::TRS(const Vector3<T>& aPos, Vector3<T>& aRot, const Vector3<T>& aSize)
+	{
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::Forward()
+	{
+		auto forward = GetRow(3);
+		return Vector3<T>(forward.x, forward.y, forward.z);
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::Up()
+	{
+		auto up = GetRow(2);
+		return Vector3<T>(up.x, up.y, up.z);
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::Right()
+	{
+		auto right = GetRow(1);
+		return Vector3<T>(right.x, right.y, right.z);
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::SetPosition(const Vector3<T>& aVector3)
+	{
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::SetSize(const Vector3<T>& aVector3)
+	{
+	}
+
+	template<typename T>
+	inline void Matrix4x4<T>::SetRotation(const Vector3<T>& aVector3)
+	{
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::GetPosition()
+	{
+		return Vector3<T>();
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::GetSize()
+	{
+		return Vector3<T>();
+	}
+
+	template<typename T>
+	inline Vector3<T> Matrix4x4<T>::GetRotation()
+	{
+		return Vector3<T>();
+	}
+
+}
