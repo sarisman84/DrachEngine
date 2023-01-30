@@ -1,5 +1,6 @@
 #pragma once
 #include <wtypes.h>
+#pragma warning(disable: 4227)
 
 struct StartContext
 {

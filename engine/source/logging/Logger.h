@@ -1,5 +1,6 @@
 #pragma once
 #include <string_view>
+#include <string>
 
 #define CONSOLE_RED "\x1b[31m"
 #define CONSOLE_YELLOW "\x1b[33m"

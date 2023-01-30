@@ -92,7 +92,7 @@ namespace drach
 		return *this;
 	}
 	template<typename T>
-	inline Vector4<T> Vector4<T>::operator=(Vector4<T>&& aVector3)
+	inline Vector4<T> Vector4<T>::operator=(Vector4<T>&& aVector4)
 	{
 		x = std::move(aVector4.x);
 		y = std::move(aVector4.y);

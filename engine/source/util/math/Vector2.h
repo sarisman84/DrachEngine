@@ -1,5 +1,6 @@
 #pragma once
 #include "CommonUtilities.h"
+#include <cmath>
 namespace drach
 {
 	template<typename T>
@@ -17,6 +18,8 @@ namespace drach
 		Vector2<T> operator*(const Vector2<T>& other);
 		Vector2<T> operator/(const T other);
 		Vector2<T> operator*(const T other);
+		Vector2<T> operator=(const Vector2<T>& other);
+
 	public:
 		void operator+=(const Vector2<T>& other);
 		void operator-=(const Vector2<T>& other);
@@ -113,6 +116,13 @@ namespace drach
 		r.x = x * other;
 		r.y = y * other;
 		return r;
+	}
+	template<typename T>
+	inline Vector2<T> Vector2<T>::operator=(const Vector2<T>& other)
+	{
+		x = other.x;
+		y = other.y;
+		return *this;
 	}
 	template<typename T>
 	inline void Vector2<T>::operator+=(const Vector2<T>& other)

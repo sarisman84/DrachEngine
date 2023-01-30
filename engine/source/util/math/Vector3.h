@@ -5,7 +5,7 @@
 namespace drach
 {
 	template<typename T>
-	class Vector3 : public Vector
+	class Vector3
 	{
 	public:
 		Vector3();

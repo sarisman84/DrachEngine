@@ -2,6 +2,10 @@
 #include <unordered_map>
 #include <vector>
 
+#pragma warning(disable: 4267)
+#pragma warning(disable: 4244)
+#pragma warning(disable: 4227)
+
 template<typename KeyT, typename ValT>
 class SMap//a sparse set, but with any type as key type (basically works like unordered map, but the ValueTypes are stored in contigous memory)	
 {

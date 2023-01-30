@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <stdlib.h> 
+#include <utility>
 namespace drach
 {
 	// Helper function to convert float to uint32_t
@@ -11,7 +12,7 @@ namespace drach
 	};
 
 	// Fast Inverse Square Root function
-	float qSqrt(float x) {
+	inline float qSqrt(float x) {
 		FloatIntConverter converter;
 		float x2;
 		const float threehalfs = 1.5f;
@@ -29,19 +30,19 @@ namespace drach
 
 
 
-	float frac(float x) { return x - (int)x; }
-	float mod(float x, float m) { return frac(x / m) * m; }
-	float uMod(float x, float m) { return mod(mod(x, m) + m, m); }
-	int ceilToInt(float x) { return (int)x + 1; }
+	inline float frac(float x) { return x - (int)x; }
+	inline float mod(float x, float m) { return frac(x / m) * m; }
+	inline float uMod(float x, float m) { return mod(mod(x, m) + m, m); }
+	inline int ceilToInt(float x) { return (int)x + 1; }
 
-	void clamp(float& val, const float min, const float max) {
+	inline void clamp(float& val, const float min, const float max) {
 		val = min > val ? min : val;//the compile is (hopefully) smart enough to make this branchless
 		val = max < val ? max : val;
 	}
 
 
 	//NOTE: assuming the floating point structure to be IEEE 754 standard
-	float rnd_01f() {//make a random binary string and put it in the fraction part of a float
+	inline float rnd_01f() {//make a random binary string and put it in the fraction part of a float
 		static const unsigned int fractionMask = ((1 << 23) - 1);
 		static const unsigned int Exp0 = 127 << 23;//an exponent of 0
 
@@ -55,7 +56,7 @@ namespace drach
 	//EXPANSION: signed floats -> make the exponent 1, by using (128 << 23), then the range will be 2 to 4 and by subtracting 3 you can optain a signed float between -1 and 1
 
 
-	float rndRange(float min, float max) { return rnd_01f() * (max - min) + min; }
+	inline float rndRange(float min, float max) { return rnd_01f() * (max - min) + min; }
 
 
 

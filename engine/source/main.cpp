@@ -6,6 +6,7 @@
 
 #include "componentSys/Registry.h"
 #include "componentSys/TestComponent.h"
+#include "util/Transform.h"
 
 #include "util/other/SMap.h"
 
@@ -17,6 +18,7 @@ void Engine::OnUpdate()
 
 void Engine::OnStart(StartContext& const someData)
 {
+	using namespace drach::ecs;
 	myGraphicsEngine.reset(new drach::GraphicsEngine(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120));
 	LOG("Engine Initialized!");
 
@@ -28,12 +30,20 @@ void Engine::OnStart(StartContext& const someData)
 	Entity A = reg.CreateEntity();
 	Entity B = reg.CreateEntity();
 	reg.Add<float>(A);
+	drach::Transform& transform = reg.Add<drach::Transform>(A);
 	reg.Add<TestComponent>(A).name = "As comp";
 	reg.Add<TestComponent>(B).name = "Bs comp";
+
+	transform.position = { 10, 0, 10 };
+
+
 
 	reg.Get<TestComponent>(A)->printName();
 	reg.Get<TestComponent>(B)->printName();
 
+
+	drach::Transform* newTransform = reg.Get<drach::Transform>(A);
+	std::cout << "Pos:(" << newTransform->position.x << ", " << newTransform->position.y << ", " << newTransform->position.z << ")\n";
 	reg.DestroyEntity(A);
 	std::cout << reg.Get<TestComponent>(A) << std::endl;
 }
