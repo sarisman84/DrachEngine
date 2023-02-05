@@ -1,5 +1,7 @@
 #pragma once
-#include <wrl/client.h>
+#include <wrl.h>
+#include <d3dcompiler.h>
+#include <d3dcommon.h>
 using Microsoft::WRL::ComPtr;
 
 struct IDXGISwapChain;
@@ -17,6 +19,9 @@ struct ID3D11PixelShader;
 struct ID3D11SamplerState;
 struct ID3D11Texture2D;
 
+enum DXGI_FORMAT;
+enum D3D11_INPUT_CLASSIFICATION;
+
 struct D3D11_TEXTURE2D_DESC;
 struct D3D11_SHADER_RESOURCE_VIEW_DESC;
 struct D3D11_DEPTH_STENCIL_VIEW_DESC;
@@ -32,3 +37,4 @@ typedef ComPtr<ID3D11VertexShader> VertexShader;
 typedef ComPtr<ID3D11PixelShader> PixelShader;
 typedef ComPtr<ID3D11InputLayout> InputLayout;
 typedef ComPtr<ID3D11Texture2D> GTexture;
+typedef ComPtr<ID3DBlob> Blob;

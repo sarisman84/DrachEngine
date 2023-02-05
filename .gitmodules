@@ -7,3 +7,6 @@
 [submodule "editor/vendor/source/imnodes"]
 	path = editor/vendor/source/imnodes
 	url = https://github.com/Nelarius/imnodes
+[submodule "engine/vendor/source/DirectXTex"]
+	path = engine/vendor/source/DirectXTex
+	url = https://github.com/Microsoft/DirectXTex

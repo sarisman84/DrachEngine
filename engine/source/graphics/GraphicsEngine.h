@@ -15,6 +15,11 @@ namespace drach
 		void CopyRenderToTargetBuffer(RenderResource* const aSource, RenderTarget* const  aTarget);
 		void CopyRenderToBackBuffer(RenderResource* const aTarget);
 		void Present();
+
+	public:
+		inline GraphicsDevice& GetDevice() { return device; }
+		inline GraphicsDeviceContext& GetContext() { return deviceContext; }
+
 	private:
 		SwapChain swapChain;
 		RenderTarget backBuffer;
