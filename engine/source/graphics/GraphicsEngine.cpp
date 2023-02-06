@@ -6,6 +6,7 @@
 
 namespace drach
 {
+	GraphicsEngine::GraphicsEngine() = default;
 	GraphicsEngine::GraphicsEngine(HWND& const anWindowsInstance, const unsigned int aWidth, const unsigned int aHeight, const unsigned int aRefreshRate)
 	{
 		DXGI_SWAP_CHAIN_DESC desc = {};
@@ -49,7 +50,7 @@ namespace drach
 
 
 	/* TODO: Try to create a full screen pass, then render the incoming "Shader Resource View" to the target "RenderTarget".
-	* 
+	*
 	void GInterface::CopyRTtoRT(mys::RenderTarget& aDst, mys::RenderTarget& aSrc)
 	{
 		SetBlendState(mys::BlendState::Disabled);
@@ -72,6 +73,12 @@ namespace drach
 
 	void GraphicsEngine::CopyRenderToTargetBuffer(RenderResource* const aSource, RenderTarget* const aTarget)
 	{
+		//Switch to target renderTarget
+		DrawTo(aTarget);
+		//Bind the resource to the current drawing element
+		deviceContext->PSSetShaderResources(0, 1, aSource->GetAddressOf());
+		//Draw the final result
+		deviceContext->DrawIndexed(3, 0, 0);
 	}
 
 	void GraphicsEngine::CopyRenderToBackBuffer(RenderResource* const aSource)

@@ -25,6 +25,7 @@ enum D3D11_INPUT_CLASSIFICATION;
 struct D3D11_TEXTURE2D_DESC;
 struct D3D11_SHADER_RESOURCE_VIEW_DESC;
 struct D3D11_DEPTH_STENCIL_VIEW_DESC;
+struct D3D11_INPUT_ELEMENT_DESC;
 
 typedef ComPtr<IDXGISwapChain> SwapChain;
 typedef ComPtr<ID3D11RenderTargetView> RenderTarget;

@@ -7,6 +7,8 @@
 namespace drach
 {
 	class GraphicsEngine;
+	class ShaderFactory;
+	class PollingStation;
 }
 
 
@@ -25,6 +27,8 @@ public:
 	void OnWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
 private:
 	std::unique_ptr<drach::GraphicsEngine> myGraphicsEngine;
+	std::unique_ptr<drach::ShaderFactory> myShaderFactory;
+	std::unique_ptr<drach::PollingStation> myPollingStation;
 };
 
 

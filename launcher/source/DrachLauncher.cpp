@@ -8,6 +8,8 @@
 #include <lmcons.h>
 #include <string>
 
+#include <iostream>
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -42,17 +44,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	hDLL = LoadLibrary(L"engine/Engine_Debug");
 
 
-#ifdef _DEBUG
-	AllocConsole();
 
-	FILE* newstdin = nullptr;
-	FILE* newstdout = nullptr;
-	FILE* newstderr = nullptr;
-
-	freopen_s(&newstdin, "CONIN$", "r", stdin);
-	freopen_s(&newstdout, "CONOUT$", "w", stdout);
-	freopen_s(&newstderr, "CONOUT$", "w", stderr);
-#endif
 
 
 	if (NULL != hDLL) {

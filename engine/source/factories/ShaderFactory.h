@@ -11,6 +11,8 @@ inline ShaderID nullshader = ShaderID(-1);
 
 namespace drach
 {
+	class GraphicsEngine;
+
 	struct ShaderData
 	{
 		ShaderID myVertexShader;
@@ -32,7 +34,7 @@ namespace drach
 	class ShaderFactory
 	{
 	public:
-		ShaderFactory();
+		ShaderFactory(GraphicsEngine& anEngine);
 
 		const ShaderID AddVertexShader(const std::string_view aFilePath);
 		const ShaderID AddPixelShader(const std::string_view aFilePath);
@@ -41,6 +43,9 @@ namespace drach
 		const bool GetVertexShader(const ShaderID anID, VertexShader& aVertexShader);
 		const bool GetPixelShader(const ShaderID anID, PixelShader& aPixelShader);
 		const bool GetInputLayout(const ShaderID anID, InputLayout& anInputLayout);
+
+	private:
+		GraphicsEngine* myGraphicsEngine;
 	private:
 		std::unordered_map<ShaderID, Blob> myVertexData;
 		std::unordered_map<ShaderID, VertexShader> myVertexShaders;

@@ -12,5 +12,5 @@
 
 void PrintLog(std::string_view&& aMessage, std::string_view&& aFile, const uint8_t aLine, const bool anErrorFlag);
 
-#define LOG(x) PrintLog(std::string(x), std::string(__FILE__), __LINE__, false)
-#define LOG_ERROR(x) PrintLog(std::string(x), std::string(__FILE__), __LINE__, true)
+#define LOG(x) PrintLog(std::string_view(x), std::string_view(__FILE__), __LINE__, false)
+#define LOG_ERROR(x) PrintLog(std::string_view(x), std::string_view(__FILE__), __LINE__, true)

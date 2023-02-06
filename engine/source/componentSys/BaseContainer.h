@@ -3,6 +3,9 @@
 
 namespace drach
 {
+	struct InitializeContext;
+	struct RuntimeContext;
+
 	namespace ecs
 	{
 		class BaseContainer
@@ -15,6 +18,8 @@ namespace drach
 
 
 			virtual void Remove(const Entity entity) = 0;
+			virtual void Start(InitializeContext& someInitContext) = 0;
+			virtual void Update(RuntimeContext& someRuntimeContext) = 0;
 		};
 	}
 }

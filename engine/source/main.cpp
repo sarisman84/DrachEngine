@@ -11,18 +11,20 @@
 #include "util/other/SMap.h"
 
 #include "graphics/GraphicsEngine.h"
+#include "factories/ShaderFactory.h"
+
+#include "util/other/PollingStation.h"
+
 void Engine::OnUpdate()
 {
 	
 }
 
-void Engine::OnStart(StartContext& const someData)
+#define _DEBUG
+//Moved the ecs test stuff onto its own global method - Spyro
+void TestECS()
 {
 	using namespace drach::ecs;
-	myGraphicsEngine.reset(new drach::GraphicsEngine(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120));
-	LOG("Engine Initialized!");
-
-
 	//TESTING THE REGISTRY
 
 	Registry reg = Registry();
@@ -43,9 +45,41 @@ void Engine::OnStart(StartContext& const someData)
 
 
 	drach::Transform* newTransform = reg.Get<drach::Transform>(A);
-	std::cout << "Pos:(" << newTransform->position.x << ", " << newTransform->position.y << ", " << newTransform->position.z << ")\n";
+	/*std::cout << "Pos:(" << newTransform->position.x << ", " << newTransform->position.y << ", " << newTransform->position.z << ")\n";*/
 	reg.DestroyEntity(A);
 	std::cout << reg.Get<TestComponent>(A) << std::endl;
+}
+
+void Engine::OnStart(StartContext& const someData)
+{
+#ifdef _DEBUG
+	AllocConsole();
+
+	FILE* newstdin = nullptr;
+	FILE* newstdout = nullptr;
+	FILE* newstderr = nullptr;
+
+	freopen_s(&newstdin, "CONIN$", "r", stdin);
+	freopen_s(&newstdout, "CONOUT$", "w", stdout);
+	freopen_s(&newstderr, "CONOUT$", "w", stderr);
+#endif
+	myPollingStation.reset(new drach::PollingStation());
+
+
+	myGraphicsEngine.reset(new drach::GraphicsEngine(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120));
+	myShaderFactory.reset(new drach::ShaderFactory(*myGraphicsEngine));
+
+	myPollingStation->Get<drach::GraphicsEngine>() = myGraphicsEngine.get();
+	LOG("Registered Graphics Engine");
+	myPollingStation->Get<drach::ShaderFactory>() = myShaderFactory.get();
+	LOG("Registered Shader Factory");
+
+	
+	LOG("Engine Initialized!");
+
+	//TestECS();
+
+	
 }
 
 void Engine::OnWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

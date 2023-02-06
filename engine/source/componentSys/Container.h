@@ -3,6 +3,10 @@
 
 #include "util/other/SMap.h"
 #include "Entity.h"
+#include "util/other/MethodCheck.h"
+
+DEFINE_METHOD_CHECK(Start);
+DEFINE_METHOD_CHECK(Update);
 
 namespace drach
 {
@@ -38,9 +42,38 @@ namespace drach
 				container.erase(anEntity);
 			}
 
+			//Container Start Callback (will only call the start method if it actually exists)
+			void Start(InitializeContext& someInitContext) override
+			{
+				//If the componentType actually contains a method of a return signature void and a single parameter InitializeContext: 
+				//assume it is a start method.
+				if constexpr (Has_Start<ComponentType, void(InitializeContext)>::value)
+				{
+					for (auto& [id, data] : container)
+					{
+						data.Start(someInitContext);
+					}
+				}
+			}
+			//Container Update Callback (will only call the update method if it actually exists)
+			void Update(RuntimeContext& someRuntimeContext) override
+			{
+				if constexpr (Has_Update < ComponentType, void(RuntimeContext) > ::value)
+				{
+					for (auto& [id, data] : container)
+					{
+						data.Update(someRuntimeContext);
+					}
+				}
+			}
+
+
 		private:
 			//NOTE: use an Sparse Set, if the quick clearing of all elements will ever be required
 			SMap<Entity, ComponentType> container;
+
+
+
 		};
 
 

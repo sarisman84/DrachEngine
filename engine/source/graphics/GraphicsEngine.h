@@ -8,6 +8,7 @@ namespace drach
 	class GraphicsEngine
 	{
 	public:
+		GraphicsEngine();
 		GraphicsEngine(HWND& const anWindowsInstance, const unsigned int aWidth, const unsigned int aHeight, const unsigned int aRefreshRate);
 	public:
 		void DrawTo(RenderTarget* const aTarget, DepthStencil* const aDepthBuffer = nullptr);

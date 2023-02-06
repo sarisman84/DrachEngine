@@ -8,6 +8,11 @@
 
 namespace drach
 {
+	struct InitializeContext;
+	struct RuntimeContext;
+
+	
+
 	namespace ecs
 	{
 		class Registry
@@ -78,6 +83,12 @@ namespace drach
 			//Destroys an entity
 			void DestroyEntity(const Entity anEntity);
 
+			//----------------- METHOD CALLS -----------------------
+			//
+			//Attemps to call a Start method call should any datatypes contain said Start method
+			void Start(InitializeContext&& someInitContext);
+			//Attempts to call an Update method call should any datatypes contain said Update method
+			void Update(RuntimeContext&& someUpdateContext);
 
 		private:
 			std::unordered_map<unsigned long, BaseContainer*> containers;
