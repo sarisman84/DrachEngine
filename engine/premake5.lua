@@ -15,7 +15,7 @@ targetdir(directory.engineOutput)
 objdir(directory.tempOutput .. prjName)
 targetname("%{prj.name}_%{cfg.buildcfg}")
 
-debugdir(directory.engineOutput)
+debugdir(directory.output)
 local vendor_source = directory.engine_vendor .. "source/"
 local foundFiles = os.matchfiles(vendor_source .. "*")
 if #foundFiles > 0 then
@@ -36,7 +36,7 @@ flags {"MultiProcessorCompile"}
 
 shadermodel("5.0")
 
-local shaderOutput = directory.engineOutput .. "shaders/"
+local shaderOutput = directory.shaderOutput
 
 filter("files:**.hlsl")
 flags("ExcludeFromBuild")

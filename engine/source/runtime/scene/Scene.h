@@ -1,6 +1,7 @@
 #pragma once
 #include "componentSys/Entity.h"
 #include "runtime/Context.h"
+#include <memory>
 FORWARD_DECLARE_REG
 
 namespace drach
@@ -14,6 +15,6 @@ namespace drach
 	public:
 		inline ecs::Registry& GetRegistry() { return *myRegistry; }
 	private:
-		ecs::Registry* myRegistry;
+		std::unique_ptr<ecs::Registry> myRegistry;
 	};
 }

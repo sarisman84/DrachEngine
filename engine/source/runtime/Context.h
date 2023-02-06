@@ -7,7 +7,6 @@ namespace drach
 
 	struct InitializeContext
 	{
-		Scene& myScene;
 		PollingStation& myPollingStation;
 	};
 

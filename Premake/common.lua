@@ -13,10 +13,12 @@ directory["engine_vendor"] = directory.engine .. "vendor/"
 directory["editor_vendor"] = directory.editor .. "vendor/"
 
 directory["output"] = os.realpath(directory.solution .. "/bin/")
+directory["resources"] = directory.output .. "resources/"
 directory["engineOutput"] = directory.output .. "engine/"
 directory["editorOutput"] = directory.output .. "editor/"
+directory["shaderOutput"] = directory.resources .. "shaders/"
 directory["tempOutput"] = os.realpath(directory.solution .. "/temp/")
-directory["workingDirectory"] = directory.bin
+directory["workingDirectory"] = directory.output
 
 -- Helper methods
 function fetchVendorInclude(src)

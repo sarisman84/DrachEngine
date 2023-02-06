@@ -36,6 +36,8 @@ namespace drach
 	public:
 		ShaderFactory(GraphicsEngine& anEngine);
 
+		const bool AddShader(const std::string_view aFilePath, ShaderID* aVertexID = nullptr, ShaderID* aPixelID = nullptr);
+
 		const ShaderID AddVertexShader(const std::string_view aFilePath);
 		const ShaderID AddPixelShader(const std::string_view aFilePath);
 		const ShaderID AddInputLayout(std::vector<InputLayoutData> someData, const ShaderID aVertexShader);

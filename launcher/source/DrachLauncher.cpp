@@ -8,7 +8,9 @@
 #include <lmcons.h>
 #include <string>
 
+#include <thread>
 #include <iostream>
+#include <chrono>
 
 #define MAX_LOADSTRING 100
 
@@ -47,7 +49,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 
-	if (NULL != hDLL) {
+	if (NULL != hDLL)
+	{
 
 		callback = (InterfaceCallback)GetProcAddress(hDLL, "ExportInterface");
 		if (callback)
@@ -79,19 +82,38 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DRACHLAUNCHER));
 
-	MSG msg;
+
 
 	// Update
 	// Main message loop:
-	while (GetMessage(&msg, nullptr, 0, 0))
+
+	MSG msg;
+
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	auto prevTime = currentTime;
+	std::chrono::duration<float> deltaTime;
+	bool running = true;
+	while (running)
 	{
+		currentTime = std::chrono::high_resolution_clock::now();
 		if (engineAPI)
-			engineAPI->OnUpdate();
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+			running = engineAPI->OnUpdate(deltaTime.count());
+
+		if (!running)break;
+
+		deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTime - prevTime);
+		prevTime = currentTime;
+
+
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+
+		if (msg.message == WM_QUIT)
+			running = false;
+
 	}
 	delete engineAPI;
 	return (int)msg.wParam;

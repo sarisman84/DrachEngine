@@ -14,7 +14,7 @@ targetdir(directory.editorOutput)
 objdir(directory.tempOutput .. prjName)
 targetname("%{prj.name}_%{cfg.buildcfg}")
 
-debugdir(directory.editorOutput)
+debugdir(directory.output)
 
 local en_vendor_source = directory.engine_lib
 local ed_vendor_source = directory.editor_lib

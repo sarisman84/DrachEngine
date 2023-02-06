@@ -14,10 +14,16 @@
 #include "factories/ShaderFactory.h"
 
 #include "util/other/PollingStation.h"
+#include "runtime/Context.h"
+#include "runtime/scene/Scene.h"
 
-void Engine::OnUpdate()
+const bool Engine::OnUpdate(const float aDeltaTime)
 {
-	
+	drach::RuntimeContext context{ *myPollingStation, aDeltaTime };
+
+	myTestScene->Update(context);
+
+	return true;
 }
 
 #define _DEBUG
@@ -52,6 +58,47 @@ void TestECS()
 
 void Engine::OnStart(StartContext& const someData)
 {
+	InitConsole();
+
+	myPollingStation.reset(new drach::PollingStation());
+
+
+	myGraphicsEngine.reset(new drach::GraphicsEngine(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120));
+	myShaderFactory.reset(new drach::ShaderFactory(*myGraphicsEngine));
+
+	ShaderID vertexID;
+	ShaderID pixelID;
+	myShaderFactory->AddShader("resources/shaders/Cube", &vertexID, &pixelID);
+
+
+	myPollingStation->Get<drach::GraphicsEngine>() = myGraphicsEngine.get();
+	LOG("Registered Graphics Engine");
+	myPollingStation->Get<drach::ShaderFactory>() = myShaderFactory.get();
+	LOG("Registered Shader Factory");
+
+
+
+
+	
+	LOG("Engine Initialized!");
+
+	drach::InitializeContext context(*myPollingStation);
+
+	myTestScene.reset(new drach::Scene());
+	myTestScene->Start(context);
+	
+	//TestECS();
+
+	
+}
+
+void Engine::OnWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+
+}
+
+void Engine::InitConsole()
+{
 #ifdef _DEBUG
 	AllocConsole();
 
@@ -63,28 +110,6 @@ void Engine::OnStart(StartContext& const someData)
 	freopen_s(&newstdout, "CONOUT$", "w", stdout);
 	freopen_s(&newstderr, "CONOUT$", "w", stderr);
 #endif
-	myPollingStation.reset(new drach::PollingStation());
-
-
-	myGraphicsEngine.reset(new drach::GraphicsEngine(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120));
-	myShaderFactory.reset(new drach::ShaderFactory(*myGraphicsEngine));
-
-	myPollingStation->Get<drach::GraphicsEngine>() = myGraphicsEngine.get();
-	LOG("Registered Graphics Engine");
-	myPollingStation->Get<drach::ShaderFactory>() = myShaderFactory.get();
-	LOG("Registered Shader Factory");
-
-	
-	LOG("Engine Initialized!");
-
-	//TestECS();
-
-	
-}
-
-void Engine::OnWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-
 }
 
 extern "C"

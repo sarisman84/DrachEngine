@@ -28,14 +28,14 @@ namespace drach
 				container->Remove(anEntity);
 			}
 		}
-		void Registry::Start(InitializeContext&& someInitContext)
+		void Registry::Start(InitializeContext& const someInitContext)
 		{
 			for (auto& [id, container] : containers)
 			{
 				container->Start(someInitContext);
 			}
 		}
-		void Registry::Update(RuntimeContext&& someUpdateContext)
+		void Registry::Update(RuntimeContext& const someUpdateContext)
 		{
 			for (auto& [id, container] : containers)
 			{

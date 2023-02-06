@@ -6,6 +6,7 @@
 
 namespace drach
 {
+	class Scene;
 	class GraphicsEngine;
 	class ShaderFactory;
 	class PollingStation;
@@ -22,9 +23,13 @@ struct counter_id {
 class Engine : public EngineInterface
 {
 public:
-	void OnUpdate() override;
+	const bool OnUpdate(const float aDeltaTime) override;
 	void OnStart(StartContext& const someData) override;
 	void OnWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
+private:
+	void InitConsole();
+private:
+	std::unique_ptr<drach::Scene> myTestScene;
 private:
 	std::unique_ptr<drach::GraphicsEngine> myGraphicsEngine;
 	std::unique_ptr<drach::ShaderFactory> myShaderFactory;

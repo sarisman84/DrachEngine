@@ -17,6 +17,19 @@ drach::ShaderFactory::ShaderFactory(GraphicsEngine& anEngine) : myGraphicsEngine
 
 }
 
+const bool drach::ShaderFactory::AddShader(const std::string_view aFilePath, ShaderID* aVertexID, ShaderID* aPixelID)
+{
+	auto pID = AddPixelShader(aFilePath);
+	auto vID = AddVertexShader(aFilePath);
+
+	if (aVertexID)
+		*aVertexID = vID;
+	if (aPixelID)
+		*aPixelID = pID;
+
+	return pID != nullshader && vID != nullshader;
+}
+
 const ShaderID drach::ShaderFactory::AddVertexShader(const std::string_view aFilePath)
 {
 	GraphicsDevice& device = myGraphicsEngine->GetDevice();
@@ -28,11 +41,11 @@ const ShaderID drach::ShaderFactory::AddVertexShader(const std::string_view aFil
 
 
 	std::wstring path = std::wstring(aFilePath.begin(), aFilePath.end());
-	path += std::wstring(L".cso");
+	path += std::wstring(L"_VS.cso");
 	HRESULT result = D3DReadFileToBlob(path.c_str(), &data);
 	if (FAILED(result))
 	{
-		LOG_ERROR("Failed to read vertex shader file [" + std::string(aFilePath) + "]");
+		LOG_ERROR("Failed to read vertex shader file: [" + std::string(path.begin(), path.end()) + "]. Reason: " + std::to_string(result));
 		return nullshader;
 	}
 
@@ -51,7 +64,7 @@ const ShaderID drach::ShaderFactory::AddVertexShader(const std::string_view aFil
 	}
 
 	id = cpy;
-
+	LOG("Vertex Shader added from file: " + std::string(path.begin(), path.end()));
 	return newID;
 }
 
@@ -66,11 +79,11 @@ const ShaderID drach::ShaderFactory::AddPixelShader(const std::string_view aFile
 
 
 	std::wstring path = std::wstring(aFilePath.begin(), aFilePath.end());
-	path += std::wstring(L".cso");
+	path += std::wstring(L"_PS.cso");
 	HRESULT result = D3DReadFileToBlob(path.c_str(), &data);
 	if (FAILED(result))
-	{
-		LOG_ERROR("Failed to read pixel shader file [" + std::string(aFilePath) + "]");
+	{ 
+		LOG_ERROR("Failed to read pixel shader file: [" + std::string(path.begin(), path.end()) + "] Reason: " + std::to_string(result));
 		return nullshader;
 	}
 
@@ -86,7 +99,7 @@ const ShaderID drach::ShaderFactory::AddPixelShader(const std::string_view aFile
 	}
 
 	id = cpy;
-
+	LOG("Pixel Shader added from file: " + std::string(path.begin(), path.end()));
 	return newID;
 }
 
@@ -132,7 +145,7 @@ const ShaderID drach::ShaderFactory::AddInputLayout(std::vector<InputLayoutData>
 		LOG_ERROR("Failed to create input layout. HResult: " + std::to_string(result));
 		return false;
 	}
-
+	
 	return true;
 }
 

@@ -77,18 +77,19 @@ namespace drach
 
 
 			//----------------- ENTITY MANAGEMENT ------------------
-			// 
+		
 			//Creates a new entity
 			Entity CreateEntity() const;
 			//Destroys an entity
 			void DestroyEntity(const Entity anEntity);
 
 			//----------------- METHOD CALLS -----------------------
-			//
+		
+		
 			//Attemps to call a Start method call should any datatypes contain said Start method
-			void Start(InitializeContext&& someInitContext);
+			void Start(InitializeContext& const someInitContext);
 			//Attempts to call an Update method call should any datatypes contain said Update method
-			void Update(RuntimeContext&& someUpdateContext);
+			void Update(RuntimeContext& const someUpdateContext);
 
 		private:
 			std::unordered_map<unsigned long, BaseContainer*> containers;
