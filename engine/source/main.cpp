@@ -71,6 +71,13 @@ void Engine::OnStart(StartContext& const someData)
 	myShaderFactory->AddShader("resources/shaders/Cube", &vertexID, &pixelID);
 
 
+	drach::InputStructure structure;
+	structure.Add("POSITION", DXGI_FORMAT_R8G8B8A8_UNORM);
+	structure.Add("TEXTCOORD", DXGI_FORMAT_R8G8B8A8_UNORM);
+
+	myShaderFactory->AddInputLayout(structure, vertexID);
+
+
 	myPollingStation->Get<drach::GraphicsEngine>() = myGraphicsEngine.get();
 	LOG("Registered Graphics Engine");
 	myPollingStation->Get<drach::ShaderFactory>() = myShaderFactory.get();

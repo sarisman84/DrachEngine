@@ -12,17 +12,40 @@ inline ShaderID nullshader = ShaderID(-1);
 namespace drach
 {
 	class GraphicsEngine;
-
-	struct ShaderData
+	struct InputStructure
 	{
-		ShaderID myVertexShader;
-		ShaderID myPixelShader;
-		ShaderID myInputLayout;
+	public:
+		void Add(std::string aName, DXGI_FORMAT&& aFormat);
+
+		inline InputLayoutData& operator[](const size_t anIndex)
+		{
+			return myData[anIndex];
+		}
+
+		inline const bool IsPopulated() { return !myData.empty(); }
+		inline const size_t DataSize() { return myData.size(); }
+	private:
+		std::vector<InputLayoutData> myData;
 	};
 
 	struct InputLayoutData
 	{
-		InputLayoutData() = default;
+		InputLayoutData(
+			std::string aName, 
+			DXGI_FORMAT&& aFormat, 
+			size_t anInputSlot = 0,
+			size_t anAlignmentOffset = 0xffffffff,
+			D3D11_INPUT_CLASSIFICATION anInputSlotClassification = D3D11_INPUT_CLASSIFICATION(0),
+			size_t anInstanceDataStepRate = 0) :
+			myName(aName),
+			myFormat(&aFormat),
+			myInputSlot(anInputSlot),
+			myAlignmentOffset(anAlignmentOffset),
+			myInputSlotClass(&anInputSlotClassification),
+			myInstanceDataStepRate(anInstanceDataStepRate)
+		{
+
+		}
 		std::string myName;
 		DXGI_FORMAT* myFormat;
 		size_t myInputSlot = 0;
@@ -40,7 +63,7 @@ namespace drach
 
 		const ShaderID AddVertexShader(const std::string_view aFilePath);
 		const ShaderID AddPixelShader(const std::string_view aFilePath);
-		const ShaderID AddInputLayout(std::vector<InputLayoutData> someData, const ShaderID aVertexShader);
+		const ShaderID AddInputLayout(InputStructure aStructure, const ShaderID aVertexShader);
 
 		const bool GetVertexShader(const ShaderID anID, VertexShader& aVertexShader);
 		const bool GetPixelShader(const ShaderID anID, PixelShader& aPixelShader);

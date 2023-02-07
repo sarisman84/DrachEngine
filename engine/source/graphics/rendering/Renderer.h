@@ -3,23 +3,26 @@
 
 namespace drach
 {
+	class PollingStation;
 	class GraphicsEngine;
 	class Scene;
-	class Shader;
+	class Model;
 	struct Transform;
 
 
 	class Renderer
 	{
 	public:
-		Renderer(GraphicsEngine& aGraphicsEngine);
+		Renderer(PollingStation& aGraphicsEngine);
 	public:
 		//Renders a scene containing entites with models. 
-		void Render(Scene& const aScene, Transform& const aTransform, Shader& const aShader);
+		void Render(Scene& const aScene, Transform& const aCamTransform);
+	private:
+		void RenderModel(const Model& aModel, const Transform& aTransform, const GraphicsDeviceContext& aContext);
 	private:
 		RenderTarget myRenderTarget;
 		DepthStencil myDepthBuffer;
 		RenderResource myRenderData;
-		GraphicsEngine& myGraphicsEngine;
+		PollingStation* myPollingStation;
 	};
 }

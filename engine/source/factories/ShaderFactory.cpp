@@ -103,13 +103,13 @@ const ShaderID drach::ShaderFactory::AddPixelShader(const std::string_view aFile
 	return newID;
 }
 
-const ShaderID drach::ShaderFactory::AddInputLayout(std::vector<InputLayoutData> someData, const ShaderID aVertexShader)
+const ShaderID drach::ShaderFactory::AddInputLayout(InputStructure aStructure, const ShaderID aVertexShader)
 {
 	GraphicsDevice& device = myGraphicsEngine->GetDevice();
 
 	static ShaderID id = 0;
 
-	if (someData.size() <= 0)
+	if (!aStructure.IsPopulated())
 	{
 		LOG_ERROR("Incoming vector InputLayoutData is invalid");
 		return false;
@@ -129,17 +129,17 @@ const ShaderID drach::ShaderFactory::AddInputLayout(std::vector<InputLayoutData>
 	}
 
 	Blob& vertexData = myVertexData[aVertexShader];
-	D3D11_INPUT_ELEMENT_DESC* layout = new D3D11_INPUT_ELEMENT_DESC[someData.size()];
-	for (size_t i = 0; i < someData.size(); i++)
+	D3D11_INPUT_ELEMENT_DESC* layout = new D3D11_INPUT_ELEMENT_DESC[aStructure.DataSize()];
+	for (size_t i = 0; i < aStructure.DataSize(); i++)
 	{
-		auto& data = someData[i];
+		auto& data = aStructure[i];
 		layout[i] = { data.myName.c_str(), 0, *data.myFormat, (unsigned int)data.myInputSlot, (unsigned int)data.myAlignmentOffset, *data.myInputSlotClass, (unsigned int)data.myInstanceDataStepRate };
 	}
 
 	ShaderID cpy = id;
 	ShaderID newID = cpy++;
 
-	HRESULT result = device->CreateInputLayout(layout, someData.size(), vertexData->GetBufferPointer(), vertexData->GetBufferSize(), &myInputLayouts[newID]);
+	HRESULT result = device->CreateInputLayout(layout, aStructure.DataSize(), vertexData->GetBufferPointer(), vertexData->GetBufferSize(), &myInputLayouts[newID]);
 	if (FAILED(result))
 	{
 		LOG_ERROR("Failed to create input layout. HResult: " + std::to_string(result));
@@ -189,4 +189,9 @@ const bool drach::ShaderFactory::GetInputLayout(const ShaderID anID, InputLayout
 	anInputLayout = myInputLayouts[anID];
 
 	return true;
+}
+
+void drach::InputStructure::Add(std::string aName, DXGI_FORMAT&& aFormat)
+{
+	myData.emplace_back(aName, aFormat, 0, 0xffffffff, D3D11_INPUT_CLASSIFICATION(0), 0);
 }
