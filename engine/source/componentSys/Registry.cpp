@@ -18,7 +18,8 @@ namespace drach
 		Entity Registry::CreateEntity() const 
 		{
 			static unsigned long generationID = 0;
-			return generationID++;
+			nextEntity = generationID++;
+			return nextEntity;
 		}
 
 		void Registry::DestroyEntity(const Entity anEntity) 
