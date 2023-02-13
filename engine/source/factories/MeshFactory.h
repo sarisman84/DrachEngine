@@ -3,12 +3,12 @@
 #include <memory>
 #include <string>
 #include "graphics/DirectX11/DXTypes.h"
+#include "graphics/objects/Mesh.h"
 #define PRIMITIVE_CUBE "cubeMesh"
 #define PRIMITIVE_SPHERE "sphereMesh"
 
 namespace drach
 {
-	class Mesh;
 	class GraphicsEngine;
 	class MeshFactory
 	{

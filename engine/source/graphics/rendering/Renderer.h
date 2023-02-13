@@ -1,4 +1,5 @@
 #pragma once
+#define NOMINMAX
 #include "graphics/DirectX11/DXTypes.h"
 
 namespace drach

@@ -11,6 +11,32 @@ inline ShaderID nullshader = ShaderID(-1);
 
 namespace drach
 {
+	struct InputLayoutData
+	{
+		InputLayoutData(
+			std::string aName,
+			DXGI_FORMAT&& aFormat,
+			size_t anInputSlot = 0,
+			size_t anAlignmentOffset = 0xffffffff,
+			D3D11_INPUT_CLASSIFICATION anInputSlotClassification = D3D11_INPUT_CLASSIFICATION(0),
+			size_t anInstanceDataStepRate = 0) :
+			myName(aName),
+			myFormat(aFormat),
+			myInputSlot(anInputSlot),
+			myAlignmentOffset(anAlignmentOffset),
+			myInputSlotClass(anInputSlotClassification),
+			myInstanceDataStepRate(anInstanceDataStepRate)
+		{
+
+		}
+		std::string myName;
+		DXGI_FORMAT myFormat;
+		size_t myInputSlot = 0;
+		size_t myAlignmentOffset = 0xffffffff;
+		D3D11_INPUT_CLASSIFICATION myInputSlotClass;
+		size_t myInstanceDataStepRate = 0;
+	};
+
 	class GraphicsEngine;
 	struct InputStructure
 	{
@@ -28,36 +54,12 @@ namespace drach
 		std::vector<InputLayoutData> myData;
 	};
 
-	struct InputLayoutData
-	{
-		InputLayoutData(
-			std::string aName, 
-			DXGI_FORMAT&& aFormat, 
-			size_t anInputSlot = 0,
-			size_t anAlignmentOffset = 0xffffffff,
-			D3D11_INPUT_CLASSIFICATION anInputSlotClassification = D3D11_INPUT_CLASSIFICATION(0),
-			size_t anInstanceDataStepRate = 0) :
-			myName(aName),
-			myFormat(&aFormat),
-			myInputSlot(anInputSlot),
-			myAlignmentOffset(anAlignmentOffset),
-			myInputSlotClass(&anInputSlotClassification),
-			myInstanceDataStepRate(anInstanceDataStepRate)
-		{
 
-		}
-		std::string myName;
-		DXGI_FORMAT* myFormat;
-		size_t myInputSlot = 0;
-		size_t myAlignmentOffset = 0xffffffff;
-		D3D11_INPUT_CLASSIFICATION* myInputSlotClass;
-		size_t myInstanceDataStepRate = 0;
-	};
 
 	class ShaderFactory
 	{
 	public:
-		ShaderFactory(GraphicsEngine& anEngine);
+		ShaderFactory(drach::GraphicsEngine& anEngine);
 
 		const bool AddShader(const std::string_view aFilePath, ShaderID* aVertexID = nullptr, ShaderID* aPixelID = nullptr);
 

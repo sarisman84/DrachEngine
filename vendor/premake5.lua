@@ -1,7 +1,7 @@
 include "../Premake/common.lua"
-print("Building Vendor Globally")
+print("Building Global Vendor")
 
-local source = directory.global_vendor .. "source/"
+local source = os.realpath(directory.global_vendor .. "source\\")
 
 project "Vendor[Global]"
 location "."
@@ -18,6 +18,7 @@ objdir(directory.tempOutput .. prjName)
 debugdir(directory.global_lib)
 
 targetname("%{prj.name}_%{cfg.buildcfg}")
+
 files {
     source .. "**.h",
     source .. "**.hpp",
@@ -48,6 +49,7 @@ includedirs {
     source,
     source .. "nlohmann/"
 }
+
 libdirs {
     directory.global_lib,
     source .. "../util/vcpkg/packages/freetype_**/lib/"
@@ -91,5 +93,4 @@ links {
 defines {
     "_WIN32_WINNT=0x0601"
 }
-
 

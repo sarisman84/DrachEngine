@@ -12,7 +12,7 @@
 
 
 
-drach::ShaderFactory::ShaderFactory(GraphicsEngine& anEngine) : myGraphicsEngine(&anEngine)
+drach::ShaderFactory::ShaderFactory(drach::GraphicsEngine& anEngine) : myGraphicsEngine(&anEngine)
 {
 
 }
@@ -133,7 +133,7 @@ const ShaderID drach::ShaderFactory::AddInputLayout(InputStructure aStructure, c
 	for (size_t i = 0; i < aStructure.DataSize(); i++)
 	{
 		auto& data = aStructure[i];
-		layout[i] = { data.myName.c_str(), 0, *data.myFormat, (unsigned int)data.myInputSlot, (unsigned int)data.myAlignmentOffset, *data.myInputSlotClass, (unsigned int)data.myInstanceDataStepRate };
+		layout[i] = { data.myName.c_str(), 0, data.myFormat, (unsigned int)data.myInputSlot, (unsigned int)data.myAlignmentOffset, data.myInputSlotClass, (unsigned int)data.myInstanceDataStepRate };
 	}
 
 	ShaderID cpy = id;
@@ -193,5 +193,6 @@ const bool drach::ShaderFactory::GetInputLayout(const ShaderID anID, InputLayout
 
 void drach::InputStructure::Add(std::string aName, DXGI_FORMAT&& aFormat)
 {
-	myData.emplace_back(aName, aFormat, 0, 0xffffffff, D3D11_INPUT_CLASSIFICATION(0), 0);
+	/*myData.push_back(
+		InputLayoutData(aName, aFormat, (size_t)0, (size_t)0xffffffff, D3D11_INPUT_CLASSIFICATION(0), 0));*/
 }

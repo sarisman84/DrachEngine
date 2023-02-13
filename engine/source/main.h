@@ -1,4 +1,5 @@
 #pragma once
+#define NOMINMAX
 #include "interface/EngineInterface.h"
 #include <memory>
 

@@ -12,6 +12,8 @@ startproject "Launcher"
 
 configurations {"Debug", "Release"}
 
+include "vendor"
 include "launcher"
 include "engine"
 include "editor"
+

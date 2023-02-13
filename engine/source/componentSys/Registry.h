@@ -17,7 +17,7 @@ namespace drach
 
 	namespace ecs
 	{
-		class IViewContainer
+		/*class IViewContainer
 		{
 		public:
 			using iterator = typename std::vector<Entity>::iterator;
@@ -49,7 +49,7 @@ namespace drach
 			{
 				return (void*)&myEntityIds;
 			}
-		};
+		};*/
 
 
 		class Registry
@@ -111,7 +111,7 @@ namespace drach
 				return true; //otherwise, return true
 			}
 
-			template<typename... Ts>
+		/*	template<typename... Ts>
 			ViewContainer<Ts...> View()
 			{
 				ViewContainer<Ts...> result;
@@ -119,7 +119,7 @@ namespace drach
 				Registry::ViewImpl<Ts...>(result);
 
 				return result;
-			}
+			}*/
 
 
 
@@ -141,29 +141,29 @@ namespace drach
 
 
 		private:
-			template<typename T, typename... Ts>
-			void ViewImpl(IViewContainer* aViewContainer)
-			{
-				if (!aViewContainer)
-					return ViewContainer<Ts...>();
+			//template<typename T, typename... Ts>
+			//void ViewImpl(IViewContainer* aViewContainer)
+			//{
+			//	if (!aViewContainer)
+			//		return ViewContainer<Ts...>();
 
-				for (size_t i = 0; i < nextEntity + 1; i++)
-				{
-					std::vector<Entity>& entities = *(std::vector<Entity>*)aViewContainer->GetContentsB();
+			//	for (size_t i = 0; i < nextEntity + 1; i++)
+			//	{
+			//		std::vector<Entity>& entities = *(std::vector<Entity>*)aViewContainer->GetContentsB();
 
-					entities.push_back(i);
+			//		entities.push_back(i);
 
-					if (Registry::Contains<T>(i))
-					{
-						auto& tuple = *()
-						std::get<std::vector<T&>>(aViewContainer->myComponents).push_back(Registry::Get<T>(i));
-					}
-				}
+			//		if (Registry::Contains<T>(i))
+			//		{
+			//			/*auto& tuple = *()
+			//			std::get<std::vector<T&>>(aViewContainer->myComponents).push_back(Registry::Get<T>(i));*/
+			//		}
+			//	}
 
-				Registry::ViewImpl<Ts...>(aViewContainer);
+			//	Registry::ViewImpl<Ts...>(aViewContainer);
 
 
-			}
+			//}
 
 		private:
 			std::unordered_map<unsigned long, BaseContainer*> containers;

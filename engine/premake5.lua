@@ -26,9 +26,9 @@ end
 links {
     "d3d11.lib"
 }
-links {
-    "Vendor[Global]"
-}
+-- links {
+--     "Vendor[Global]"
+-- }
 
 if #foundFiles > 0 then
     libdirs {
@@ -40,6 +40,7 @@ libdirs {
 }
 includedirs {
     directory.engine_vendor .. "source/",
+    directory.global_vendor .. "source/",
     "source/"
 }
 
@@ -82,7 +83,7 @@ shaderoptions({
 
 include "vendor"
 -- Global Vendor vvvv
-include "../vendor/"
+
 
 filter "configurations:Debug"
 defines "_DEBUG"

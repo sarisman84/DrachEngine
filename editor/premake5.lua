@@ -55,6 +55,7 @@ libdirs {
 includedirs {
     directory.editor_vendor .. "source/",
     directory.engine_vendor .. "source/",
+    directory.global_vendor .. "source/",
     "source/"
 }
 
@@ -69,8 +70,6 @@ flags {
 }
 
 include "vendor"
--- Global Vendor vvvv
-include "../vendor/"
 
 filter "configurations:Debug"
 defines "_DEBUG"

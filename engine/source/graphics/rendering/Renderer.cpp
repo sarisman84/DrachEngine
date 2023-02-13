@@ -6,9 +6,9 @@
 #include "logging/Logger.h"
 #include "util/other/PollingStation.h"
 #include "graphics/objects/Model.h"
-
+#include "util/Transform.h"
 #include "factories/ShaderFactory.h"
-
+#include "entt/single_include/entt/entt.hpp"
 drach::Renderer::Renderer(PollingStation& aPollingStation) : myPollingStation(&aPollingStation)
 {
 }
@@ -28,11 +28,11 @@ void drach::Renderer::Render(Scene& const aScene, Transform& const aCamTransform
 
 	GraphicsDeviceContext& context = gEngine->GetContext();
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	ecs::Registry& reg = aScene.GetRegistry();
+	entt::registry& reg = aScene.GetRegistry();
 
-	auto& view = reg.View<Model, Transform>();
+	auto view = reg.view<Model, Transform>();
 
-	for (auto& [entity, model, transform] : view)
+	for (auto [entity, model, transform] : view.each())
 	{
 		RenderModel(model, transform, context);
 	}

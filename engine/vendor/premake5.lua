@@ -5,8 +5,9 @@ local foundFiles = os.matchfiles(os.realpath(source .. "/*"))
 local foundDirectories = os.matchdirs(os.realpath(source .. "/*"))
 if #foundFiles > 0 or #foundDirectories > 0 then
 
-    print("Bulding Vendor for Engine")
+    print("Building Vendor for Engine")
     group("Engine")
+
     project "Vendor[Engine]"
     location "."
     kind "StaticLib"
