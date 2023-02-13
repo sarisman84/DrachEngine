@@ -10,3 +10,6 @@
 [submodule "engine/vendor/source/DirectXTex"]
 	path = engine/vendor/source/DirectXTex
 	url = https://github.com/Microsoft/DirectXTex
+[submodule "vendor/source/entt"]
+	path = vendor/source/entt
+	url = https://github.com/skypjack/entt

@@ -3,7 +3,7 @@ include "../Premake/common.lua"
 project "Launcher"
 location "."
 kind "WindowedApp"
-language  "C++"
+language "C++"
 cppdialect "C++20"
 
 output = "%{cfg.buildcfg}"
@@ -14,14 +14,12 @@ targetdir(directory.output)
 objdir(directory.tempOutput .. prjName)
 targetname("%{prj.name}_%{cfg.buildcfg}")
 
-debugdir (directory.workingDirectory)
-dependson
-{
+debugdir(directory.workingDirectory)
+dependson {
     "Editor",
     "Engine"
 }
-files 
-{
+files {
     "source/**.h",
     "source/**.hpp",
     "source/**.cpp",
@@ -44,5 +42,4 @@ filter "configurations:Release"
 defines "_RELEASE"
 runtime "Release"
 optimize "on"
-
 

@@ -22,25 +22,50 @@ if #foundFiles > 0 or #foundDirectories > 0 then
     debugdir(directory.engine_lib)
 
     targetname("%{prj.name}_%{cfg.buildcfg}")
-    files {source .. "**.h", source .. "**.hpp", source .. "**.c", source .. "**.cpp",
-           source .. "../util/vcpkg/packages/freetype_**/include/"}
+    files {
+        source .. "**.h",
+        source .. "**.hpp",
+        source .. "**.c",
+        source .. "**.cpp",
+        source .. "../util/vcpkg/packages/freetype_**/include/"
+    }
 
-    excludes {"ffmpeg-2.0/**.h", "ffmpeg-2.0/**.c", "ffmpeg-2.0/**.cpp", "*/DirectXTex/DirectXTex/**",
-              "*/DirectXTex/Auxiliary/**", "*/DirectXTex/DDSView/**", "*/DirectXTex/Texassemble/**",
-              "*/DirectXTex/Texconv/**", "*/DirectXTex/Texdiag/**",
-              "*/DirectXTex/DDSTextureLoader/DDSTextureLoader9.**",
-              "*/DirectXTex/DDSTextureLoader/DDSTextureLoader12.**", "*/DirectXTex/ScreenGrab/ScreenGrab9.**",
-              "*/DirectXTex/ScreenGrab/ScreenGrab12.**", "*/DirectXTex/WICTextureLoader/WICTextureLoader9.**",
-              "*/DirectXTex/WICTextureLoader/WICTextureLoader12.**"}
+    excludes {
+        "ffmpeg-2.0/**.h",
+        "ffmpeg-2.0/**.c",
+        "ffmpeg-2.0/**.cpp",
+        "*/DirectXTex/DirectXTex/**",
+        "*/DirectXTex/Auxiliary/**",
+        "*/DirectXTex/DDSView/**",
+        "*/DirectXTex/Texassemble/**",
+        "*/DirectXTex/Texconv/**",
+        "*/DirectXTex/Texdiag/**",
+        "*/DirectXTex/DDSTextureLoader/DDSTextureLoader9.**",
+        "*/DirectXTex/DDSTextureLoader/DDSTextureLoader12.**",
+        "*/DirectXTex/ScreenGrab/ScreenGrab9.**",
+        "*/DirectXTex/ScreenGrab/ScreenGrab12.**",
+        "*/DirectXTex/WICTextureLoader/WICTextureLoader9.**",
+        "*/DirectXTex/WICTextureLoader/WICTextureLoader12.**"
+    }
 
-    includedirs {source, source .. "nlohmann/"}
+    includedirs {
+        source,
+        source .. "nlohmann/"
+    }
 
-    libdirs {directory.engine_lib, source .. "../util/vcpkg/packages/freetype_**/lib/"}
+    libdirs {
+        directory.engine_lib,
+        source .. "../util/vcpkg/packages/freetype_**/lib/"
+    }
 
-    defines {"_CONSOLE"}
+    defines {
+        "_CONSOLE"
+    }
 
     filter "configurations:Debug"
-    defines {"_DEBUG"}
+    defines {
+        "_DEBUG"
+    }
     runtime "Debug"
     symbols "on"
     filter "configurations:Release"
@@ -61,10 +86,16 @@ if #foundFiles > 0 or #foundDirectories > 0 then
     -- conformanceMode "On"
     -- buildoptions { "/permissive" }
     flags { --	"FatalWarnings", -- would be both compile and lib, the original didn't set lib
-    --	"FatalCompileWarnings",
-    "MultiProcessorCompile"}
-    links {"DXGI", "dxguid"}
-    defines {"_WIN32_WINNT=0x0601"}
+        --	"FatalCompileWarnings",
+        "MultiProcessorCompile"
+    }
+    links {
+        "DXGI",
+        "dxguid"
+    }
+    defines {
+        "_WIN32_WINNT=0x0601"
+    }
 
 else
     print("No Vendor Libraries found: Skipping building vendor for engine!")

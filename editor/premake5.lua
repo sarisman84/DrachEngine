@@ -23,27 +23,54 @@ local ed_files = os.matchfiles(ed_vendor_source .. "*")
 local en_files = os.matchfiles(en_vendor_source .. "*")
 
 if #ed_files > 0 then
-    links {"Vendor[Editor]"}
+    links {
+        "Vendor[Editor]"
+    }
 end
 
 if #en_files > 0 then
-    links {"Vendor[Engine]"}
+    links {
+        "Vendor[Engine]"
+    }
 end
+links {
+    "Vendor[Global]"
+}
 
 if #ed_files > 0 then
-    libdirs {directory.editor_lib}
+    libdirs {
+        directory.editor_lib
+    }
 end
 
 if #en_files > 0 then
-    libdirs {directory.engine_lib}
+    libdirs {
+        directory.engine_lib
+    }
 end
-includedirs {directory.editor_vendor .. "source/", directory.engine_vendor .. "source/", "source/"}
+libdirs {
+    directory.global_lib
+}
 
-files {"source/**.h", "source/**.hpp", "source/**.cpp"}
+includedirs {
+    directory.editor_vendor .. "source/",
+    directory.engine_vendor .. "source/",
+    "source/"
+}
 
-flags {"MultiProcessorCompile"}
+files {
+    "source/**.h",
+    "source/**.hpp",
+    "source/**.cpp"
+}
+
+flags {
+    "MultiProcessorCompile"
+}
 
 include "vendor"
+-- Global Vendor vvvv
+include "../vendor/"
 
 filter "configurations:Debug"
 defines "_DEBUG"

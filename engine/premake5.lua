@@ -19,20 +19,41 @@ debugdir(directory.output)
 local vendor_source = directory.engine_vendor .. "source/"
 local foundFiles = os.matchfiles(vendor_source .. "*")
 if #foundFiles > 0 then
-    links {"Vendor[Engine]"}
+    links {
+        "Vendor[Engine]"
+    }
 end
-links {"d3d11.lib"}
-
-
+links {
+    "d3d11.lib"
+}
+links {
+    "Vendor[Global]"
+}
 
 if #foundFiles > 0 then
-    libdirs {directory.engine_lib}
+    libdirs {
+        directory.engine_lib
+    }
 end
-includedirs {directory.engine_vendor .. "source/", "source/"}
+libdirs {
+    directory.global_lib
+}
+includedirs {
+    directory.engine_vendor .. "source/",
+    "source/"
+}
 
-files {"source/**.h", "source/**.hpp", "source/**.cpp", "source/**.hlsl", "source/**.hlsli"}
+files {
+    "source/**.h",
+    "source/**.hpp",
+    "source/**.cpp",
+    "source/**.hlsl",
+    "source/**.hlsli"
+}
 
-flags {"MultiProcessorCompile"}
+flags {
+    "MultiProcessorCompile"
+}
 
 shadermodel("5.0")
 
@@ -55,9 +76,13 @@ removeflags("ExcludeFromBuild")
 shadertype("Geometry")
 
 -- Warnings as errors
-shaderoptions({"/WX"})
+shaderoptions({
+    "/WX"
+})
 
 include "vendor"
+-- Global Vendor vvvv
+include "../vendor/"
 
 filter "configurations:Debug"
 defines "_DEBUG"
