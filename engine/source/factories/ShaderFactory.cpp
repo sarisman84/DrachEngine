@@ -1,6 +1,8 @@
 #include "ShaderFactory.h"
 #include <d3d11.h> 
 #include <d3d10.h>
+#include <d3d11shader.h>
+#include <filesystem>
 
 #include "DirectXTex/DirectXTex/DirectXTex.h"
 #include "graphics/GraphicsEngine.h"
@@ -11,188 +13,205 @@
 #pragma comment(lib, "d3dcompiler.lib")
 
 
+DXGI_FORMAT GetDXGIFormat(const D3D11_SIGNATURE_PARAMETER_DESC& desc)
+{
+	switch (desc.Mask)
+	{
+	case 1:
+		switch (desc.ComponentType)
+		{
+		case D3D_REGISTER_COMPONENT_UINT32:
+			return DXGI_FORMAT_R32_UINT;
+		case D3D_REGISTER_COMPONENT_SINT32:
+			return DXGI_FORMAT_R32_SINT;
+		case D3D_REGISTER_COMPONENT_FLOAT32:
+			return DXGI_FORMAT_R32_FLOAT;
+		default:
+			break;
+		}
+		break;
+	case 3:
+		switch (desc.ComponentType)
+		{
+		case D3D_REGISTER_COMPONENT_UINT32:
+			return DXGI_FORMAT_R32G32B32_UINT;
+		case D3D_REGISTER_COMPONENT_SINT32:
+			return DXGI_FORMAT_R32G32B32_SINT;
+		case D3D_REGISTER_COMPONENT_FLOAT32:
+			return DXGI_FORMAT_R32G32B32_FLOAT;
+		default:
+			break;
+		}
+		break;
+	case 7:
+		switch (desc.ComponentType)
+		{
+		case D3D_REGISTER_COMPONENT_UINT32:
+			return DXGI_FORMAT_R32G32B32A32_UINT;
+		case D3D_REGISTER_COMPONENT_SINT32:
+			return DXGI_FORMAT_R32G32B32A32_SINT;
+		case D3D_REGISTER_COMPONENT_FLOAT32:
+			return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
+	return DXGI_FORMAT_UNKNOWN;
+}
+
 
 drach::ShaderFactory::ShaderFactory(drach::GraphicsEngine& anEngine) : myGraphicsEngine(&anEngine)
 {
 
 }
 
-const bool drach::ShaderFactory::AddShader(const std::string_view aFilePath, ShaderID* aVertexID, ShaderID* aPixelID)
+drach::Shader drach::ShaderFactory::GetShaderFromFile(std::string aFileName, const ShaderType aType)
 {
-	auto pID = AddPixelShader(aFilePath);
-	auto vID = AddVertexShader(aFilePath);
-
-	if (aVertexID)
-		*aVertexID = vID;
-	if (aPixelID)
-		*aPixelID = pID;
-
-	return pID != nullshader && vID != nullshader;
-}
-
-const ShaderID drach::ShaderFactory::AddVertexShader(const std::string_view aFilePath)
-{
-	GraphicsDevice& device = myGraphicsEngine->GetDevice();
-
-	static ShaderID id = 0;
-
-	Blob data;
 
 
+	//Then hash it with a value for comparison
+	StringID id(aFileName);
 
-	std::wstring path = std::wstring(aFilePath.begin(), aFilePath.end());
-	path += std::wstring(L"_VS.cso");
-	HRESULT result = D3DReadFileToBlob(path.c_str(), &data);
+	//Check if we already have the value in our database. If we do, fetch the data.
+	if (myShaders.count(id) > 0)
+	{
+		LOG("Found Shader!");
+		return Shader(id, *this);
+	}
+	GDevice context = myGraphicsEngine->GetDevice();
+
+	//Otherwise, load the data from the file and create the appropiate information (shader stuff).
+	VertexShader vs;
+	PixelShader ps;
+	InputLayout il;
+
+	HRESULT result;
+
+	Blob vertexData;
+	Blob pixelData;
+
+
+	std::filesystem::path vsPath("resources/shaders/" + aFileName + "_VS.cso");
+	std::filesystem::path psPath("resources/shaders/" + aFileName + "_PS.cso");
+
+	result = D3DReadFileToBlob(vsPath.wstring().c_str(), &vertexData);
 	if (FAILED(result))
 	{
-		LOG_ERROR("Failed to read vertex shader file: [" + std::string(path.begin(), path.end()) + "]. Reason: " + std::to_string(result));
-		return nullshader;
+		LOG_ERROR("Failed to read vertex shader file: " + vsPath.string() + ".");
+		return Shader(id, *this);
 	}
-
-	ShaderID cpy = id;
-
-
-	ShaderID newID = cpy++;
-	myVertexData[newID] = data;
-
-	result = device->CreateVertexShader(data->GetBufferPointer(), data->GetBufferSize(), nullptr, &myVertexShaders[newID]);
-
+	LOG("Read File: " + vsPath.string());
+	result = D3DReadFileToBlob(psPath.wstring().c_str(), &pixelData);
 	if (FAILED(result))
 	{
-		LOG_ERROR("Failed to create vertex shader! HRESULT: " + std::to_string(result));
-		return nullshader;
+		LOG_ERROR("Failed to read pixel shader file: " + psPath.string() + ".");
+		return Shader(id, *this);
 	}
-
-	id = cpy;
-	LOG("Vertex Shader added from file: " + std::string(path.begin(), path.end()));
-	return newID;
-}
-
-const ShaderID drach::ShaderFactory::AddPixelShader(const std::string_view aFilePath)
-{
-	GraphicsDevice& device = myGraphicsEngine->GetDevice();
-
-	static ShaderID id = 0;
-
-	Blob data;
-
-
-
-	std::wstring path = std::wstring(aFilePath.begin(), aFilePath.end());
-	path += std::wstring(L"_PS.cso");
-	HRESULT result = D3DReadFileToBlob(path.c_str(), &data);
-	if (FAILED(result))
-	{ 
-		LOG_ERROR("Failed to read pixel shader file: [" + std::string(path.begin(), path.end()) + "] Reason: " + std::to_string(result));
-		return nullshader;
-	}
-
-	ShaderID cpy = id;
-
-	ShaderID newID = cpy++;
-	result = device->CreatePixelShader(data->GetBufferPointer(), data->GetBufferSize(), nullptr, &myPixelShaders[newID]);
-
+	LOG("Read File: " + psPath.string());
+	result = context->CreateVertexShader(vertexData->GetBufferPointer(), vertexData->GetBufferSize(), NULL, &vs);
 	if (FAILED(result))
 	{
-		LOG_ERROR("Failed to create pixel shader! HRESULT: " + std::to_string(result));
-		return nullshader;
+		LOG_ERROR("Failed to create vertex shader from file: " + vsPath.string() + ".");
+		return Shader(id, *this);
 	}
-
-	id = cpy;
-	LOG("Pixel Shader added from file: " + std::string(path.begin(), path.end()));
-	return newID;
-}
-
-const ShaderID drach::ShaderFactory::AddInputLayout(InputStructure aStructure, const ShaderID aVertexShader)
-{
-	GraphicsDevice& device = myGraphicsEngine->GetDevice();
-
-	static ShaderID id = 0;
-
-	if (!aStructure.IsPopulated())
-	{
-		LOG_ERROR("Incoming vector InputLayoutData is invalid");
-		return false;
-	}
-
-	if (myVertexData.count(aVertexShader) <= 0)
-	{
-		LOG_ERROR("Assigned VertexShaderID does not exist in the database.");
-		return false;
-	}
-
-
-	if (aVertexShader == nullshader)
-	{
-		LOG_ERROR("Assigned VertexShaderID is invalid.");
-		return false;
-	}
-
-	Blob& vertexData = myVertexData[aVertexShader];
-	D3D11_INPUT_ELEMENT_DESC* layout = new D3D11_INPUT_ELEMENT_DESC[aStructure.DataSize()];
-	for (size_t i = 0; i < aStructure.DataSize(); i++)
-	{
-		auto& data = aStructure[i];
-		layout[i] = { data.myName.c_str(), 0, data.myFormat, (unsigned int)data.myInputSlot, (unsigned int)data.myAlignmentOffset, data.myInputSlotClass, (unsigned int)data.myInstanceDataStepRate };
-	}
-
-	ShaderID cpy = id;
-	ShaderID newID = cpy++;
-
-	HRESULT result = device->CreateInputLayout(layout, aStructure.DataSize(), vertexData->GetBufferPointer(), vertexData->GetBufferSize(), &myInputLayouts[newID]);
+	LOG("Created Vertex Shader: " + vsPath.string());
+	result = context->CreatePixelShader(pixelData->GetBufferPointer(), pixelData->GetBufferSize(), NULL, &ps);
 	if (FAILED(result))
 	{
-		LOG_ERROR("Failed to create input layout. HResult: " + std::to_string(result));
-		return false;
+		LOG_ERROR("Failed to read pixel shader from file: " + psPath.string() + ".");
+		return Shader(id, *this);
 	}
-	
-	return true;
-}
-
-const bool drach::ShaderFactory::GetVertexShader(const ShaderID anID, VertexShader& aVertexShader)
-{
-	if (myVertexShaders.count(anID) <= 0)
+	LOG("Created Pixel Shader: " + psPath.string());
+	result = LoadInputLayout(vertexData, il);
+	if (FAILED(result))
 	{
-		LOG_ERROR("Assigned VertexShaderID does not exist in the database.");
-		return false;
+		LOG_ERROR("Failed to load input layout from vertex file: " + vsPath.string());
+		return Shader(id, *this);
 	}
+	LOG("Parsed Vertex Shader Input Layout: " + vsPath.string());
+	//Finally, store the data and the id into the database.
+	myShaders[id] = std::make_tuple(vs, ps, il);
 
 
-	aVertexShader = myVertexShaders[anID];
 
-	return true;
+
+	LOG("Initialized Shader!");
+	//Whenever or not i created or fetch the data, return the shader struct with an id and this factory as a result.
+	return Shader(id, *this);
 }
 
-const bool drach::ShaderFactory::GetPixelShader(const ShaderID anID, PixelShader& aPixelShader)
+HRESULT drach::ShaderFactory::LoadInputLayout(Blob& someVertexData, InputLayout& anInputLayout)
 {
-	if (myPixelShaders.count(anID) <= 0)
+	GDevice context = myGraphicsEngine->GetDevice();
+	ID3D11ShaderReflection* reflection;
+	HRESULT result = D3DReflect(someVertexData->GetBufferPointer(), someVertexData->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&reflection);
+	if (FAILED(result))
 	{
-		LOG_ERROR("Assigned PixelShaderID does not exist in the database.");
-		return false;
+		return result;
 	}
+	D3D11_SHADER_DESC shaderInfo = {};
+	reflection->GetDesc(&shaderInfo);
 
+	D3D11_SIGNATURE_PARAMETER_DESC paramDesc = {};
 
-	aPixelShader = myPixelShaders[anID];
+	std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc;
 
-	return true;
-}
-
-const bool drach::ShaderFactory::GetInputLayout(const ShaderID anID, InputLayout& anInputLayout)
-{
-	if (myInputLayouts.count(anID) <= 0)
+	for (size_t i = 0; i < shaderInfo.InputParameters; i++)
 	{
-		LOG_ERROR("Assigned InputLayoutID does not exist in the database.");
-		return false;
+		reflection->GetInputParameterDesc(i, &paramDesc);
+
+		D3D11_INPUT_ELEMENT_DESC elementDesc = {};
+		elementDesc.SemanticName = paramDesc.SemanticName;
+		elementDesc.SemanticIndex = paramDesc.SemanticIndex;
+		elementDesc.Format = GetDXGIFormat(paramDesc);
+		elementDesc.InputSlot = 0;
+		elementDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+		elementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		elementDesc.InstanceDataStepRate = 0;
+
+		inputLayoutDesc.push_back(elementDesc);
 	}
 
+	result = context->CreateInputLayout(inputLayoutDesc.data(), inputLayoutDesc.size(),
+		someVertexData->GetBufferPointer(), someVertexData->GetBufferSize(), &anInputLayout);
+	if (FAILED(result))
+	{
+		return result;
+	}
 
-	anInputLayout = myInputLayouts[anID];
-
-	return true;
+	return S_OK;
 }
 
-void drach::InputStructure::Add(std::string aName, DXGI_FORMAT&& aFormat)
+
+drach::Shader::Shader(StringID anID, ShaderFactory& aFactory)
+	:myID(anID), myShaderDatabase(aFactory)
 {
-	/*myData.push_back(
-		InputLayoutData(aName, aFormat, (size_t)0, (size_t)0xffffffff, D3D11_INPUT_CLASSIFICATION(0), 0));*/
+}
+
+void drach::Shader::Bind(GraphicsEngine& anEngine)
+{
+	GDContext context = anEngine.GetContext();
+
+	context->VSSetShader(GetVertexShader().Get(), nullptr, 0);
+	context->PSSetShader(GetPixelShader().Get(), nullptr, 0);
+	context->IASetInputLayout(GetInputLayout().Get());
+
+}
+
+PixelShader& drach::Shader::GetPixelShader()
+{
+	return std::get<PixelShader>(myShaderDatabase.myShaders[myID]);
+}
+
+VertexShader& drach::Shader::GetVertexShader()
+{
+	return std::get<VertexShader>(myShaderDatabase.myShaders[myID]);
+}
+
+InputLayout& drach::Shader::GetInputLayout()
+{
+	return std::get<InputLayout>(myShaderDatabase.myShaders[myID]);
 }

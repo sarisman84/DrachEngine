@@ -20,19 +20,19 @@ namespace drach
 		};
 
 
-		HRESULT BindResource(GraphicsDeviceContext& aContext, RenderResource& aResource, const size_t aSlot, const size_t anAmount = 1);
-		HRESULT BindConstantBuffer(GraphicsDeviceContext& aContext, const BufferType aBufferTYype, GBuffer& aBuffer, const size_t aSlot, const size_t anAmount = 1);
-		void SetViewport(GraphicsDeviceContext& aContext, const PixelCoords& aSize, const PixelCoords& aStart, const uint32_t aMinDepth, const uint32_t aMaxDepth);
-		void ClearDepthStencil(GraphicsDeviceContext& aContext, DepthStencil& aStencil);
-		void ClearRenderTarget(GraphicsDeviceContext& aContext, RenderTarget& aTarget);
+		HRESULT BindResource(GDContext& aContext, RenderResource& aResource, const size_t aSlot, const size_t anAmount = 1);
+		HRESULT BindConstantBuffer(GDContext& aContext, const BufferType aBufferTYype, GBuffer& aBuffer, const size_t aSlot, const size_t anAmount = 1);
+		void SetViewport(GDContext& aContext, const PixelCoords& aSize, const PixelCoords& aStart, const uint32_t aMinDepth, const uint32_t aMaxDepth);
+		void ClearDepthStencil(GDContext& aContext, DepthStencil& aStencil);
+		void ClearRenderTarget(GDContext& aContext, RenderTarget& aTarget);
 
 
 		class RenderBuilder
 		{
 		public:
-			RenderBuilder(GraphicsDevice& aDevice);
+			RenderBuilder(GDevice& aDevice);
 
-			static inline void Init(GraphicsDevice& aDevice);
+			static inline void Init(GDevice& aDevice);
 			static inline RenderBuilder& API() noexcept { return *ourInstance; }
 			static inline void Release();
 
@@ -52,7 +52,7 @@ namespace drach
 
 		private:
 
-			GraphicsDevice& myDevice;
+			GDevice& myDevice;
 			std::unordered_map<std::string, std::shared_ptr<BaseObject>> myBlackboard;
 		private:
 			static RenderBuilder* ourInstance;

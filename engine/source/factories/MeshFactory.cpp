@@ -5,7 +5,7 @@
 #include "logging/Logger.h"
 
 #include <d3d11.h>
-
+#include <d3d11shader.h>
 drach::MeshFactory::MeshFactory(GraphicsEngine& anEngine)
 	:myGraphicsEngine(&anEngine)
 {
@@ -123,7 +123,7 @@ drach::Mesh* drach::MeshFactory::GenerateSphere()
 
 const bool drach::MeshFactory::ParseVertices(GBuffer& aBuffer, std::vector<Vertex> someVertices)
 {
-	GraphicsDevice& device = myGraphicsEngine->GetDevice();
+	GDevice& device = myGraphicsEngine->GetDevice();
 
 
 	D3D11_BUFFER_DESC desc = {};
@@ -146,7 +146,7 @@ const bool drach::MeshFactory::ParseVertices(GBuffer& aBuffer, std::vector<Verte
 
 const bool drach::MeshFactory::ParseIndices(GBuffer& aBuffer, std::vector<uint32_t> someIndices)
 {
-	GraphicsDevice& device = myGraphicsEngine->GetDevice();
+	GDevice& device = myGraphicsEngine->GetDevice();
 
 
 	D3D11_BUFFER_DESC desc = {};

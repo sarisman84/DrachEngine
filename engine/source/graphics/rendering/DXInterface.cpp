@@ -13,11 +13,11 @@ return *this
 
 drach::dx11::RenderBuilder* drach::dx11::RenderBuilder::ourInstance;
 
-drach::dx11::RenderBuilder::RenderBuilder(GraphicsDevice& aDevice) : myDevice(aDevice)
+drach::dx11::RenderBuilder::RenderBuilder(GDevice& aDevice) : myDevice(aDevice)
 {
 }
 
-inline void drach::dx11::RenderBuilder::Init(GraphicsDevice& aDevice)
+inline void drach::dx11::RenderBuilder::Init(GDevice& aDevice)
 {
 	ourInstance = new RenderBuilder(aDevice);
 }
@@ -73,4 +73,24 @@ drach::dx11::RenderBuilder& drach::dx11::RenderBuilder::InitDepthStencil(DepthSt
 		RETURN(foundResults);
 }
 
+HRESULT drach::dx11::BindResource(GDContext& aContext, RenderResource& aResource, const size_t aSlot, const size_t anAmount)
+{
+	return E_NOTIMPL;
+}
 
+HRESULT drach::dx11::BindConstantBuffer(GDContext& aContext, const BufferType aBufferTYype, GBuffer& aBuffer, const size_t aSlot, const size_t anAmount)
+{
+	return E_NOTIMPL;
+}
+
+void drach::dx11::SetViewport(GDContext& aContext, const PixelCoords& aSize, const PixelCoords& aStart, const uint32_t aMinDepth, const uint32_t aMaxDepth)
+{
+}
+
+void drach::dx11::ClearDepthStencil(GDContext& aContext, DepthStencil& aStencil)
+{
+}
+
+void drach::dx11::ClearRenderTarget(GDContext& aContext, RenderTarget& aTarget)
+{
+}

@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d11.h>
+#include <d3d11shader.h>
 #include "DirectX11/DXTypes.h"
 
 
@@ -18,15 +19,15 @@ namespace drach
 		void Present();
 
 	public:
-		inline GraphicsDevice& GetDevice() { return device; }
-		inline GraphicsDeviceContext& GetContext() { return deviceContext; }
+		inline GDevice& GetDevice() { return device; }
+		inline GDContext& GetContext() { return deviceContext; }
 
 	private:
 		SwapChain swapChain;
 		RenderTarget backBuffer;
 		DepthStencil depthBuffer;
-		GraphicsDevice device;
-		GraphicsDeviceContext deviceContext;
+		GDevice device;
+		GDContext deviceContext;
 	};
 }
 

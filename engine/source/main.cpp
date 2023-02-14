@@ -66,16 +66,7 @@ void Engine::OnStart(StartContext& const someData)
 	myGraphicsEngine.reset(new drach::GraphicsEngine(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120));
 	myShaderFactory.reset(new drach::ShaderFactory(*myGraphicsEngine));
 
-	ShaderID vertexID;
-	ShaderID pixelID;
-	myShaderFactory->AddShader("resources/shaders/Cube", &vertexID, &pixelID);
-
-
-	drach::InputStructure structure;
-	structure.Add("POSITION", DXGI_FORMAT_R8G8B8A8_UNORM);
-	structure.Add("TEXTCOORD", DXGI_FORMAT_R8G8B8A8_UNORM);
-
-	myShaderFactory->AddInputLayout(structure, vertexID);
+	myShaderFactory->GetShaderFromFile("Cube");
 
 
 	myPollingStation->Get<drach::GraphicsEngine>() = myGraphicsEngine.get();

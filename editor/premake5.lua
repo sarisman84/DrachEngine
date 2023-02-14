@@ -33,9 +33,9 @@ if #en_files > 0 then
         "Vendor[Engine]"
     }
 end
-links {
-    "Vendor[Global]"
-}
+-- links {
+--     "Vendor[Global]"
+-- }
 
 if #ed_files > 0 then
     libdirs {

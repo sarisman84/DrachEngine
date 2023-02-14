@@ -19,7 +19,7 @@ namespace drach
 		//Renders a scene containing entites with models. 
 		void Render(Scene& const aScene, Transform& const aCamTransform);
 	private:
-		void RenderModel(const Model& aModel, const Transform& aTransform, const GraphicsDeviceContext& aContext);
+		void RenderModel(const Model& aModel, const Transform& aTransform, const GDContext& aContext);
 	private:
 		RenderTarget myRenderTarget;
 		DepthStencil myDepthBuffer;
