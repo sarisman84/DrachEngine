@@ -1,3 +1,5 @@
+#include "precompile-header/coreIncludes.h"
+ 
 #include "Registry.h"
 #include "Container.h"
 namespace drach

@@ -1,3 +1,4 @@
+#include "precompile-header/coreIncludes.h"
 #include "Logger.h"
 #include <iostream>
 #include <string>

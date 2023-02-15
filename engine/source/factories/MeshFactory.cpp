@@ -1,3 +1,4 @@
+#include "precompile-header/coreIncludes.h"
 #include "MeshFactory.h"
 #include "graphics/GraphicsEngine.h"
 #include "graphics/objects/Mesh.h"

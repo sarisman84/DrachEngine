@@ -1,3 +1,4 @@
+#include "precompile-header/coreIncludes.h"
 #include "ShaderFactory.h"
 #include <d3d11.h> 
 #include <d3d10.h>
@@ -10,58 +11,89 @@
 
 #include "logging/Logger.h"
 
-#pragma comment(lib, "d3dcompiler.lib")
 
-
+//Parses in reflection information to DXGI_FORMAT values for Input Layout.
 DXGI_FORMAT GetDXGIFormat(const D3D11_SIGNATURE_PARAMETER_DESC& desc)
 {
 	switch (desc.Mask)
 	{
-	case 1:
+	case 1: //The format contains one element
 		switch (desc.ComponentType)
 		{
 		case D3D_REGISTER_COMPONENT_UINT32:
+			LOG("Format found to be unsigned int of 1 value");
 			return DXGI_FORMAT_R32_UINT;
 		case D3D_REGISTER_COMPONENT_SINT32:
+			LOG("Format found to be signed int of 1 value");
 			return DXGI_FORMAT_R32_SINT;
 		case D3D_REGISTER_COMPONENT_FLOAT32:
+			LOG("Format found to be float of 1 value");
 			return DXGI_FORMAT_R32_FLOAT;
 		default:
 			break;
 		}
 		break;
-	case 3:
+	case 3: //The format contains two elements
 		switch (desc.ComponentType)
 		{
 		case D3D_REGISTER_COMPONENT_UINT32:
+			LOG("Format found to be unsigned int of 2 values");
+			return DXGI_FORMAT_R32G32_UINT;
+		case D3D_REGISTER_COMPONENT_SINT32:
+			LOG("Format found to be signed int of 2 values");
+			return DXGI_FORMAT_R32G32_SINT;
+		case D3D_REGISTER_COMPONENT_FLOAT32:
+			LOG("Format found to be float of 2 values");
+			return DXGI_FORMAT_R32G32_FLOAT;
+		default:
+			break;
+		}
+		break;
+
+	case 7: //The format contains three elements
+		switch (desc.ComponentType)
+		{
+		case D3D_REGISTER_COMPONENT_UINT32:
+			LOG("Format found to be unsigned int of 3 values");
 			return DXGI_FORMAT_R32G32B32_UINT;
 		case D3D_REGISTER_COMPONENT_SINT32:
+			LOG("Format found to be signed int of 3 values");
 			return DXGI_FORMAT_R32G32B32_SINT;
 		case D3D_REGISTER_COMPONENT_FLOAT32:
+			LOG("Format found to be float of 3 values");
 			return DXGI_FORMAT_R32G32B32_FLOAT;
 		default:
 			break;
 		}
 		break;
-	case 7:
+
+	case 15: //The format contains four elements
 		switch (desc.ComponentType)
 		{
 		case D3D_REGISTER_COMPONENT_UINT32:
+			LOG("Format found to be unsigned int of 4 values");
 			return DXGI_FORMAT_R32G32B32A32_UINT;
 		case D3D_REGISTER_COMPONENT_SINT32:
+			LOG("Format found to be signed int of 4 values");
 			return DXGI_FORMAT_R32G32B32A32_SINT;
 		case D3D_REGISTER_COMPONENT_FLOAT32:
+			LOG("Format found to be float of 4 values");
 			return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		default:
 			break;
 		}
 		break;
+
 	default:
 		break;
 	}
+
+	LOG_ERROR("Could not parse format from the above information: " + std::to_string(desc.Mask));
 	return DXGI_FORMAT_UNKNOWN;
 }
 
+
+drach::ShaderFactory::ShaderFactory() = default;
 
 drach::ShaderFactory::ShaderFactory(drach::GraphicsEngine& anEngine) : myGraphicsEngine(&anEngine)
 {
@@ -138,9 +170,22 @@ drach::Shader drach::ShaderFactory::GetShaderFromFile(std::string aFileName, con
 
 
 
-	LOG("Initialized Shader!");
+	LOG("Initialized Shader: " + aFileName);
 	//Whenever or not i created or fetch the data, return the shader struct with an id and this factory as a result.
 	return Shader(id, *this);
+}
+
+ShaderDataSet drach::ShaderFactory::GetShaders()
+{
+	static ShaderDataSet result;
+	result.clear();
+
+	for (auto& shader : myShaders)
+	{
+		result.push_back(Shader(shader.first, *this));
+	}
+
+	return result;
 }
 
 HRESULT drach::ShaderFactory::LoadInputLayout(Blob& someVertexData, InputLayout& anInputLayout)
@@ -186,8 +231,10 @@ HRESULT drach::ShaderFactory::LoadInputLayout(Blob& someVertexData, InputLayout&
 }
 
 
+drach::Shader::Shader() = default;
+
 drach::Shader::Shader(StringID anID, ShaderFactory& aFactory)
-	:myID(anID), myShaderDatabase(aFactory)
+	:myID(anID), myShaderDatabase(&aFactory)
 {
 }
 
@@ -203,15 +250,15 @@ void drach::Shader::Bind(GraphicsEngine& anEngine)
 
 PixelShader& drach::Shader::GetPixelShader()
 {
-	return std::get<PixelShader>(myShaderDatabase.myShaders[myID]);
+	return std::get<PixelShader>(myShaderDatabase->myShaders[myID]);
 }
 
 VertexShader& drach::Shader::GetVertexShader()
 {
-	return std::get<VertexShader>(myShaderDatabase.myShaders[myID]);
+	return std::get<VertexShader>(myShaderDatabase->myShaders[myID]);
 }
 
 InputLayout& drach::Shader::GetInputLayout()
 {
-	return std::get<InputLayout>(myShaderDatabase.myShaders[myID]);
+	return std::get<InputLayout>(myShaderDatabase->myShaders[myID]);
 }

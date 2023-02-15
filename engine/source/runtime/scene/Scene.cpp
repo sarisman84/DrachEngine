@@ -1,3 +1,4 @@
+#include "precompile-header/coreIncludes.h"
 #include "Scene.h"
 #include "componentSys/Registry.h"
 #include "logging/Logger.h"
@@ -29,7 +30,7 @@ void drach::Scene::Start(InitializeContext& const anInitContext)
 
 void drach::Scene::Update(RuntimeContext& const aRuntimeContext)
 {
-	LOG("Update method called! [Delta: " + std::to_string(aRuntimeContext.myDeltaTime) + "]");
+	//LOG("Update method called! [Delta: " + std::to_string(aRuntimeContext.myDeltaTime) + "]");
 
 	for (auto storage : myRegistry->storage())
 	{

@@ -1,15 +1,38 @@
 #pragma once
 #define NOMINMAX
+#include <vector>
+#include <tuple>
+#include <memory>
 #include "graphics/DirectX11/DXTypes.h"
 
 namespace drach
 {
+	class Camera;
 	class PollingStation;
 	class GraphicsEngine;
+	class ShaderFactory;
 	class Scene;
 	class Model;
+	class Mesh;
+	struct Shader;
 	struct Transform;
 
+
+
+
+	struct RenderContext
+	{
+		Camera& myCamera;
+		Transform& myCameraTransform;
+	};
+
+
+	struct RenderInstruction
+	{
+		Mesh& myMesh;
+		Transform& myTransform;
+		Shader& myShader;
+	};
 
 	class Renderer
 	{
@@ -17,10 +40,15 @@ namespace drach
 		Renderer(PollingStation& aGraphicsEngine);
 	public:
 		//Renders a scene containing entites with models. 
-		void Render(Scene& const aScene, Transform& const aCamTransform);
+		void Render(RenderContext& someContext);
+		void Submit(Mesh& aMesh, Transform& aTransform, Shader& aShader);
 	private:
-		void RenderModel(const Model& aModel, const Transform& aTransform, const GDContext& aContext);
+		const bool FetchManagers(GraphicsEngine& anEngine, ShaderFactory& aShaderFactory);
 	private:
+		std::vector<std::unique_ptr<RenderInstruction>> myRenderInstructions;
+	private:
+
+
 		RenderTarget myRenderTarget;
 		DepthStencil myDepthBuffer;
 		RenderResource myRenderData;

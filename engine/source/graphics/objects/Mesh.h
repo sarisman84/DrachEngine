@@ -6,6 +6,7 @@
 #include "graphics/DirectX11/DXTypes.h"
 namespace drach
 {
+	class GraphicsEngine;
 	struct Vertex
 	{
 		Vector3f myPosition;
@@ -18,6 +19,8 @@ namespace drach
 		friend class MeshFactory;
 	public:
 		std::string myName;
+	public:
+		void Bind(GraphicsEngine& anEngine);
 	private:
 		GBuffer myVertexBuffer;
 		GBuffer myIndexBuffer;

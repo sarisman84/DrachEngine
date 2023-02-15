@@ -24,7 +24,9 @@ if #foundFiles > 0 then
     }
 end
 links {
-    "d3d11.lib"
+    "d3d11.lib",
+    "dxguid.lib",
+    "d3dcompiler.lib"
 }
 -- links {
 --     "Vendor[Global]"
@@ -51,6 +53,8 @@ files {
     "source/**.hlsl",
     "source/**.hlsli"
 }
+
+precompileHeader("coreIncludes", directory.engine)
 
 flags {
     "MultiProcessorCompile"

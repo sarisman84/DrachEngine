@@ -1,3 +1,4 @@
+#include "precompile-header/coreIncludes.h"
 #include "RectTransform.h"
 #include "componentSys/Registry.h"
 #include "logging/Logger.h"

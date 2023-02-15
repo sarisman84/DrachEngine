@@ -1,3 +1,4 @@
+#include "precompile-header/coreIncludes.h"
 #include "Renderer.h"
 #include "graphics/GraphicsEngine.h"
 #include "runtime/scene/Scene.h"
@@ -9,82 +10,88 @@
 #include "util/Transform.h"
 #include "factories/ShaderFactory.h"
 #include "entt/single_include/entt/entt.hpp"
+
+#include "graphics/constant-buffers/BufferDef.h"
+#include "graphics/constant-buffers/ConstantBuffer.h"
+
 drach::Renderer::Renderer(PollingStation& aPollingStation) : myPollingStation(&aPollingStation)
 {
+	GraphicsEngine& gEngine = *aPollingStation.Get<GraphicsEngine>();
+	ConstantBuffer::Initialize<ObjectBuffer>(gEngine);
 }
 
-void drach::Renderer::Render(Scene& const aScene, Transform& const aCamTransform)
+void drach::Renderer::Render(RenderContext& someContext)
 {
+	GraphicsEngine gEngine;
+	ShaderFactory shaderFactory;
+
+	GDContext& context = gEngine.GetContext();
+
+	if (!FetchManagers(gEngine, shaderFactory)) return;
+
+	//Swap to the renderer's render target and depth buffer
+	gEngine.DrawTo(&myRenderTarget, &myDepthBuffer);
+
+
+	std::sort(myRenderInstructions.begin(), myRenderInstructions.end(),
+		[](const std::unique_ptr<RenderInstruction>& a, const std::unique_ptr<RenderInstruction>& b)
+		{
+			return a->myShader.GetID() < b->myShader.GetID();
+		});
+
+	for (auto& renderInstruction : myRenderInstructions)
+	{
+		Mesh& mesh = renderInstruction->myMesh;
+		Shader& shader = renderInstruction->myShader;
+		Transform& transform = renderInstruction->myTransform;
+		shader.Bind(gEngine);
+		mesh.Bind(gEngine);
+		ObjectBuffer buffer(transform.GetMatrix());
+		ConstantBuffer::Bind<ObjectBuffer, BindType::Vertex>(gEngine, buffer, 1);
+
+		context->DrawIndexed(mesh.myIndicesAmm, 0, 0);
+
+
+	}
+
+
+
+	gEngine.Present();
+	myRenderInstructions.clear();
+}
+
+void drach::Renderer::Submit(Mesh& aModel, Transform& aTransform, Shader& aShader)
+{
+	RenderInstruction instruction(aModel, aTransform, aShader);
+	myRenderInstructions.push_back(std::make_unique<RenderInstruction>(instruction));
+
+
+}
+
+const bool drach::Renderer::FetchManagers(GraphicsEngine& anEngine, ShaderFactory& aShaderFactory)
+{
+
 	GraphicsEngine* gEngine = myPollingStation->Get<GraphicsEngine>();
 
 	if (!gEngine)
 	{
 		LOG_ERROR("Missing Graphics Engine ptr in the polling station!");
-		return;
+		return false;
 	}
 
-	//Set the graphics engine to draw to the current render target
-	gEngine->DrawTo(&myRenderTarget, &myDepthBuffer);
+	ShaderFactory* shaderFactory = myPollingStation->Get<ShaderFactory>();
 
-	GDContext& context = gEngine->GetContext();
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	entt::registry& reg = aScene.GetRegistry();
-
-	auto view = reg.view<Model, Transform>();
-
-	for (auto [entity, model, transform] : view.each())
+	if (!shaderFactory)
 	{
-		RenderModel(model, transform, context);
+		LOG_ERROR("Missing Shader Factory ptr in the polling station!");
+		return false;
 	}
 
-	//Draw stuff
-	gEngine->CopyRenderToBackBuffer(&myRenderData);
+	anEngine = *gEngine;
+	aShaderFactory = *shaderFactory;
+	return true;
 }
 
 
-void drach::Renderer::RenderModel(const Model& aModel, const Transform& aTransform, const GDContext& aContext)
-{
-	auto shaderFactory = myPollingStation->Get<ShaderFactory>();
 
-	for (size_t i = 0; i < aModel.GetSubMeshCount(); i++)
-	{
-		auto& mesh = aModel.GetSubMeshes()[i];
-		//auto& mat = aModel.GetMaterials()[i];
 
-		//InputLayout layout;
-		///*if (!shaderFactory->GetInputLayout(mat.myInputLayout, layout))
-		//{
-		//	LOG_ERROR("Mesh " + mesh->myName + std::string(" with material ") + mat.myName + std::string(" missing an input layout!"));
-		//	return;
-		//}*/
-		//aContext->IASetInputLayout(layout.Get());
-
-		//unsigned int stride = sizeof(Vertex);
-		//unsigned int offset = 0;
-
-		//
-		//aContext->IASetVertexBuffers(0, 1, mesh->myVertexBuffer.GetAddressOf(), &stride, &offset);
-		//aContext->IASetIndexBuffer(mesh->myIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
-		//VertexShader vertexShader;
-		//PixelShader pixelShader;
-
-		///*if (!shaderFactory->GetVertexShader(mat.myVertexShader, vertexShader))
-		//{
-		//	LOG_ERROR("Mesh " + mesh->myName + std::string(" with material ") + mat.myName + std::string(" missing a vertex shader!"));
-		//	return;
-		//}
-
-		//if (!shaderFactory->GetPixelShader(mat.myPixelShader, pixelShader))
-		//{
-		//	LOG_ERROR("Mesh " + mesh->myName + std::string(" with material ") + mat.myName + std::string(" missing a vertex shader!"));
-		//	return;
-		//}*/
-
-		//aContext->VSSetShader(vertexShader.Get(), nullptr, 0);
-		//aContext->PSSetShader(pixelShader.Get(), nullptr, 0);
-
-		//aContext->DrawIndexed(mesh->myIndicesAmm, 0, 0);
-	}
-
-}

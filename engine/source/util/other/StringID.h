@@ -9,6 +9,10 @@ namespace drach
 	{
 		size_t myID;
 
+		StringID()
+		{
+			myID = size_t(-1);
+		}
 		StringID(const std::string& aStr)
 		{
 			myID = std::hash<std::string_view>()(aStr);
@@ -47,6 +51,17 @@ namespace drach
 
 		bool operator!=(const StringID& other) const {
 			return myID != other.myID;
+		}
+
+		bool operator <(const StringID& other) const
+		{
+			return myID < other.myID;
+		}
+
+
+		bool operator >(const StringID& other) const
+		{
+			return myID > other.myID;
 		}
 	};
 

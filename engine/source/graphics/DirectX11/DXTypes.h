@@ -2,6 +2,7 @@
 #include <wrl.h>
 #include <d3dcompiler.h>
 #include <d3dcommon.h>
+
 using Microsoft::WRL::ComPtr;
 
 struct IDXGISwapChain;

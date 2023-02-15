@@ -7,7 +7,12 @@
 
 #include "util/other/StringID.h"
 
-
+namespace drach
+{
+	class Shader;
+}
+typedef std::unordered_map<drach::StringID, std::tuple<VertexShader, PixelShader, InputLayout>, drach::StringIDHash> ShaderLibrary;
+typedef std::vector<drach::Shader> ShaderDataSet;
 namespace drach
 {
 	enum class ShaderType : unsigned char
@@ -21,6 +26,7 @@ namespace drach
 	class ShaderFactory;
 	struct Shader
 	{
+		Shader();
 		Shader(StringID anID, ShaderFactory& aFactory);
 
 		void Bind(GraphicsEngine& anEngine);
@@ -35,7 +41,7 @@ namespace drach
 		}
 
 	private:
-		ShaderFactory& myShaderDatabase;
+		ShaderFactory* myShaderDatabase;
 		StringID myID;
 	};
 
@@ -43,16 +49,19 @@ namespace drach
 	{
 		friend class Shader;
 	public:
+		ShaderFactory();
 		ShaderFactory(GraphicsEngine& anEngine);
 
 	public:
 		Shader GetShaderFromFile(std::string aFilePath, const ShaderType aType = ShaderType::All);
+		
+		ShaderDataSet GetShaders();
 	private:
 		HRESULT LoadInputLayout(Blob& someVertexData, InputLayout& anInputLayout);
 	private:
 		GraphicsEngine* myGraphicsEngine;
 	private:
-		std::unordered_map<StringID, std::tuple<VertexShader, PixelShader, InputLayout>, StringIDHash> myShaders;
+		ShaderLibrary myShaders;
 	};
 
 }

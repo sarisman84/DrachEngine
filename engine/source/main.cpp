@@ -1,3 +1,4 @@
+#include "precompile-header/coreIncludes.h"
 #include "main.h"
 
 #include "logging/Logger.h"
@@ -66,7 +67,9 @@ void Engine::OnStart(StartContext& const someData)
 	myGraphicsEngine.reset(new drach::GraphicsEngine(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120));
 	myShaderFactory.reset(new drach::ShaderFactory(*myGraphicsEngine));
 
+
 	myShaderFactory->GetShaderFromFile("Cube");
+
 
 
 	myPollingStation->Get<drach::GraphicsEngine>() = myGraphicsEngine.get();
@@ -77,17 +80,17 @@ void Engine::OnStart(StartContext& const someData)
 
 
 
-	
+
 	LOG("Engine Initialized!");
 
 	drach::InitializeContext context(*myPollingStation);
 
 	myTestScene.reset(new drach::Scene());
 	myTestScene->Start(context);
-	
+
 	//TestECS();
 
-	
+
 }
 
 void Engine::OnWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

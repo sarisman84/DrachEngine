@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "util/other/StringID.h"
 namespace drach
 {
 	class Material
@@ -8,8 +9,6 @@ namespace drach
 	public:
 		std::string myName;
 	private:
-		uint32_t myPixelShader;
-		uint32_t myVertexShader;
-		uint32_t myInputLayout;
+		StringID myShaderID;
 	};
 }

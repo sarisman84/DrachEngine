@@ -1,3 +1,4 @@
+#include "precompile-header/coreIncludes.h"
 #include "GraphicsEngine.h"
 
 #include <cassert>

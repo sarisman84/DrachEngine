@@ -1,3 +1,5 @@
+#include "precompile-header/coreIncludes.h"
+
 #include "BaseContainer.h"
 #include "logging/Logger.h"
 

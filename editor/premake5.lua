@@ -65,6 +65,8 @@ files {
     "source/**.cpp"
 }
 
+precompileHeader("coreIncludes", directory.editor)
+
 flags {
     "MultiProcessorCompile"
 }
