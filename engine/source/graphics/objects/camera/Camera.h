@@ -2,21 +2,15 @@
 #include <memory>
 #include "util/math/Matrix4x4.h"
 #include "entt/single_include/entt/entt.hpp"
-
+#include "ProjectionInterface.h"
 
 namespace drach
 {
-	class ProjectionInterface
-	{
-		virtual Matrix4x4f CalculateProjection() = 0;
-	};
-
-
 	class Camera
 	{
 	public:
 		Camera();
-		Camera(entt::registry& aReg, const entt::entity anEntity, ProjectionInterface& anInterface);
+		Camera(entt::registry* aReg, const entt::entity anEntity, ProjectionInterface* anInterface);
 	public:
 		Matrix4x4f ViewMatrix();
 	private:

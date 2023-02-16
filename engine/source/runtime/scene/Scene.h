@@ -12,17 +12,19 @@
 
 
 
+
 FORWARD_DECLARE_REG
 
 
 namespace drach
 {
+	class PollingStation;
 	class Scene
 	{
 	public:
 		Scene();
-		void Start(InitializeContext& const anInitContext);
-		void Update(RuntimeContext& const aRuntimeContext);
+		void Start(PollingStation& aPollingStation);
+		void Update(PollingStation& aPollingStation,const float aDeltaTime);
 	public:
 
 		static entt::entity CreateEntity(Scene& aScene);

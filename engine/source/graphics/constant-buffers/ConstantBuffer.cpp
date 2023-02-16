@@ -3,11 +3,13 @@
 #include "graphics/GraphicsEngine.h"
 #include "logging/Logger.h"
 
+
+
 std::unordered_map<size_t, GBuffer> drach::ConstantBuffer::myBuffers;
 
 void drach::ConstantBuffer::Bind(GraphicsEngine& anEngine, void* someData, size_t someDataSize, const size_t aSlot, const size_t aBindSetting)
 {
-	GDContext& context = anEngine.GetContext();
+	ID3D11DeviceContext* context = anEngine.GetContext();
 	D3D11_MAPPED_SUBRESOURCE resource;
 	context->Map(myBuffers[someDataSize].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
 	resource.pData = someData;
@@ -19,10 +21,10 @@ void drach::ConstantBuffer::Bind(GraphicsEngine& anEngine, void* someData, size_
 		context->VSSetConstantBuffers(aSlot, 1, &myBuffers[someDataSize]);
 }
 
-GBuffer drach::ConstantBuffer::InitializeGBuffer(GraphicsEngine& anEngine, size_t someDataSize)
+GBuffer drach::ConstantBuffer::Initialize(GraphicsEngine& anEngine, size_t someDataSize)
 {
-	GBuffer buffer;
-	GDevice& device = anEngine.GetDevice();
+	GBuffer buffer = nullptr;
+	ID3D11Device* device = anEngine.GetDevice();
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.ByteWidth = someDataSize;
@@ -33,7 +35,6 @@ GBuffer drach::ConstantBuffer::InitializeGBuffer(GraphicsEngine& anEngine, size_
 	desc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA data = {};
-
 	HRESULT result = device->CreateBuffer(&desc, nullptr, &buffer);
 
 	if (FAILED(result))

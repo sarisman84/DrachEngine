@@ -5,6 +5,8 @@
 #pragma comment(lib, "d3d11.lib")
 #include "logging/Logger.h"
 
+#define REPORT_DX_WARNINGS
+
 namespace drach
 {
 	GraphicsEngine::GraphicsEngine() = default;
@@ -25,7 +27,12 @@ namespace drach
 		desc.OutputWindow = anWindowsInstance;
 		desc.Flags = 0;
 
-		HRESULT result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, NULL, 0, D3D11_SDK_VERSION, &desc, &swapChain, &device, NULL, &deviceContext);
+		UINT creationFlags = 0;
+#if defined(REPORT_DX_WARNINGS)
+		creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+		HRESULT result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, creationFlags, NULL, 0, D3D11_SDK_VERSION, &desc, &swapChain, &device, NULL, &deviceContext);
 
 		assert(result == S_OK && "Failed to create Swap Chain, Device and Device Context!");
 		LOG("Successfully created Swap chain, Device and Device Context!");

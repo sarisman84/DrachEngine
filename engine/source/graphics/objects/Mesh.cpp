@@ -4,7 +4,7 @@
 
 void drach::Mesh::Bind(GraphicsEngine& anEngine)
 {
-	GDContext& context = anEngine.GetContext();
+	ID3D11DeviceContext* context = anEngine.GetContext();
 
 	uint32_t strife = 0;
 	uint32_t offset = 0;

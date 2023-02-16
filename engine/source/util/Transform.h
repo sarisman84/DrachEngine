@@ -14,7 +14,13 @@ namespace drach
 	public:
 		Transform();
 		Transform(const Transform& aTransform);
-		Transform operator=(const Transform& aTransform);
+		Transform(Transform&& aTransform);
+
+		
+		Transform& operator=(const Transform& aTransform);
+		Transform& operator=(Transform&& aTransform);
+
+
 		Transform(ecs::Registry* const aRegistry, ecs::Entity anEntityID);
 		~Transform();
 

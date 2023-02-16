@@ -19,26 +19,42 @@ drach::Transform::Transform()
 
 drach::Transform::Transform(const Transform& aTransform)
 {
-	myCachedLocalMatrix = aTransform.myCachedLocalMatrix;
+	memcpy(this, &aTransform, sizeof(Transform));
+	/*myCachedLocalMatrix = aTransform.myCachedLocalMatrix;
 	myChildElementIDs = aTransform.myChildElementIDs;
 	myEntityID = aTransform.myEntityID;
 	myParentID = aTransform.myParentID;
 	myRegistry = aTransform.myRegistry;
 	position = aTransform.position;
 	rotation = aTransform.rotation;
-	size = aTransform.size;
+	size = aTransform.size;*/
 }
 
-drach::Transform drach::Transform::operator=(const Transform& aTransform)
+drach::Transform::Transform(Transform&& aTransform)
 {
-	myCachedLocalMatrix = aTransform.myCachedLocalMatrix;
+	memcpy(this, &aTransform, sizeof(Transform));
+	memset(&aTransform, 0, sizeof(Transform));
+}
+
+drach::Transform& drach::Transform::operator=(const Transform& aTransform)
+{
+	memcpy(this, &aTransform, sizeof(Transform));
+	/*myCachedLocalMatrix = aTransform.myCachedLocalMatrix;
 	myChildElementIDs = aTransform.myChildElementIDs;
 	myEntityID = aTransform.myEntityID;
 	myParentID = aTransform.myParentID;
 	myRegistry = aTransform.myRegistry;
 	position = aTransform.position;
 	rotation = aTransform.rotation;
-	size = aTransform.size;
+	size = aTransform.size;*/
+	return *this;
+}
+
+drach::Transform& drach::Transform::operator=(Transform&& aTransform)
+{
+	memcpy(this, &aTransform, sizeof(Transform));
+	memset(&aTransform, 0, sizeof(Transform));
+
 	return *this;
 }
 
@@ -81,5 +97,6 @@ drach::Matrix4x4f drach::Transform::GetLocalMatrix(const bool aCacheMatrixImmmed
 
 void drach::Transform::CacheTransform()
 {
+
 	myCachedLocalMatrix = Matrix4x4f::TRS(position, rotation, size);
 }

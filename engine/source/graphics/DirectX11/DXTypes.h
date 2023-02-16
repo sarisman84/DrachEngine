@@ -1,33 +1,13 @@
 #pragma once
 #include <wrl.h>
+#include <d3d10.h>
+#include <d3d11.h>
 #include <d3dcompiler.h>
 #include <d3dcommon.h>
+#include <d3d11shader.h>
+#include <string_view>
 
 using Microsoft::WRL::ComPtr;
-
-struct IDXGISwapChain;
-struct ID3D11RenderTargetView;
-struct ID3D11DepthStencilView;
-struct ID3D11ShaderResourceView;
-struct ID3D11Device;
-struct ID3D11DeviceContext;
-struct ID3D11Buffer;
-struct ID3D11DepthStencilState;
-struct ID3D11RasterizerState;
-struct ID3D11InputLayout;
-struct ID3D11VertexShader;
-struct ID3D11PixelShader;
-struct ID3D11SamplerState;
-struct ID3D11Texture2D;
-struct ID3D11ShaderReflection;
-
-enum DXGI_FORMAT;
-enum D3D11_INPUT_CLASSIFICATION;
-
-struct D3D11_TEXTURE2D_DESC;
-struct D3D11_SHADER_RESOURCE_VIEW_DESC;
-struct D3D11_DEPTH_STENCIL_VIEW_DESC;
-struct D3D11_INPUT_ELEMENT_DESC;
 
 typedef ComPtr<IDXGISwapChain> SwapChain;
 typedef ComPtr<ID3D11RenderTargetView> RenderTarget;

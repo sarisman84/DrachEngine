@@ -4,16 +4,27 @@
 #include "logging/Logger.h"
 #include "util/other/MethodCheck.h"
 
+#include "graphics/objects/camera/Camera.h"
+#include "graphics/objects/camera/PerspectiveProjection.h"
 
+#include "util/Transform.h"
+#include "util/other/PollingStation.h"
 
 drach::Scene::Scene()
 {
 	myRegistry.reset(new entt::registry());
 }
 
-void drach::Scene::Start(InitializeContext& const anInitContext)
+void drach::Scene::Start(PollingStation& aPollingStation)
 {
 	LOG("Start method called!");
+	auto cameraEntity = myRegistry->create();
+	Camera& cam = Scene::Emplace<Camera>(*this, cameraEntity, myRegistry.get(), cameraEntity, new Perspective(1920, 1080, 90));
+	cam;
+
+	Transform& transform = myRegistry->get<Transform>(cameraEntity);
+	transform.position = { 0,0,-10 };
+
 
 	for (auto storage : myRegistry->storage())
 	{
@@ -21,24 +32,29 @@ void drach::Scene::Start(InitializeContext& const anInitContext)
 		{
 			if (myStartCallbacks.count(entity))
 			{
-				myStartCallbacks[entity](anInitContext);
+				InitializeContext initializeContext{ aPollingStation, entity };
+				myStartCallbacks[entity](initializeContext);
 			}
 		}
 	}
-	
+
 }
 
-void drach::Scene::Update(RuntimeContext& const aRuntimeContext)
+void drach::Scene::Update(PollingStation& aPollingStation, const float aDeltaTime)
 {
 	//LOG("Update method called! [Delta: " + std::to_string(aRuntimeContext.myDeltaTime) + "]");
+
+
 
 	for (auto storage : myRegistry->storage())
 	{
 		for (auto entity : storage.second)
 		{
+
 			if (myUpdateCallbacks.count(entity))
 			{
-				myUpdateCallbacks[entity](aRuntimeContext);
+				RuntimeContext runtimeContext{ aPollingStation, entity, aDeltaTime, *myRegistry };
+				myUpdateCallbacks[entity](runtimeContext);
 			}
 		}
 	}

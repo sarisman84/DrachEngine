@@ -10,7 +10,9 @@ namespace drach
 	class Scene;
 	class GraphicsEngine;
 	class ShaderFactory;
+	class MeshFactory;
 	class PollingStation;
+	class Renderer;
 }
 
 
@@ -34,7 +36,9 @@ private:
 private:
 	std::unique_ptr<drach::GraphicsEngine> myGraphicsEngine;
 	std::unique_ptr<drach::ShaderFactory> myShaderFactory;
+	std::unique_ptr<drach::MeshFactory> myMeshFactory;
 	std::unique_ptr<drach::PollingStation> myPollingStation;
+	std::unique_ptr<drach::Renderer> myRenderer;
 };
 
 

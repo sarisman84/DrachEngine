@@ -124,11 +124,11 @@ drach::Mesh* drach::MeshFactory::GenerateSphere()
 
 const bool drach::MeshFactory::ParseVertices(GBuffer& aBuffer, std::vector<Vertex> someVertices)
 {
-	GDevice& device = myGraphicsEngine->GetDevice();
+	ID3D11Device* device = myGraphicsEngine->GetDevice();
 
 
 	D3D11_BUFFER_DESC desc = {};
-	desc.ByteWidth = sizeof(Vertex) * someVertices.size();
+	desc.ByteWidth = sizeof(Vertex) * static_cast<UINT>(someVertices.size());
 	desc.Usage = D3D11_USAGE_IMMUTABLE;
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
@@ -147,11 +147,11 @@ const bool drach::MeshFactory::ParseVertices(GBuffer& aBuffer, std::vector<Verte
 
 const bool drach::MeshFactory::ParseIndices(GBuffer& aBuffer, std::vector<uint32_t> someIndices)
 {
-	GDevice& device = myGraphicsEngine->GetDevice();
+	ID3D11Device* device = myGraphicsEngine->GetDevice();
 
 
 	D3D11_BUFFER_DESC desc = {};
-	desc.ByteWidth = sizeof(uint32_t) * someIndices.size();
+	desc.ByteWidth = sizeof(uint32_t) * static_cast<UINT>(someIndices.size());
 	desc.Usage = D3D11_USAGE_IMMUTABLE;
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 

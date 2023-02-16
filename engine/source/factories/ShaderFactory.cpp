@@ -1,9 +1,6 @@
 #include "precompile-header/coreIncludes.h"
 #include "ShaderFactory.h"
-#include <d3d11.h> 
-#include <d3d10.h>
-#include <d3d11shader.h>
-#include <filesystem>
+
 
 #include "DirectXTex/DirectXTex/DirectXTex.h"
 #include "graphics/GraphicsEngine.h"

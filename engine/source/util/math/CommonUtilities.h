@@ -59,7 +59,9 @@ namespace drach
 	inline float rndRange(float min, float max) { return rnd_01f() * (max - min) + min; }
 
 
-
+	inline static constexpr double Pi = 3.14159265358979323846;
+	inline static constexpr double DegToRad = Pi / 180.0;
+	inline static constexpr double RadToDeg = 180.0 / Pi;
 
 
 }

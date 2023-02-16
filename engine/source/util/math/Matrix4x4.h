@@ -2,7 +2,7 @@
 #include "CommonUtilities.h"
 #include "Vector4.h"
 #include "Vector3.h"
-
+#include <cmath>
 #include <cassert>
 
 namespace drach
@@ -102,7 +102,7 @@ namespace drach
 		{
 			for (size_t j = 0; j < 4; j++)
 			{
-				r.myData[j][i] = aMatrix.myData[i][j];
+				r.myArray[j][i] = aMatrix.myArray[i][j];
 			}
 		}
 
@@ -382,14 +382,14 @@ namespace drach
 	{
 		Matrix4x4<T> inv = aMatrix;
 
-		auto t1 = aMatrix.myRows[0].Dot(aMatrix.myRows[3]);
-		auto t2 = aMatrix.myRows[1].Dot(aMatrix.myRows[3]);
-		auto t3 = aMatrix.myRows[2].Dot(aMatrix.myRows[3]);
+		T t1 = Vector4<T>::Dot(aMatrix.myRows[0], aMatrix.myRows[3]);
+		T t2 = Vector4<T>::Dot(aMatrix.myRows[1], aMatrix.myRows[3]);
+		T t3 = Vector4<T>::Dot(aMatrix.myRows[2], aMatrix.myRows[3]);
 
-		inv.myRows[3] = { 0,0,0,1 };
+		inv.myRows[3] = { T(0),T(0),T(0),T(1) };
 
 		inv = Transpose(inv);
-		inv.myRows[3] = { -t1, -t2, -t3, 1 };
+		inv.myRows[3] = { -t1, -t2, -t3, T(1) };
 		return inv;
 	}
 
@@ -734,11 +734,15 @@ namespace drach
 	}
 
 	template<typename T>
-	inline Matrix4x4<T> Matrix4x4<T>::TRS(const Vector3<T>& aPos, const Vector3<T>& aRot, const Vector3<T>& aSize)
+	inline Matrix4x4<T> Matrix4x4<T>::TRS(const Vector3<T>& aPos, const Vector3<T>& aRotInDeg, const Vector3<T>& aSize)
 	{
 		Matrix4x4<T> m;
-
-		m = CreateScaleMatrix(aSize) * Matrix4x4<T>::CreateRotationMatrix(aRot) * CreateTranslateMatrix(aPos) * m;
+		Vector3f rotInRads = {
+			aRotInDeg.x * static_cast<T>(DegToRad),
+			aRotInDeg.y * static_cast<T>(DegToRad),
+			aRotInDeg.z * static_cast<T>(DegToRad)
+		};
+		m = CreateScaleMatrix(aSize) * Matrix4x4<T>::CreateRotationMatrix(rotInRads) * CreateTranslateMatrix(aPos) * m;
 
 		return m;
 	}

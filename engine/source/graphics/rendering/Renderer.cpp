@@ -16,7 +16,13 @@
 
 drach::Renderer::Renderer(PollingStation& aPollingStation) : myPollingStation(&aPollingStation)
 {
-	GraphicsEngine& gEngine = *aPollingStation.Get<GraphicsEngine>();
+	
+	
+}
+
+void drach::Renderer::Init()
+{
+	GraphicsEngine& gEngine = *myPollingStation->Get<GraphicsEngine>();
 	ConstantBuffer::Initialize<ObjectBuffer>(gEngine);
 }
 
@@ -25,7 +31,7 @@ void drach::Renderer::Render(RenderContext& someContext)
 	GraphicsEngine gEngine;
 	ShaderFactory shaderFactory;
 
-	GDContext& context = gEngine.GetContext();
+	ID3D11DeviceContext* context = gEngine.GetContext();
 
 	if (!FetchManagers(gEngine, shaderFactory)) return;
 
@@ -38,13 +44,20 @@ void drach::Renderer::Render(RenderContext& someContext)
 		{
 			return a->myShader.GetID() < b->myShader.GetID();
 		});
-
+	static StringID previousShader;
 	for (auto& renderInstruction : myRenderInstructions)
 	{
-		Mesh& mesh = renderInstruction->myMesh;
 		Shader& shader = renderInstruction->myShader;
+
+		if (previousShader != shader.GetID())
+		{
+			LOG("Binded new shader!");
+			shader.Bind(gEngine);
+			previousShader = shader.GetID();
+		}
+
+		Mesh& mesh = renderInstruction->myMesh;
 		Transform& transform = renderInstruction->myTransform;
-		shader.Bind(gEngine);
 		mesh.Bind(gEngine);
 		ObjectBuffer buffer(transform.GetMatrix());
 		ConstantBuffer::Bind<ObjectBuffer, BindType::Vertex>(gEngine, buffer, 1);
@@ -54,7 +67,7 @@ void drach::Renderer::Render(RenderContext& someContext)
 
 	}
 
-
+	previousShader = StringID();
 
 	gEngine.Present();
 	myRenderInstructions.clear();

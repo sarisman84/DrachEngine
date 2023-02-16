@@ -1,6 +1,8 @@
 #pragma once
 #include <unordered_map>
 #include "graphics/DirectX11/DXTypes.h"
+
+
 namespace drach
 {
 	class GraphicsEngine;
@@ -23,7 +25,7 @@ namespace drach
 	private:
 		static void Bind(GraphicsEngine& anEngine, void* someData, size_t someDataSize, const size_t aSlot, const size_t aBindSetting = 0);
 
-		static GBuffer InitializeGBuffer(GraphicsEngine& anEngine, size_t someDataSize);
+		static GBuffer Initialize(GraphicsEngine& anEngine, size_t someDataSize);
 	private:
 		static std::unordered_map<size_t, GBuffer> myBuffers;
 	};
@@ -37,6 +39,6 @@ namespace drach
 	template<typename Type>
 	inline void ConstantBuffer::Initialize(GraphicsEngine& anEngine)
 	{
-		static GBuffer buffer = InitializeGBuffer(anEngine, sizeof(Type));
+		static GBuffer buffer = Initialize(anEngine, sizeof(Type));
 	}
 }

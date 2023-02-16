@@ -19,8 +19,8 @@ namespace drach
 		void Present();
 
 	public:
-		inline GDevice& GetDevice() { return device; }
-		inline GDContext& GetContext() { return deviceContext; }
+		inline ID3D11Device* GetDevice() { return device.Get(); }
+		inline ID3D11DeviceContext* GetContext() { return deviceContext.Get(); }
 
 	private:
 		SwapChain swapChain;

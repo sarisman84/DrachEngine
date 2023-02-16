@@ -13,16 +13,15 @@
 
 #include "graphics/GraphicsEngine.h"
 #include "factories/ShaderFactory.h"
-
+#include "factories/MeshFactory.h"
 #include "util/other/PollingStation.h"
 #include "runtime/Context.h"
 #include "runtime/scene/Scene.h"
+#include "graphics/rendering/Renderer.h"
 
 const bool Engine::OnUpdate(const float aDeltaTime)
 {
-	drach::RuntimeContext context{ *myPollingStation, aDeltaTime };
-
-	myTestScene->Update(context);
+	myTestScene->Update(*myPollingStation, aDeltaTime);
 
 	return true;
 }
@@ -66,27 +65,31 @@ void Engine::OnStart(StartContext& const someData)
 
 	myGraphicsEngine.reset(new drach::GraphicsEngine(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120));
 	myShaderFactory.reset(new drach::ShaderFactory(*myGraphicsEngine));
-
+	myMeshFactory.reset(new drach::MeshFactory(*myGraphicsEngine));
+	myRenderer.reset(new drach::Renderer(*myPollingStation));
 
 	myShaderFactory->GetShaderFromFile("Cube");
 
 
 
 	myPollingStation->Get<drach::GraphicsEngine>() = myGraphicsEngine.get();
-	LOG("Registered Graphics Engine");
+	LOG("PollingStation -> Registered Graphics Engine");
 	myPollingStation->Get<drach::ShaderFactory>() = myShaderFactory.get();
-	LOG("Registered Shader Factory");
-
-
+	LOG("PollingStation -> Registered Shader Factory");
+	myPollingStation->Get<drach::MeshFactory>() = myMeshFactory.get();
+	LOG("PollingStation -> Registered Mesh Factory");
+	myPollingStation->Get<drach::Renderer>() = myRenderer.get();
+	LOG("PollingStation -> Registered Renderer");
 
 
 
 	LOG("Engine Initialized!");
 
-	drach::InitializeContext context(*myPollingStation);
+
+	myRenderer->Init();
 
 	myTestScene.reset(new drach::Scene());
-	myTestScene->Start(context);
+	myTestScene->Start(*myPollingStation);
 
 	//TestECS();
 

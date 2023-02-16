@@ -37,8 +37,9 @@ namespace drach
 	class Renderer
 	{
 	public:
-		Renderer(PollingStation& aGraphicsEngine);
+		Renderer(PollingStation& aPollingStation);
 	public:
+		void Init();
 		//Renders a scene containing entites with models. 
 		void Render(RenderContext& someContext);
 		void Submit(Mesh& aMesh, Transform& aTransform, Shader& aShader);
