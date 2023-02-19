@@ -1,4 +1,5 @@
 include "../Premake/common.lua"
+include "../Premake/vendor_common.lua"
 print("Building Global Vendor")
 
 local source = os.realpath(directory.global_vendor .. "source\\")
@@ -19,36 +20,7 @@ debugdir(directory.global_lib)
 
 targetname("%{prj.name}_%{cfg.buildcfg}")
 
-files {
-    source .. "**.h",
-    source .. "**.hpp",
-    source .. "**.c",
-    source .. "**.cpp",
-    source .. "../util/vcpkg/packages/freetype_**/include/"
-}
-
-excludes {
-    "ffmpeg-2.0/**.h",
-    "ffmpeg-2.0/**.c",
-    "ffmpeg-2.0/**.cpp",
-    "*/DirectXTex/DirectXTex/**",
-    "*/DirectXTex/Auxiliary/**",
-    "*/DirectXTex/DDSView/**",
-    "*/DirectXTex/Texassemble/**",
-    "*/DirectXTex/Texconv/**",
-    "*/DirectXTex/Texdiag/**",
-    "*/DirectXTex/DDSTextureLoader/DDSTextureLoader9.**",
-    "*/DirectXTex/DDSTextureLoader/DDSTextureLoader12.**",
-    "*/DirectXTex/ScreenGrab/ScreenGrab9.**",
-    "*/DirectXTex/ScreenGrab/ScreenGrab12.**",
-    "*/DirectXTex/WICTextureLoader/WICTextureLoader9.**",
-    "*/DirectXTex/WICTextureLoader/WICTextureLoader12.**"
-}
-
-includedirs {
-    source,
-    source .. "nlohmann/"
-}
+importLibraries(directory.global_vendor .. "source/")
 
 libdirs {
     directory.global_lib,

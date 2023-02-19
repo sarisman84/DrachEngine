@@ -12,18 +12,23 @@
 #include "entt/single_include/entt/entt.hpp"
 
 #include "graphics/constant-buffers/BufferDef.h"
-#include "graphics/constant-buffers/ConstantBuffer.h"
 
-drach::Renderer::Renderer(PollingStation& aPollingStation) : myPollingStation(&aPollingStation)
+
+drach::Renderer::Renderer(GraphicsEngine& aEngine, PollingStation& aPollingStation) :
+	myPollingStation(&aPollingStation), myGraphicsEngine(&aEngine)
 {
-	
-	
+
+
 }
 
 void drach::Renderer::Init()
 {
-	GraphicsEngine& gEngine = *myPollingStation->Get<GraphicsEngine>();
-	ConstantBuffer::Initialize<ObjectBuffer>(gEngine);
+
+	myBufferManager = ConstantBuffer(*myGraphicsEngine);
+	ConstantBuffer::Initialize<ObjectBuffer>(myBufferManager);
+
+
+
 }
 
 void drach::Renderer::Render(RenderContext& someContext)
@@ -60,7 +65,7 @@ void drach::Renderer::Render(RenderContext& someContext)
 		Transform& transform = renderInstruction->myTransform;
 		mesh.Bind(gEngine);
 		ObjectBuffer buffer(transform.GetMatrix());
-		ConstantBuffer::Bind<ObjectBuffer, BindType::Vertex>(gEngine, buffer, 1);
+		ConstantBuffer::Bind<ObjectBuffer, BindType::Vertex>(myBufferManager, buffer, 1);
 
 		context->DrawIndexed(mesh.myIndicesAmm, 0, 0);
 

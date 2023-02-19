@@ -72,13 +72,13 @@ void Engine::OnStart(StartContext& const someData)
 
 
 
-	myPollingStation->Get<drach::GraphicsEngine>() = myGraphicsEngine.get();
+	myPollingStation->Register<drach::GraphicsEngine>(*myGraphicsEngine);
 	LOG("PollingStation -> Registered Graphics Engine");
-	myPollingStation->Get<drach::ShaderFactory>() = myShaderFactory.get();
+	myPollingStation->Register<drach::ShaderFactory>(*myShaderFactory);
 	LOG("PollingStation -> Registered Shader Factory");
-	myPollingStation->Get<drach::MeshFactory>() = myMeshFactory.get();
+	myPollingStation->Register<drach::MeshFactory>(*myMeshFactory);
 	LOG("PollingStation -> Registered Mesh Factory");
-	myPollingStation->Get<drach::Renderer>() = myRenderer.get();
+	myPollingStation->Register<drach::Renderer>(*myRenderer);
 	LOG("PollingStation -> Registered Renderer");
 
 

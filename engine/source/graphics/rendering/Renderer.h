@@ -4,6 +4,7 @@
 #include <tuple>
 #include <memory>
 #include "graphics/DirectX11/DXTypes.h"
+#include "graphics/constant-buffers/ConstantBuffer.h"
 
 namespace drach
 {
@@ -37,7 +38,7 @@ namespace drach
 	class Renderer
 	{
 	public:
-		Renderer(PollingStation& aPollingStation);
+		Renderer(GraphicsEngine& aEngine, PollingStation& aPollingStation);
 	public:
 		void Init();
 		//Renders a scene containing entites with models. 
@@ -48,8 +49,8 @@ namespace drach
 	private:
 		std::vector<std::unique_ptr<RenderInstruction>> myRenderInstructions;
 	private:
-
-
+		GraphicsEngine* myGraphicsEngine;
+		ConstantBuffer myBufferManager;
 		RenderTarget myRenderTarget;
 		DepthStencil myDepthBuffer;
 		RenderResource myRenderData;

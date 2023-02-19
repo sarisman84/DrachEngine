@@ -54,6 +54,7 @@ files {
     "source/**.hlsli"
 }
 
+
 precompileHeader("coreIncludes", directory.engine)
 
 flags {

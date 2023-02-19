@@ -1,10 +1,9 @@
 #include "precompile-header/coreIncludes.h"
 #include "GraphicsEngine.h"
-
 #include <cassert>
-#pragma comment(lib, "d3d11.lib")
-#include "logging/Logger.h"
 
+#include "logging/Logger.h"
+#include "graphics/constant-buffers/BufferDef.h"
 #define REPORT_DX_WARNINGS
 
 namespace drach
@@ -36,6 +35,10 @@ namespace drach
 
 		assert(result == S_OK && "Failed to create Swap Chain, Device and Device Context!");
 		LOG("Successfully created Swap chain, Device and Device Context!");
+
+
+
+
 	}
 
 	void GraphicsEngine::DrawTo(RenderTarget* const aTarget, DepthStencil* const aDepthBuffer)

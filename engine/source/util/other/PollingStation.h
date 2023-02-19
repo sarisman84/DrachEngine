@@ -5,29 +5,22 @@
 #include "TypeID.h"
 namespace drach
 {
-	template<typename T>
-	struct PtrObject : public BaseObject
-	{
-		T* myData = nullptr;
-	};
-
 	class PollingStation
 	{
 	public:
 		template<typename T>
-		T*& Get()
+		void Register(T& aPtr)
 		{
-			if (myData.count(TypeID<T>::id) <= 0)
-			{
-				myData[TypeID<T>::id] = std::make_shared<PtrObject<T>>();
-			}
+			myData[TypeID<T>().id] = static_cast<void*>(&aPtr);
+		}
 
-
-			return myData[TypeID<T>::id]->As<PtrObject<T>>().myData;
-
+		template<typename T>
+		T* Get()
+		{
+			return static_cast<T*>(myData[TypeID<T>().id]);
 		}
 
 	private:
-		std::unordered_map<uint32_t, std::shared_ptr<BaseObject>> myData;
+		std::unordered_map<uint32_t, void*> myData;
 	};
 }

@@ -14,31 +14,34 @@ namespace drach
 
 	class ConstantBuffer
 	{
-
+	public:
+		ConstantBuffer();
+		ConstantBuffer(GraphicsEngine& anEngine);
 	public:
 		template<typename Type, BindType aBindType>
-		static void Bind(GraphicsEngine& anEngine, const Type& aType, const size_t aSlot);
+		static void Bind(ConstantBuffer& anInstance, const Type& aType, const size_t aSlot);
 
 		template<typename Type>
-		static void Initialize(GraphicsEngine& anEngine);
+		static void Initialize(ConstantBuffer& anInstance);
 
 	private:
-		static void Bind(GraphicsEngine& anEngine, void* someData, size_t someDataSize, const size_t aSlot, const size_t aBindSetting = 0);
+		static void Bind(ConstantBuffer& anInstance, void* someData, size_t someDataSize, const size_t aSlot, const size_t aBindSetting = 0);
 
-		static GBuffer Initialize(GraphicsEngine& anEngine, size_t someDataSize);
+		static GBuffer Initialize(ConstantBuffer& anInstance, size_t someDataSize);
 	private:
-		static std::unordered_map<size_t, GBuffer> myBuffers;
+		std::unordered_map<size_t, GBuffer> myBuffers;
+		GraphicsEngine* myEngine;
 	};
 	template<typename Type, BindType aBindType>
-	inline void ConstantBuffer::Bind(GraphicsEngine& anEngine, const Type& aType, const size_t aSlot)
+	inline void ConstantBuffer::Bind(ConstantBuffer& anInstance, const Type& aType, const size_t aSlot)
 	{
-		ConstantBuffer::Bind(anEngine, (void*)&aType, sizeof(Type), aSlot, static_cast<size_t>(aBindType));
+		ConstantBuffer::Bind(anInstance, (void*)&aType, sizeof(Type), aSlot, static_cast<size_t>(aBindType));
 	}
 
 
 	template<typename Type>
-	inline void ConstantBuffer::Initialize(GraphicsEngine& anEngine)
+	inline void ConstantBuffer::Initialize(ConstantBuffer& anInstance)
 	{
-		static GBuffer buffer = Initialize(anEngine, sizeof(Type));
+		ConstantBuffer::Initialize(anInstance, sizeof(Type));
 	}
 }
