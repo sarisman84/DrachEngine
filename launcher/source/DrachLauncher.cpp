@@ -45,10 +45,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	HINSTANCE hDLL;
 	hDLL = LoadLibrary(L"engine/Engine_Debug");
 
-
-
-
-
 	if (NULL != hDLL)
 	{
 

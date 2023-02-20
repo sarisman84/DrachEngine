@@ -33,7 +33,7 @@ namespace drach
 
 		HRESULT result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, creationFlags, NULL, 0, D3D11_SDK_VERSION, &desc, &swapChain, &device, NULL, &deviceContext);
 
-		assert(result == S_OK && "Failed to create Swap Chain, Device and Device Context!");
+		assert(SUCCEEDED(result) && "Failed to create Swap Chain, Device and Device Context!");
 		LOG("Successfully created Swap chain, Device and Device Context!");
 
 
@@ -41,8 +41,13 @@ namespace drach
 
 	}
 
-	void GraphicsEngine::DrawTo(RenderTarget* const aTarget, DepthStencil* const aDepthBuffer)
+	void GraphicsEngine::DrawTo(drach::Vector4f aColor, RenderTarget* const aTarget, DepthStencil* const aDepthBuffer)
 	{
+		if (!aTarget->Get()) return;
+
+		deviceContext->ClearRenderTargetView(aTarget->Get(), &aColor.x);
+		if (aDepthBuffer)
+			deviceContext->ClearDepthStencilView(aDepthBuffer->Get(), 0, 0, 1);
 		if (aDepthBuffer)
 			deviceContext->OMSetRenderTargets(1, aTarget->GetAddressOf(), aDepthBuffer->Get());
 		else
@@ -52,9 +57,9 @@ namespace drach
 		LOG("Switched Render Target!");
 	}
 
-	void GraphicsEngine::DrawToBackBuffer()
+	void GraphicsEngine::DrawToBackBuffer(drach::Vector4f aColor)
 	{
-		DrawTo(&backBuffer, &depthBuffer);
+		DrawTo(aColor, &backBuffer, &depthBuffer);
 	}
 
 
@@ -85,7 +90,7 @@ namespace drach
 	void GraphicsEngine::CopyRenderToTargetBuffer(RenderResource* const aSource, RenderTarget* const aTarget)
 	{
 		//Switch to target renderTarget
-		DrawTo(aTarget);
+		DrawTo({ 0,0,0,1 }, aTarget);
 		//Bind the resource to the current drawing element
 		deviceContext->PSSetShaderResources(0, 1, aSource->GetAddressOf());
 		//Draw the final result

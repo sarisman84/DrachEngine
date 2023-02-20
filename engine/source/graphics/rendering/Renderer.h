@@ -38,17 +38,18 @@ namespace drach
 	class Renderer
 	{
 	public:
-		Renderer(GraphicsEngine& aEngine, PollingStation& aPollingStation);
+		Renderer(PollingStation& aStation);
 	public:
 		void Init();
 		//Renders a scene containing entites with models. 
 		void Render(RenderContext& someContext);
 		void Submit(Mesh& aMesh, Transform& aTransform, Shader& aShader);
 	private:
-		const bool FetchManagers(GraphicsEngine& anEngine, ShaderFactory& aShaderFactory);
+		const bool FetchManagers(GraphicsEngine*& anEngine, ShaderFactory*& aShaderFactory);
 	private:
 		std::vector<std::unique_ptr<RenderInstruction>> myRenderInstructions;
 	private:
+		ShaderFactory* myShaderFactory;
 		GraphicsEngine* myGraphicsEngine;
 		ConstantBuffer myBufferManager;
 		RenderTarget myRenderTarget;

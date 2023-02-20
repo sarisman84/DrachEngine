@@ -7,6 +7,7 @@
 #include "logging/Logger.h"
 #include "util/other/PollingStation.h"
 #include "graphics/objects/Model.h"
+#include "graphics/objects/camera/Camera.h"
 #include "util/Transform.h"
 #include "factories/ShaderFactory.h"
 #include "entt/single_include/entt/entt.hpp"
@@ -14,8 +15,8 @@
 #include "graphics/constant-buffers/BufferDef.h"
 
 
-drach::Renderer::Renderer(GraphicsEngine& aEngine, PollingStation& aPollingStation) :
-	myPollingStation(&aPollingStation), myGraphicsEngine(&aEngine)
+drach::Renderer::Renderer(PollingStation& aStation) :
+	myPollingStation(&aStation)
 {
 
 
@@ -23,27 +24,23 @@ drach::Renderer::Renderer(GraphicsEngine& aEngine, PollingStation& aPollingStati
 
 void drach::Renderer::Init()
 {
+	myGraphicsEngine = myPollingStation->GetGraphicsEngine();
+	myShaderFactory = myPollingStation->GetShaderFactory();
 
 	myBufferManager = ConstantBuffer(*myGraphicsEngine);
 	ConstantBuffer::Initialize<ObjectBuffer>(myBufferManager);
-
-
+	ConstantBuffer::Initialize<FrameBuffer>(myBufferManager);
 
 }
 
 void drach::Renderer::Render(RenderContext& someContext)
 {
-	GraphicsEngine gEngine;
-	ShaderFactory shaderFactory;
-
-	ID3D11DeviceContext* context = gEngine.GetContext();
-
-	if (!FetchManagers(gEngine, shaderFactory)) return;
-
+	if (!myGraphicsEngine) return;
+	ID3D11DeviceContext* context = myGraphicsEngine->GetContext();
 	//Swap to the renderer's render target and depth buffer
-	gEngine.DrawTo(&myRenderTarget, &myDepthBuffer);
-
-
+	myGraphicsEngine->DrawTo({ 1,0,0,1 }, &myRenderTarget, &myDepthBuffer);
+	FrameBuffer fBuffer(someContext.myCamera.ViewMatrix());
+	ConstantBuffer::Bind<FrameBuffer, BindType::Vertex>(myBufferManager, fBuffer, 1);
 	std::sort(myRenderInstructions.begin(), myRenderInstructions.end(),
 		[](const std::unique_ptr<RenderInstruction>& a, const std::unique_ptr<RenderInstruction>& b)
 		{
@@ -57,15 +54,15 @@ void drach::Renderer::Render(RenderContext& someContext)
 		if (previousShader != shader.GetID())
 		{
 			LOG("Binded new shader!");
-			shader.Bind(gEngine);
+			shader.Bind(*myGraphicsEngine);
 			previousShader = shader.GetID();
 		}
 
 		Mesh& mesh = renderInstruction->myMesh;
 		Transform& transform = renderInstruction->myTransform;
-		mesh.Bind(gEngine);
-		ObjectBuffer buffer(transform.GetMatrix());
-		ConstantBuffer::Bind<ObjectBuffer, BindType::Vertex>(myBufferManager, buffer, 1);
+		mesh.Bind(*myGraphicsEngine);
+		ObjectBuffer oBuffer(transform.GetMatrix());
+		ConstantBuffer::Bind<ObjectBuffer, BindType::Vertex>(myBufferManager, oBuffer, 1);
 
 		context->DrawIndexed(mesh.myIndicesAmm, 0, 0);
 
@@ -74,7 +71,7 @@ void drach::Renderer::Render(RenderContext& someContext)
 
 	previousShader = StringID();
 
-	gEngine.Present();
+	myGraphicsEngine->Present();
 	myRenderInstructions.clear();
 }
 
@@ -86,27 +83,8 @@ void drach::Renderer::Submit(Mesh& aModel, Transform& aTransform, Shader& aShade
 
 }
 
-const bool drach::Renderer::FetchManagers(GraphicsEngine& anEngine, ShaderFactory& aShaderFactory)
+const bool drach::Renderer::FetchManagers(GraphicsEngine*& anEngine, ShaderFactory*& aShaderFactory)
 {
-
-	GraphicsEngine* gEngine = myPollingStation->Get<GraphicsEngine>();
-
-	if (!gEngine)
-	{
-		LOG_ERROR("Missing Graphics Engine ptr in the polling station!");
-		return false;
-	}
-
-	ShaderFactory* shaderFactory = myPollingStation->Get<ShaderFactory>();
-
-	if (!shaderFactory)
-	{
-		LOG_ERROR("Missing Shader Factory ptr in the polling station!");
-		return false;
-	}
-
-	anEngine = *gEngine;
-	aShaderFactory = *shaderFactory;
 	return true;
 }
 

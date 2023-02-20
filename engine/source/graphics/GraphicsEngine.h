@@ -2,7 +2,7 @@
 #include <d3d11.h>
 #include <d3d11shader.h>
 #include "DirectX11/DXTypes.h"
-
+#include "util/math/Vector4.h"
 
 namespace drach
 {
@@ -11,9 +11,10 @@ namespace drach
 	public:
 		GraphicsEngine();
 		GraphicsEngine(HWND& const anWindowsInstance, const unsigned int aWidth, const unsigned int aHeight, const unsigned int aRefreshRate);
+	
 	public:
-		void DrawTo(RenderTarget* const aTarget, DepthStencil* const aDepthBuffer = nullptr);
-		void DrawToBackBuffer();
+		void DrawTo(drach::Vector4f aColor, RenderTarget* const aTarget, DepthStencil* const aDepthBsuffer = nullptr);
+		void DrawToBackBuffer(drach::Vector4f aColor);
 		void CopyRenderToTargetBuffer(RenderResource* const aSource, RenderTarget* const  aTarget);
 		void CopyRenderToBackBuffer(RenderResource* const aTarget);
 		void Present();

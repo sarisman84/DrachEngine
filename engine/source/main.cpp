@@ -18,10 +18,23 @@
 #include "runtime/Context.h"
 #include "runtime/scene/Scene.h"
 #include "graphics/rendering/Renderer.h"
+#include "util/Transform.h"
+namespace drach
+{
+	class Camera
+	{
+
+	};
+}
+
+
+
+
 
 const bool Engine::OnUpdate(const float aDeltaTime)
 {
 	myTestScene->Update(*myPollingStation, aDeltaTime);
+	myTestScene->Render(*myRenderer);
 
 	return true;
 }
@@ -72,13 +85,13 @@ void Engine::OnStart(StartContext& const someData)
 
 
 
-	myPollingStation->Register<drach::GraphicsEngine>(*myGraphicsEngine);
+	myPollingStation->myGraphicsEnginePtr = myGraphicsEngine.get();
 	LOG("PollingStation -> Registered Graphics Engine");
-	myPollingStation->Register<drach::ShaderFactory>(*myShaderFactory);
+	myPollingStation->myShaderFactoryPtr = myShaderFactory.get();
 	LOG("PollingStation -> Registered Shader Factory");
-	myPollingStation->Register<drach::MeshFactory>(*myMeshFactory);
+	myPollingStation->myMeshFactoryPtr = myMeshFactory.get();
 	LOG("PollingStation -> Registered Mesh Factory");
-	myPollingStation->Register<drach::Renderer>(*myRenderer);
+	myPollingStation->myRendererPtr = myRenderer.get();
 	LOG("PollingStation -> Registered Renderer");
 
 

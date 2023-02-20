@@ -5,22 +5,23 @@
 #include "TypeID.h"
 namespace drach
 {
+	class ShaderFactory;
+	class GraphicsEngine;
+	class Renderer;
+	class MeshFactory;
+
 	class PollingStation
 	{
+		friend class Engine;
 	public:
-		template<typename T>
-		void Register(T& aPtr)
-		{
-			myData[TypeID<T>().id] = static_cast<void*>(&aPtr);
-		}
-
-		template<typename T>
-		T* Get()
-		{
-			return static_cast<T*>(myData[TypeID<T>().id]);
-		}
-
+		inline GraphicsEngine* GetGraphicsEngine() noexcept { return myGraphicsEnginePtr; }
+		inline ShaderFactory* GetShaderFactory() noexcept { return myShaderFactoryPtr; }
+		inline Renderer* GetRenderer() noexcept { return myRendererPtr; }
+		inline MeshFactory* GetMeshFactory() noexcept { return myMeshFactoryPtr; }
 	private:
-		std::unordered_map<uint32_t, void*> myData;
+		ShaderFactory* myShaderFactoryPtr;
+		GraphicsEngine* myGraphicsEnginePtr;
+		Renderer* myRendererPtr;
+		MeshFactory* myMeshFactoryPtr;
 	};
 }

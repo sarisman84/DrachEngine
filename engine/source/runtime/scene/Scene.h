@@ -18,14 +18,20 @@ FORWARD_DECLARE_REG
 
 namespace drach
 {
+	class Renderer;
+	class Transform;
+	class Camera;
 	class PollingStation;
 	class Scene
 	{
 	public:
 		Scene();
 		void Start(PollingStation& aPollingStation);
-		void Update(PollingStation& aPollingStation,const float aDeltaTime);
+		void Update(PollingStation& aPollingStation, const float aDeltaTime);
+		void Render(Renderer& aRenderer);
+
 	public:
+		static std::tuple<entt::entity, drach::Camera, drach::Transform> GetActiveCamera(Scene& aScene);
 
 		static entt::entity CreateEntity(Scene& aScene);
 		static void DestroyEntity(Scene& aScene, entt::entity anEntity);
@@ -36,9 +42,6 @@ namespace drach
 
 		template<typename Type>
 		static Type& Get(Scene& aScene, entt::entity anEntity);
-
-
-
 		inline entt::registry& GetRegistry() { return *myRegistry; }
 	private:
 		std::unordered_map<entt::entity, std::function<void(InitializeContext&)>> myStartCallbacks;
@@ -46,6 +49,7 @@ namespace drach
 	private:
 		//std::unique_ptr<ecs::Registry> myRegistry;
 		std::unique_ptr<entt::registry> myRegistry;
+		entt::entity myActiveCamera = entt::entity(-1);
 	};
 
 }

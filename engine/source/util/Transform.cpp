@@ -4,84 +4,97 @@
 #include "logging/Logger.h"
 
 
-drach::Transform::Transform(ecs::Registry* const aRegistry, ecs::Entity anEntityID)
-	:myRegistry(aRegistry), myEntityID(anEntityID)
+
+
+drach::Transform::Transform(entt::registry* const aRegistry, entt::entity anEntityID)
+	:myRegistry(aRegistry), myEntity(anEntityID)
 {
 }
 
 drach::Transform::~Transform() = default;
 
-drach::Transform::Transform()
-	:myRegistry(nullptr), myEntityID(ecs::nullentity)
-{
-
-}
+drach::Transform::Transform() = default;
 
 drach::Transform::Transform(const Transform& aTransform)
 {
-	memcpy(this, &aTransform, sizeof(Transform));
-	/*myCachedLocalMatrix = aTransform.myCachedLocalMatrix;
-	myChildElementIDs = aTransform.myChildElementIDs;
-	myEntityID = aTransform.myEntityID;
-	myParentID = aTransform.myParentID;
+	myCachedLocalMatrix = aTransform.myCachedLocalMatrix;
+	myChildElements = aTransform.myChildElements;
+	myEntity = aTransform.myEntity;
+	myParent = aTransform.myParent;
 	myRegistry = aTransform.myRegistry;
 	position = aTransform.position;
 	rotation = aTransform.rotation;
-	size = aTransform.size;*/
+	size = aTransform.size;
 }
 
 drach::Transform::Transform(Transform&& aTransform)
 {
-	memcpy(this, &aTransform, sizeof(Transform));
-	memset(&aTransform, 0, sizeof(Transform));
+	myCachedLocalMatrix = aTransform.myCachedLocalMatrix;
+	myChildElements = aTransform.myChildElements;
+	myEntity = aTransform.myEntity;
+	myParent = aTransform.myParent;
+	myRegistry = aTransform.myRegistry;
+	position = aTransform.position;
+	rotation = aTransform.rotation;
+	size = aTransform.size;
+
+	delete& aTransform;
 }
 
 drach::Transform& drach::Transform::operator=(const Transform& aTransform)
 {
-	memcpy(this, &aTransform, sizeof(Transform));
-	/*myCachedLocalMatrix = aTransform.myCachedLocalMatrix;
-	myChildElementIDs = aTransform.myChildElementIDs;
-	myEntityID = aTransform.myEntityID;
-	myParentID = aTransform.myParentID;
+
+	myCachedLocalMatrix = aTransform.myCachedLocalMatrix;
+	myChildElements = aTransform.myChildElements;
+	myEntity = aTransform.myEntity;
+	myParent = aTransform.myParent;
 	myRegistry = aTransform.myRegistry;
 	position = aTransform.position;
 	rotation = aTransform.rotation;
-	size = aTransform.size;*/
+	size = aTransform.size;
 	return *this;
 }
 
 drach::Transform& drach::Transform::operator=(Transform&& aTransform)
 {
-	memcpy(this, &aTransform, sizeof(Transform));
-	memset(&aTransform, 0, sizeof(Transform));
+	myCachedLocalMatrix = aTransform.myCachedLocalMatrix;
+	myChildElements = aTransform.myChildElements;
+	myEntity = aTransform.myEntity;
+	myParent = aTransform.myParent;
+	myRegistry = aTransform.myRegistry;
+	position = aTransform.position;
+	rotation = aTransform.rotation;
+	size = aTransform.size;
+
+	delete& aTransform;
 
 	return *this;
 }
 
 
 
-void drach::Transform::AddChild(const ecs::Entity anEntity)
+void drach::Transform::AddChild(const entt::entity anEntity)
 {
 	if (!myRegistry)
 	{
 		LOG_ERROR("Tried to add a child to an invalid transform!");
 		return;
 	}
-	if (myRegistry->Contains<Transform>(anEntity))
+	if (myRegistry->any_of<Transform>(anEntity))
 	{
-		myChildElementIDs.push_back(anEntity);
-		myRegistry->Get<Transform>(anEntity)->myParentID = myEntityID;
+		myChildElements.push_back(anEntity);
+		myRegistry->get<Transform>(anEntity).myParent = myEntity;
 		return;
 	}
-	LOG_ERROR("Entity " + std::to_string(anEntity) + " does not contain a transform!");
+	LOG_ERROR("Entity " + std::to_string(static_cast<uint32_t>(anEntity)) + " does not contain a transform!");
 }
 
 drach::Matrix4x4f drach::Transform::GetMatrix(const bool aCacheMatrixImmmediate)
 {
 
-	if (myParentID != ecs::nullentity)
+	if (myParent != entt::entity(-1))
 	{
-		return GetLocalMatrix() * myRegistry->Get<Transform>(myParentID)->GetMatrix(aCacheMatrixImmmediate);
+		return GetLocalMatrix() * myRegistry->get<Transform>(myParent).GetMatrix(aCacheMatrixImmmediate);
 	}
 
 	return GetLocalMatrix(aCacheMatrixImmmediate);

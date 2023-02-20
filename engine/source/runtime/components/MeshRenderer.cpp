@@ -18,9 +18,9 @@ void drach::MeshRenderer::Update(RuntimeContext& aRuntimeContext)
 {
 	if (!myPollingStation) return;
 	entt::registry& reg = aRuntimeContext.myRegistry;
-	MeshFactory* meshFactory = myPollingStation->Get<MeshFactory>();
-	ShaderFactory* shaderFactory = myPollingStation->Get<ShaderFactory>();
-	Renderer* renderer = myPollingStation->Get<Renderer>();
+	MeshFactory* meshFactory = myPollingStation->GetMeshFactory();
+	ShaderFactory* shaderFactory = myPollingStation->GetShaderFactory();
+	Renderer* renderer = myPollingStation->GetRenderer();
 	Transform& transform = reg.get<Transform>(myEntity);
 	Shader shader = shaderFactory->GetShaderFromFile(myShaderName);
 

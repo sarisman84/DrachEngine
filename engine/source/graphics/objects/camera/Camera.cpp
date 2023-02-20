@@ -11,7 +11,7 @@ drach::Camera::Camera()
 drach::Camera::Camera(entt::registry* aReg, const entt::entity anEntity, ProjectionInterface* anInterface)
 	:myRegistry(aReg), myEntity(anEntity), myProjection(std::shared_ptr<ProjectionInterface>(anInterface))
 {
-	myRegistry->get_or_emplace<Transform>(myEntity);
+	myRegistry->get_or_emplace<Transform>(myEntity, myRegistry, myEntity);
 }
 
 drach::Matrix4x4f drach::Camera::ViewMatrix()

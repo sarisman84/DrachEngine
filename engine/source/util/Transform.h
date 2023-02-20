@@ -1,11 +1,9 @@
 #pragma once
 #include "math/Vector3.h"
 #include "math/Matrix4x4.h"
-#include "componentSys/Entity.h"
+#include "entt/single_include/entt/entt.hpp"
 #include <vector>
-
-FORWARD_DECLARE_REG
-
+#include <string>
 
 namespace drach
 {
@@ -16,25 +14,24 @@ namespace drach
 		Transform(const Transform& aTransform);
 		Transform(Transform&& aTransform);
 
-		
 		Transform& operator=(const Transform& aTransform);
 		Transform& operator=(Transform&& aTransform);
 
 
-		Transform(ecs::Registry* const aRegistry, ecs::Entity anEntityID);
+		Transform(entt::registry* const aRegistry, entt::entity anEntityID);
 		~Transform();
 
-		
 
-		void AddChild(const ecs::Entity anEntity);
-		inline std::vector<ecs::Entity>& GetChildren()
+
+		void AddChild(const entt::entity anEntity);
+		inline std::vector<entt::entity>& GetChildren()
 		{
-			return myChildElementIDs;
+			return myChildElements;
 
 		}
 		Matrix4x4f GetMatrix(const bool aCacheMatrixImmmediate = false);
 		Matrix4x4f GetLocalMatrix(const bool aCacheMatrixImmmediate = false);
-		
+
 
 	public:
 		void CacheTransform();
@@ -46,10 +43,10 @@ namespace drach
 
 	private:
 		Matrix4x4f myCachedLocalMatrix;
-		std::vector<ecs::Entity> myChildElementIDs;
-		ecs::Entity myParentID;
-		ecs::Entity myEntityID;
-		ecs::Registry* myRegistry;
+		std::vector<entt::entity> myChildElements;
+		entt::entity myParent = entt::entity(-1);
+		entt::entity myEntity = entt::entity(-1);
+		entt::registry* myRegistry;
 
 	};
 }

@@ -6,6 +6,7 @@
 
 #include "graphics/objects/camera/Camera.h"
 #include "graphics/objects/camera/PerspectiveProjection.h"
+#include "graphics/rendering/Renderer.h"
 
 #include "util/Transform.h"
 #include "util/other/PollingStation.h"
@@ -25,6 +26,7 @@ void drach::Scene::Start(PollingStation& aPollingStation)
 	Transform& transform = myRegistry->get<Transform>(cameraEntity);
 	transform.position = { 0,0,-10 };
 
+	myActiveCamera = cameraEntity;
 
 	for (auto storage : myRegistry->storage())
 	{
@@ -58,6 +60,20 @@ void drach::Scene::Update(PollingStation& aPollingStation, const float aDeltaTim
 			}
 		}
 	}
+}
+
+void drach::Scene::Render(Renderer& aRenderer)
+{
+	auto camera = GetActiveCamera(*this);
+
+	RenderContext context{ std::get<Camera>(camera), std::get<Transform>(camera) };
+	aRenderer.Render(context);
+
+}
+
+std::tuple<entt::entity, drach::Camera, drach::Transform> drach::Scene::GetActiveCamera(Scene& aScene)
+{
+	return std::make_tuple(aScene.myActiveCamera, Get <drach::Camera >(aScene, aScene.myActiveCamera), Get<drach::Transform>(aScene, aScene.myActiveCamera));
 }
 
 entt::entity drach::Scene::CreateEntity(Scene& aScene)

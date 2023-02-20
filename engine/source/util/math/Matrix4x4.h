@@ -545,10 +545,8 @@ namespace drach
 	template<typename T>
 	inline Matrix4x4<T>::Matrix4x4(Matrix4x4<T>&& aMatrix)
 	{
-		for (size_t i = 0; i < 16; i++)
-		{
-			memcpy(myArray[i], aMatrix.myArray[i], sizeof(T));
-		}
+		memcpy(myData, aMatrix.myData, sizeof(myData));
+		memset(aMatrix.myData, 0, sizeof(aMatrix.myData));
 	}
 
 	template<typename T>
