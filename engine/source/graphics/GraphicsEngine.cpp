@@ -38,6 +38,52 @@ namespace drach
 
 
 
+		ID3D11Texture2D* backBufferTexture;
+		result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBufferTexture);
+		if (FAILED(result))
+		{
+			return;
+		}
+		result = device->CreateRenderTargetView(backBufferTexture, nullptr, &backBuffer);
+		if (FAILED(result))
+		{
+			return;
+		}
+		D3D11_TEXTURE2D_DESC textureDesc;
+		backBufferTexture->GetDesc(&textureDesc);
+		backBufferTexture->Release();
+
+
+
+		ID3D11Texture2D* depthBufferTexture;
+		D3D11_TEXTURE2D_DESC depthBufferDesc = { 0 };
+		depthBufferDesc.Width = static_cast<unsigned int>(textureDesc.Width);
+		depthBufferDesc.Height = static_cast<unsigned int>(textureDesc.Height);
+		depthBufferDesc.ArraySize = 1;
+		depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
+		depthBufferDesc.SampleDesc.Count = 1;
+		depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		result = device->CreateTexture2D(&depthBufferDesc, nullptr, &depthBufferTexture);
+		if (FAILED(result))
+		{
+			return;
+		}
+		result = device->CreateDepthStencilView(depthBufferTexture, nullptr, &depthBuffer);
+		if (FAILED(result))
+		{
+			return;
+		}
+		depthBufferTexture->Release();
+
+		deviceContext->OMSetRenderTargets(1, backBuffer.GetAddressOf(), nullptr);
+		D3D11_VIEWPORT viewport = { 0 };
+		viewport.TopLeftX = 0.0f;
+		viewport.TopLeftY = 0.0f;
+		viewport.Width = static_cast<float>(textureDesc.Width);
+		viewport.Height = static_cast<float>(textureDesc.Height);
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		deviceContext->RSSetViewports(1, &viewport);
 
 	}
 
@@ -47,7 +93,7 @@ namespace drach
 
 		deviceContext->ClearRenderTargetView(aTarget->Get(), &aColor.x);
 		if (aDepthBuffer)
-			deviceContext->ClearDepthStencilView(aDepthBuffer->Get(), 0, 0, 1);
+			deviceContext->ClearDepthStencilView(aDepthBuffer->Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		if (aDepthBuffer)
 			deviceContext->OMSetRenderTargets(1, aTarget->GetAddressOf(), aDepthBuffer->Get());
 		else

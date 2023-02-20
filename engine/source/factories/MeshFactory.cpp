@@ -37,6 +37,7 @@ drach::Mesh* drach::MeshFactory::LoadMesh(std::string aName)
 
 drach::Mesh* drach::MeshFactory::GenerateCube()
 {
+	LOG("Generating Primitive Cube!");
 	std::unique_ptr<Mesh>& mesh = myDatabase[PRIMITIVE_CUBE] = std::make_unique<Mesh>();
 
 	std::vector<Vertex> vertices;

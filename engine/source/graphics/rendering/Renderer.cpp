@@ -38,29 +38,31 @@ void drach::Renderer::Render(RenderContext& someContext)
 	if (!myGraphicsEngine) return;
 	ID3D11DeviceContext* context = myGraphicsEngine->GetContext();
 	//Swap to the renderer's render target and depth buffer
-	myGraphicsEngine->DrawTo({ 1,0,0,1 }, &myRenderTarget, &myDepthBuffer);
+	myGraphicsEngine->DrawToBackBuffer({ 1,0,0,1 });
 	FrameBuffer fBuffer(someContext.myCamera.ViewMatrix());
-	ConstantBuffer::Bind<FrameBuffer, BindType::Vertex>(myBufferManager, fBuffer, 1);
+	ConstantBuffer::Bind<FrameBuffer, BindType::Vertex>(myBufferManager, fBuffer, 0);
 	std::sort(myRenderInstructions.begin(), myRenderInstructions.end(),
-		[](const std::unique_ptr<RenderInstruction>& a, const std::unique_ptr<RenderInstruction>& b)
+		[](RenderInstruction& a, RenderInstruction& b)
 		{
-			return a->myShader.GetID() < b->myShader.GetID();
+			return a.myShader.GetID() < b.myShader.GetID();
 		});
 	static StringID previousShader;
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	for (auto& renderInstruction : myRenderInstructions)
 	{
-		Shader& shader = renderInstruction->myShader;
+		Shader& shader = renderInstruction.myShader;
+		Mesh& mesh = renderInstruction.myMesh;
+		mesh.Bind(*myGraphicsEngine);
 
 		if (previousShader != shader.GetID())
 		{
-			LOG("Binded new shader!");
-			shader.Bind(*myGraphicsEngine);
+			shader.Bind(*myGraphicsEngine, *myShaderFactory);
 			previousShader = shader.GetID();
 		}
 
-		Mesh& mesh = renderInstruction->myMesh;
-		Transform& transform = renderInstruction->myTransform;
-		mesh.Bind(*myGraphicsEngine);
+
+		Transform& transform = renderInstruction.myTransform;
+
 		ObjectBuffer oBuffer(transform.GetMatrix());
 		ConstantBuffer::Bind<ObjectBuffer, BindType::Vertex>(myBufferManager, oBuffer, 1);
 
@@ -69,7 +71,6 @@ void drach::Renderer::Render(RenderContext& someContext)
 
 	}
 
-	previousShader = StringID();
 
 	myGraphicsEngine->Present();
 	myRenderInstructions.clear();
@@ -78,7 +79,7 @@ void drach::Renderer::Render(RenderContext& someContext)
 void drach::Renderer::Submit(Mesh& aModel, Transform& aTransform, Shader& aShader)
 {
 	RenderInstruction instruction(aModel, aTransform, aShader);
-	myRenderInstructions.push_back(std::make_unique<RenderInstruction>(instruction));
+	myRenderInstructions.push_back(instruction);
 
 
 }

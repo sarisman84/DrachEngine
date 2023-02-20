@@ -81,7 +81,6 @@ void Engine::OnStart(StartContext& const someData)
 	myMeshFactory.reset(new drach::MeshFactory(*myGraphicsEngine));
 	myRenderer.reset(new drach::Renderer(*myPollingStation));
 
-	myShaderFactory->GetShaderFromFile("Cube");
 
 
 

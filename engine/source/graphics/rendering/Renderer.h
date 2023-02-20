@@ -5,18 +5,19 @@
 #include <memory>
 #include "graphics/DirectX11/DXTypes.h"
 #include "graphics/constant-buffers/ConstantBuffer.h"
+#include "util/Transform.h"
+#include "graphics/objects/Mesh.h"
+#include "factories/ShaderFactory.h"
 
 namespace drach
 {
 	class Camera;
 	class PollingStation;
 	class GraphicsEngine;
-	class ShaderFactory;
 	class Scene;
 	class Model;
-	class Mesh;
-	struct Shader;
-	struct Transform;
+
+
 
 
 
@@ -30,9 +31,9 @@ namespace drach
 
 	struct RenderInstruction
 	{
-		Mesh& myMesh;
-		Transform& myTransform;
-		Shader& myShader;
+		Mesh myMesh;
+		Transform myTransform;
+		Shader myShader;
 	};
 
 	class Renderer
@@ -47,7 +48,7 @@ namespace drach
 	private:
 		const bool FetchManagers(GraphicsEngine*& anEngine, ShaderFactory*& aShaderFactory);
 	private:
-		std::vector<std::unique_ptr<RenderInstruction>> myRenderInstructions;
+		std::vector<RenderInstruction> myRenderInstructions;
 	private:
 		ShaderFactory* myShaderFactory;
 		GraphicsEngine* myGraphicsEngine;

@@ -27,13 +27,13 @@ namespace drach
 	struct Shader
 	{
 		Shader();
-		Shader(StringID anID, ShaderFactory& aFactory);
+		Shader(StringID anID);
 
-		void Bind(GraphicsEngine& anEngine);
+		void Bind(GraphicsEngine& anEngine, ShaderFactory& aFactory);
 
-		PixelShader& GetPixelShader();
-		VertexShader& GetVertexShader();
-		InputLayout& GetInputLayout();
+		PixelShader& GetPixelShader(ShaderFactory& aFactory);
+		VertexShader& GetVertexShader(ShaderFactory& aFactory);
+		InputLayout& GetInputLayout(ShaderFactory& aFactory);
 
 		inline const StringID GetID()
 		{
@@ -41,7 +41,6 @@ namespace drach
 		}
 
 	private:
-		ShaderFactory* myShaderDatabase;
 		StringID myID;
 	};
 

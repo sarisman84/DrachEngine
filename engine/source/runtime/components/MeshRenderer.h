@@ -10,11 +10,14 @@ namespace drach
 	class MeshRenderer
 	{
 	public:
+		MeshRenderer();
+		MeshRenderer(PollingStation& aPollingStation);
+
 		void Start(InitializeContext& anInitContext);
 		void Update(RuntimeContext& aRuntimeContext);
 
 		void LoadMesh(std::string_view aFilePath);
-
+		void LoadShader(std::string_view aShaderName);
 	private:
 		entt::entity myEntity;
 		std::string myMeshName;

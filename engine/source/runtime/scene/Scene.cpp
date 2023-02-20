@@ -10,34 +10,52 @@
 
 #include "util/Transform.h"
 #include "util/other/PollingStation.h"
+#include "runtime/components/MeshRenderer.h"
+#include "factories/MeshFactory.h"
 
 drach::Scene::Scene()
 {
-	myRegistry.reset(new entt::registry());
+}
+
+drach::Scene::~Scene()
+{
+	delete[] mySystems.data();
+	mySystems.clear();
+
 }
 
 void drach::Scene::Start(PollingStation& aPollingStation)
 {
 	LOG("Start method called!");
-	auto cameraEntity = myRegistry->create();
-	Camera& cam = Scene::Emplace<Camera>(*this, cameraEntity, myRegistry.get(), cameraEntity, new Perspective(1920, 1080, 90));
+	auto cameraEntity = myRegistry.create();
+	Camera& cam = Scene::Emplace<Camera>(*this, cameraEntity, &myRegistry, cameraEntity, new Perspective(1920, 1080, 90));
 	cam;
 
-	Transform& transform = myRegistry->get<Transform>(cameraEntity);
+	Transform& transform = myRegistry.get<Transform>(cameraEntity);
 	transform.position = { 0,0,-10 };
+	transform.size = { 1,1,1 };
+	transform.rotation = { 0,0,0 };
 
 	myActiveCamera = cameraEntity;
 
-	for (auto storage : myRegistry->storage())
+
+
+	auto testCube = myRegistry.create();
+	Transform& cubeTransform = Scene::Emplace<Transform>(*this, testCube, &myRegistry, testCube);
+	cubeTransform.position = { 0,0,10 };
+	cubeTransform.size = { 1,1,1 };
+	cubeTransform.rotation = { 0,0,0 };
+
+	MeshRenderer& cubeMesh = Scene::Emplace<MeshRenderer>(*this, testCube, aPollingStation);
+
+	cubeMesh.LoadMesh(PRIMITIVE_CUBE);
+	cubeMesh.LoadShader("Cube");
+
+
+
+	for (auto& callback : mySystems)
 	{
-		for (auto entity : storage.second)
-		{
-			if (myStartCallbacks.count(entity))
-			{
-				InitializeContext initializeContext{ aPollingStation, entity };
-				myStartCallbacks[entity](initializeContext);
-			}
-		}
+		callback->OnStart(myRegistry, aPollingStation);
 	}
 
 }
@@ -46,19 +64,12 @@ void drach::Scene::Update(PollingStation& aPollingStation, const float aDeltaTim
 {
 	//LOG("Update method called! [Delta: " + std::to_string(aRuntimeContext.myDeltaTime) + "]");
 
+	static std::vector<BaseSystem*> cpy;
+	cpy = mySystems;
 
-
-	for (auto storage : myRegistry->storage())
+	for (auto& callback : cpy)
 	{
-		for (auto entity : storage.second)
-		{
-
-			if (myUpdateCallbacks.count(entity))
-			{
-				RuntimeContext runtimeContext{ aPollingStation, entity, aDeltaTime, *myRegistry };
-				myUpdateCallbacks[entity](runtimeContext);
-			}
-		}
+		callback->OnUpdate(myRegistry, aPollingStation, aDeltaTime);
 	}
 }
 
@@ -78,12 +89,12 @@ std::tuple<entt::entity, drach::Camera, drach::Transform> drach::Scene::GetActiv
 
 entt::entity drach::Scene::CreateEntity(Scene& aScene)
 {
-	return aScene.myRegistry->create();
+	return aScene.myRegistry.create();
 }
 
 void drach::Scene::DestroyEntity(Scene& aScene, entt::entity anEntity)
 {
-	aScene.myRegistry->destroy(anEntity);
+	aScene.myRegistry.destroy(anEntity);
 }
 
 
@@ -91,21 +102,20 @@ void drach::Scene::DestroyEntity(Scene& aScene, entt::entity anEntity)
 template<typename Type, typename ...Args>
 Type& drach::Scene::Emplace(Scene& aScene, entt::entity anEntity, Args ...someArgs)
 {
-	if constexpr (Has_Start<Type, void(InitializeContext&)>::value)
+	static bool isRegistered = false;
+	Type& t = aScene.myRegistry.emplace<Type>(anEntity, someArgs...);
+	if (!isRegistered)
 	{
-		myStartCallbacks[anEntity] = std::bind(&Type::Start);
+		isRegistered = true;
+		aScene.mySystems.push_back(new RuntimeSystem<Type>());
 	}
-	if constexpr (Has_Update<Type, void(RuntimeContext&)>::value)
-	{
-		myUpdateCallbacks[anEntity] = std::bind(&Type::Update);
-	}
-	return aScene.myRegistry->emplace<Type>(anEntity, someArgs...);
-	// TODO: insert return statement here
+
+	return t;
 }
 template<typename Type>
 Type& drach::Scene::Get(Scene& aScene, entt::entity anEntity)
 {
-	return aScene.myRegistry->get<Type>(anEntity);
+	return aScene.myRegistry.get<Type>(anEntity);
 }
 
 

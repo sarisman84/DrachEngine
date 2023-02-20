@@ -1,4 +1,10 @@
-float4 main() : SV_TARGET
+#include "util/ShaderStructs.hlsli"
+#include "util/ShaderBuffers.hlsli"
+
+PixelOutput main(PixelInputType input)
 {
-	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    PixelOutput result;
+    result.myColor = input.myColor;
+    return result;
+
 }

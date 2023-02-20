@@ -111,7 +111,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			running = false;
 
 	}
-	delete engineAPI;
+	if (engineAPI)
+		delete engineAPI;
+	engineAPI = nullptr;
 	return (int)msg.wParam;
 }
 
@@ -201,6 +203,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
 		case IDM_EXIT:
+			if (interface)
+				delete interface;
+			interface = nullptr;
 			DestroyWindow(hWnd);
 			break;
 		default:
