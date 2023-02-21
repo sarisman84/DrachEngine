@@ -23,5 +23,5 @@ drach::Matrix4x4f drach::Camera::ViewMatrix()
 	}
 
 	Transform& transform = myRegistry->get<Transform>(myEntity);
-	return  Matrix4x4f::GetFastInverse(transform.GetMatrix()) * myProjection->CalculateProjection();
+	return myProjection->CalculateProjection() * Matrix4x4f::GetFastInverse(transform.GetMatrix(true));
 }

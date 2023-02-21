@@ -34,11 +34,11 @@ private:
 private:
 	std::unique_ptr<drach::Scene> myTestScene;
 private:
-	std::unique_ptr<drach::GraphicsEngine> myGraphicsEngine;
-	std::unique_ptr<drach::ShaderFactory> myShaderFactory;
-	std::unique_ptr<drach::MeshFactory> myMeshFactory;
-	std::unique_ptr<drach::PollingStation> myPollingStation;
-	std::unique_ptr<drach::Renderer> myRenderer;
+	std::shared_ptr<drach::GraphicsEngine> myGraphicsEngine;
+	std::shared_ptr<drach::ShaderFactory> myShaderFactory;
+	std::shared_ptr<drach::MeshFactory> myMeshFactory;
+	std::shared_ptr<drach::PollingStation> myPollingStation;
+	std::shared_ptr<drach::Renderer> myRenderer;
 };
 
 

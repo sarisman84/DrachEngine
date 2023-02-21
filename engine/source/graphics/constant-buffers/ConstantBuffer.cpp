@@ -20,7 +20,7 @@ void drach::ConstantBuffer::Bind(const size_t aTypeID, ConstantBuffer& anInstanc
 	ID3D11DeviceContext* context = anInstance.myEngine->GetContext();
 	D3D11_MAPPED_SUBRESOURCE resource;
 	context->Map(anInstance.myBuffers[aTypeID].Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
-	memcpy(resource.pData, someData, sizeof(someDataSize));
+	memcpy(resource.pData, someData, someDataSize);
 	context->Unmap(anInstance.myBuffers[aTypeID].Get(), 0);
 
 	if (aBindSetting == 0 || aBindSetting == static_cast<size_t>(BindType::Pixel))

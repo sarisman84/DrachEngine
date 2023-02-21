@@ -33,8 +33,8 @@ void drach::Scene::Start(PollingStation& aPollingStation)
 
 	Transform& transform = myRegistry.get<Transform>(cameraEntity);
 	transform.position = { 0,0,-10 };
-	transform.size = { 1,1,1 };
-	transform.rotation = { 0,0,0 };
+	transform.size = { 1.0f,1.0f,1.0f };
+	transform.rotation = { 0.0f,0.0f,0.0f };
 
 	myActiveCamera = cameraEntity;
 

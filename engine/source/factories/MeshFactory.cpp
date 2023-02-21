@@ -40,68 +40,52 @@ drach::Mesh* drach::MeshFactory::GenerateCube()
 	LOG("Generating Primitive Cube!");
 	std::unique_ptr<Mesh>& mesh = myDatabase[PRIMITIVE_CUBE] = std::make_unique<Mesh>();
 
+
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
 
-	vertices =
+
+	struct Face
 	{
-		//Negaitve Z
-		Vertex{ Vector3f(-1.0f, -1.0f, -1.0f),  Vector2f(0.0f, 0.0f) },
-		Vertex{ Vector3f(1.0f, -1.0f, -1.0f),  Vector2f(1.0f, 0.0f) },
-		Vertex{ Vector3f(1.0f,  1.0f, -1.0f),  Vector2f(1.0f, 1.0f) },
-		Vertex{ Vector3f(-1.0f,  1.0f, -1.0f),  Vector2f(0.0f, 1.0f) },
+		std::array<Vertex, 4> myVertices;
+		std::array<uint32_t, 6> myIndices;
 
-		//Positive Z
-		Vertex{ Vector3f(-1.0f, -1.0f, 1.0f),  Vector2f(0.0f, 0.0f) },
-		Vertex{ Vector3f(1.0f, -1.0f, 1.0f),  Vector2f(1.0f, 0.0f) },
-		Vertex{ Vector3f(1.0f,  1.0f, 1.0f),  Vector2f(1.0f, 1.0f) },
-		Vertex{ Vector3f(-1.0f,  1.0f, 1.0f),  Vector2f(0.0f, 1.0f) },
 
-		//Negative X
-		Vertex{ Vector3f(-1.0f, -1.0f, -1.0f), Vector2f(0.0f, 0.0f) },
-		Vertex{ Vector3f(-1.0f,  1.0f, -1.0f), Vector2f(1.0f, 0.0f) },
-		Vertex{ Vector3f(-1.0f,  1.0f,  1.0f), Vector2f(1.0f, 1.0f) },
-		Vertex{ Vector3f(-1.0f, -1.0f,  1.0f), Vector2f(0.0f, 1.0f) },
+		void Apply(std::vector<Vertex>& aVertex, std::vector<uint32_t>& someIndex)
+		{
+			for (size_t i = 0; i < 4; i++)
+			{
+				aVertex.push_back(myVertices[i]);
+			}
+			for (size_t i = 0; i < 4; i++)
+			{
+				someIndex.push_back(myIndices[i]);
+			}
+		}
 
-		//Positive X
-		Vertex{ Vector3f(1.0f, -1.0f, -1.0f), Vector2f(0.0f, 0.0f) },
-		Vertex{ Vector3f(1.0f,  1.0f, -1.0f), Vector2f(1.0f, 0.0f) },
-		Vertex{ Vector3f(1.0f,  1.0f,  1.0f), Vector2f(1.0f, 1.0f) },
-		Vertex{ Vector3f(1.0f, -1.0f,  1.0f), Vector2f(0.0f, 1.0f) },
-
-		//Negative Y
-		Vertex{ Vector3f(-1.0f, -1.0f,  1.0f), Vector2f(0.0f, 0.0f) },
-		Vertex{ Vector3f(-1.0f, -1.0f, -1.0f), Vector2f(1.0f, 0.0f) },
-		Vertex{ Vector3f(1.0f, -1.0f, -1.0f), Vector2f(1.0f, 1.0f) },
-		Vertex{ Vector3f(1.0f, -1.0f,  1.0f), Vector2f(0.0f, 1.0f) },
-
-		//Positive Y
-		Vertex{ Vector3f(-1.0f,  1.0f,  1.0f), Vector2f(0.0f, 0.0f) },
-		Vertex{ Vector3f(-1.0f,  1.0f, -1.0f), Vector2f(1.0f, 0.0f) },
-		Vertex{ Vector3f(1.0f,  1.0f, -1.0f), Vector2f(1.0f, 1.0f) },
-		Vertex{ Vector3f(1.0f,  1.0f,  1.0f), Vector2f(0.0f, 1.0f) },
 	};
 
-	indices =
+
+	for (size_t i = 0; i < 6; i++)
 	{
-		0, 1, 2,
-		0, 2, 3,
+		Face newFace;
+		newFace.myVertices =
+		{
+			Vertex{Vector3f(-0.5f, -0.5f, 0.5f), Vector2f(0.0f, 0.0f)},
+			Vertex{Vector3f(0.5f, 0.5f, 0.5f), Vector2f(0.0f, 0.0f)},
+			Vertex{Vector3f(0.5f,-0.5f,0.5f), Vector2f(0.0f, 0.0f)},
+			Vertex{Vector3f(-0.5f, 0.5f, 0.5f), Vector2f(0.0f, 0.0f)}
+		};
 
-		4, 5, 6,
-		4, 6, 7,
+		newFace.myIndices =
+		{
+			0,1,2,
+			0,3,1
+		};
 
-		8, 9, 10,
-		8, 10, 11,
+		newFace.Apply(vertices, indices);
 
-		12, 13, 14,
-		12, 14, 15,
-
-		16, 17, 18,
-		16, 18, 19,
-
-		20, 21, 22,
-		20, 22, 23
-	};
+	}
 
 	//vertices.push_back();
 	//vertices.push_back();

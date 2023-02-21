@@ -9,7 +9,7 @@
 
 namespace drach
 {
-	class Shader;
+	struct Shader;
 }
 typedef std::unordered_map<drach::StringID, std::tuple<VertexShader, PixelShader, InputLayout>, drach::StringIDHash> ShaderLibrary;
 typedef std::vector<drach::Shader> ShaderDataSet;

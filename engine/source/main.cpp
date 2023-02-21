@@ -76,10 +76,10 @@ void Engine::OnStart(StartContext& const someData)
 	myPollingStation.reset(new drach::PollingStation());
 
 
-	myGraphicsEngine.reset(new drach::GraphicsEngine(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120));
-	myShaderFactory.reset(new drach::ShaderFactory(*myGraphicsEngine));
-	myMeshFactory.reset(new drach::MeshFactory(*myGraphicsEngine));
-	myRenderer.reset(new drach::Renderer(*myPollingStation));
+	myGraphicsEngine = std::make_shared<drach::GraphicsEngine>(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120);
+	myShaderFactory = std::make_shared<drach::ShaderFactory>(*myGraphicsEngine);
+	myMeshFactory = std::make_shared<drach::MeshFactory>(*myGraphicsEngine);
+	myRenderer = std::make_shared<drach::Renderer>(*myPollingStation);
 
 
 

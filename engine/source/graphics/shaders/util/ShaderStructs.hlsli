@@ -1,7 +1,7 @@
 struct VertexInputType
 {
-    float4 myPosition : POSITION;
-    float4 myUV : TEXCOORD;
+    float3 myPosition : POSITION;
+    float2 myUV : TEXCOORD;
 };
 
 struct PixelInputType

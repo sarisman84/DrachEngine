@@ -38,7 +38,7 @@ void drach::Renderer::Render(RenderContext& someContext)
 	if (!myGraphicsEngine) return;
 	ID3D11DeviceContext* context = myGraphicsEngine->GetContext();
 	//Swap to the renderer's render target and depth buffer
-	myGraphicsEngine->DrawToBackBuffer({ 1,0,0,1 });
+	myGraphicsEngine->DrawToBackBuffer({ 0.25f,0.25f,0.5f,1 });
 	FrameBuffer fBuffer(someContext.myCamera.ViewMatrix());
 	ConstantBuffer::Bind<FrameBuffer, BindType::Vertex>(myBufferManager, fBuffer, 0);
 	std::sort(myRenderInstructions.begin(), myRenderInstructions.end(),
@@ -63,7 +63,7 @@ void drach::Renderer::Render(RenderContext& someContext)
 
 		Transform& transform = renderInstruction.myTransform;
 
-		ObjectBuffer oBuffer(transform.GetMatrix());
+		ObjectBuffer oBuffer(transform.GetMatrix(true));
 		ConstantBuffer::Bind<ObjectBuffer, BindType::Vertex>(myBufferManager, oBuffer, 1);
 
 		context->DrawIndexed(mesh.myIndicesAmm, 0, 0);

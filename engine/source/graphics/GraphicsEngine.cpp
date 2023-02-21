@@ -66,11 +66,14 @@ namespace drach
 		result = device->CreateTexture2D(&depthBufferDesc, nullptr, &depthBufferTexture);
 		if (FAILED(result))
 		{
+			LOG_ERROR("Failed to create texture for depht buffer!");
 			return;
 		}
 		result = device->CreateDepthStencilView(depthBufferTexture, nullptr, &depthBuffer);
 		if (FAILED(result))
 		{
+			depthBufferTexture->Release();
+			LOG_ERROR("Failed to create depth buffer!");
 			return;
 		}
 		depthBufferTexture->Release();
@@ -87,25 +90,25 @@ namespace drach
 
 	}
 
-	void GraphicsEngine::DrawTo(drach::Vector4f aColor, RenderTarget* const aTarget, DepthStencil* const aDepthBuffer)
+	void GraphicsEngine::DrawTo(drach::Vector4f aColor, RenderTarget& aTarget, DepthStencil& aDepthBuffer)
 	{
-		if (!aTarget->Get()) return;
+		if (!aTarget.Get()) return;
 
-		deviceContext->ClearRenderTargetView(aTarget->Get(), &aColor.x);
+		deviceContext->ClearRenderTargetView(aTarget.Get(), &aColor.x);
 		if (aDepthBuffer)
-			deviceContext->ClearDepthStencilView(aDepthBuffer->Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+			deviceContext->ClearDepthStencilView(aDepthBuffer.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		if (aDepthBuffer)
-			deviceContext->OMSetRenderTargets(1, aTarget->GetAddressOf(), aDepthBuffer->Get());
+			deviceContext->OMSetRenderTargets(1, aTarget.GetAddressOf(), aDepthBuffer.Get());
 		else
-			deviceContext->OMSetRenderTargets(1, aTarget->GetAddressOf(), nullptr);
+			deviceContext->OMSetRenderTargets(1, aTarget.GetAddressOf(), nullptr);
 
 
-		LOG("Switched Render Target!");
+		/*LOG("Switched Render Target!");*/
 	}
 
 	void GraphicsEngine::DrawToBackBuffer(drach::Vector4f aColor)
 	{
-		DrawTo(aColor, &backBuffer, &depthBuffer);
+		DrawTo(aColor, backBuffer, depthBuffer);
 	}
 
 
@@ -135,12 +138,12 @@ namespace drach
 
 	void GraphicsEngine::CopyRenderToTargetBuffer(RenderResource* const aSource, RenderTarget* const aTarget)
 	{
-		//Switch to target renderTarget
-		DrawTo({ 0,0,0,1 }, aTarget);
-		//Bind the resource to the current drawing element
-		deviceContext->PSSetShaderResources(0, 1, aSource->GetAddressOf());
-		//Draw the final result
-		deviceContext->DrawIndexed(3, 0, 0);
+		////Switch to target renderTarget
+		//DrawTo({ 0,0,0,1 }, aTarget, depthBuffer);
+		////Bind the resource to the current drawing element
+		//deviceContext->PSSetShaderResources(0, 1, aSource->GetAddressOf());
+		////Draw the final result
+		//deviceContext->DrawIndexed(3, 0, 0);
 	}
 
 	void GraphicsEngine::CopyRenderToBackBuffer(RenderResource* const aSource)

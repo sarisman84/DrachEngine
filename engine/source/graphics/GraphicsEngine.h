@@ -11,9 +11,9 @@ namespace drach
 	public:
 		GraphicsEngine();
 		GraphicsEngine(HWND& const anWindowsInstance, const unsigned int aWidth, const unsigned int aHeight, const unsigned int aRefreshRate);
-	
+
 	public:
-		void DrawTo(drach::Vector4f aColor, RenderTarget* const aTarget, DepthStencil* const aDepthBsuffer = nullptr);
+		void DrawTo(drach::Vector4f aColor, RenderTarget& aTarget, DepthStencil& aDepthBuffer);
 		void DrawToBackBuffer(drach::Vector4f aColor);
 		void CopyRenderToTargetBuffer(RenderResource* const aSource, RenderTarget* const  aTarget);
 		void CopyRenderToBackBuffer(RenderResource* const aTarget);

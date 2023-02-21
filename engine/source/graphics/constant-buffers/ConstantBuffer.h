@@ -19,7 +19,7 @@ namespace drach
 		ConstantBuffer(GraphicsEngine& anEngine);
 	public:
 		template<typename Type, BindType aBindType>
-		static void Bind(ConstantBuffer& anInstance, const Type& aType, const size_t aSlot);
+		static void Bind(ConstantBuffer& anInstance, Type& aType, const size_t aSlot);
 
 		template<typename Type>
 		static void Initialize(ConstantBuffer& anInstance);
@@ -33,7 +33,7 @@ namespace drach
 		GraphicsEngine* myEngine;
 	};
 	template<typename Type, BindType aBindType>
-	inline void ConstantBuffer::Bind(ConstantBuffer& anInstance, const Type& aType, const size_t aSlot)
+	inline void ConstantBuffer::Bind(ConstantBuffer& anInstance, Type& aType, const size_t aSlot)
 	{
 		ConstantBuffer::Bind(TypeID<Type>::id, anInstance, (void*)&aType, sizeof(Type), aSlot, static_cast<size_t>(aBindType));
 	}

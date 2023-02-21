@@ -408,26 +408,38 @@ namespace drach
 		switch (anAxis)
 		{
 		case RotationAxis::X:
+		{
 			Matrix4x4<T> m;
 			m(2, 2) = std::cos(someValueInRadians);
 			m(2, 3) = std::sin(someValueInRadians);
 			m(3, 2) = -std::sin(someValueInRadians);
 			m(3, 3) = std::cos(someValueInRadians);
 			return m;
+		}
+
+
 		case RotationAxis::Y:
+		{
 			Matrix4x4<T> m;
 			m(1, 1) = std::cos(someValueInRadians);
 			m(1, 3) = -std::sin(someValueInRadians);
 			m(3, 1) = std::sin(someValueInRadians);
 			m(3, 3) = std::cos(someValueInRadians);
 			return m;
+		}
+
+
 		case RotationAxis::Z:
+		{
 			Matrix4x4<T> m;
 			m(1, 1) = std::cos(someValueInRadians);
 			m(1, 2) = std::sin(someValueInRadians);
 			m(2, 1) = -std::sin(someValueInRadians);
 			m(2, 2) = std::cos(someValueInRadians);
 			return m;
+		}
+
+
 		default:
 			break;
 		}
@@ -510,7 +522,7 @@ namespace drach
 	template<typename T>
 	inline Vector4<T>& Matrix4x4<T>::GetRow(const uint32_t anIndex)
 	{
-		uint32_t i = anIndex + 1;
+		uint32_t i = anIndex - 1;
 		assert(i >= 0 && i < 4 && "Invalid index");
 		return myRows[i];
 	}
@@ -740,7 +752,13 @@ namespace drach
 			aRotInDeg.y * static_cast<T>(DegToRad),
 			aRotInDeg.z * static_cast<T>(DegToRad)
 		};
-		m = CreateScaleMatrix(aSize) * Matrix4x4<T>::CreateRotationMatrix(rotInRads) * CreateTranslateMatrix(aPos) * m;
+		Matrix4x4<T> scale = CreateScaleMatrix(aSize);
+		Matrix4x4<T> rot =
+			Matrix4x4<T>::CreateRotationMatrix(RotationAxis::X, rotInRads.x) *
+			Matrix4x4<T>::CreateRotationMatrix(RotationAxis::Y, rotInRads.y) *
+			Matrix4x4<T>::CreateRotationMatrix(RotationAxis::Z, rotInRads.z);
+		Matrix4x4<T> translate = CreateTranslateMatrix(aPos);
+		m = scale * rot * translate;
 
 		return m;
 	}

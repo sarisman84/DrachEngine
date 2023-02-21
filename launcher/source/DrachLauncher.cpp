@@ -111,9 +111,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			running = false;
 
 	}
-	if (engineAPI)
-		delete engineAPI;
-	engineAPI = nullptr;
+	//if (engineAPI)
+	//	delete engineAPI;
+	//engineAPI = nullptr;
 	return (int)msg.wParam;
 }
 
