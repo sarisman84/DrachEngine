@@ -2,6 +2,9 @@
 temp/
 bin/
 lib/
+samples/
+
+!vendor/source/fbx_sdk/*/lib/
 
 *.sln
 *.vcxproj

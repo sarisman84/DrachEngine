@@ -16,13 +16,6 @@ namespace drach
 }
 
 
-template<typename T, int N>
-struct counter_id {
-	constexpr static int id = counter_id<T, N + 1>::id;
-};
-
-
-
 class Engine : public EngineInterface
 {
 public:
