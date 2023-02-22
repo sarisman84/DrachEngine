@@ -20,7 +20,7 @@ namespace drach
 
 		StringID(const char* aStr)
 		{
-			myID = std::hash<std::string_view>()(std::string(aStr));
+			myID = std::hash<std::string_view>()(aStr);
 		}
 
 		StringID(const StringID& someOther)

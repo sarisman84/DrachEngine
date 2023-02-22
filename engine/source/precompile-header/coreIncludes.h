@@ -27,4 +27,7 @@
 #include <d3dcommon.h>
 
 //3rd party Includes
-#include "entt/single_include/entt/entt.hpp"
+#include "entt/entt.hpp"
+//#include "fbxsdk.h"
+//#include "fbxsdk/core/fbxmanager.h"
+#include "nlohmann/single_include/nlohmann/json.hpp"

@@ -46,7 +46,7 @@ namespace drach
 
 	class ShaderFactory
 	{
-		friend class Shader;
+		friend struct Shader;
 	public:
 		ShaderFactory();
 		ShaderFactory(GraphicsEngine& anEngine);

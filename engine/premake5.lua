@@ -1,4 +1,5 @@
 include "../Premake/common.lua"
+include "../Premake/vendor_common.lua"
 
 group("Engine")
 project "Engine"
@@ -37,14 +38,17 @@ if #foundFiles > 0 then
         directory.engine_lib
     }
 end
-libdirs {
-    directory.global_lib
-}
+
+
+includeLibraries(directory.global_vendor .. "source/")
+
 includedirs {
     directory.engine_vendor .. "source/",
     directory.global_vendor .. "source/",
     "source/"
 }
+
+
 
 files {
     "source/**.h",

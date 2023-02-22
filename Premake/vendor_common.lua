@@ -5,12 +5,16 @@ function importNlohmann(projectDir)
     local nlohmannDir = projectDir .. "nlohmann/"
     if readSettings().use_single_include then
         message = message .. " as SINGLE_INCLUDE"
-        files {nlohmannDir .. "single_include/nlohmann/*"}
-        includedirs {nlohmannDir .. "single_include/"}
+        files {
+            nlohmannDir .. "single_include/nlohmann/*"
+        }
+
     else
         message = message .. " as NORMAL"
-        files {nlohmannDir .. "include/nlohmann/*"}
-        includedirs {nlohmannDir .. "include/"}
+        files {
+            nlohmannDir .. "include/nlohmann/*"
+        }
+
     end
     print(message)
 end
@@ -18,30 +22,127 @@ end
 function importEntt(projectDir)
     local message = "--Importing ENTT"
     local enttDir = projectDir .. "entt/"
+
     if readSettings().use_single_include then
+        files {
+            enttDir .. "single_include/**.hpp",
+            enttDir .. "single_include/**.h"
+        }
         message = message .. " as SINGLE_INCLUDE"
-        files {enttDir .. "single_include/entt/*"}
-        includedirs {enttDir .. "single_include/"}
+
     else
+        files {
+            enttDir .. "**.h",
+            enttDir .. "**.hpp",
+            enttDir .. "**.c",
+            enttDir .. "**.cpp"
+        }
         message = message .. " as NORMAL"
-        files {enttDir .. "src/entt/*"}
-        includedirs {enttDir .. "src/"}
+
     end
     print(message)
 end
 
+function importFBXSDK(projectDir)
+    local message = "--Importing Autodesk FBX - SDK"
+    local fbxSDKDir = projectDir .. "fbx_sdk/"
+
+    files {
+        fbxSDKDir .. "2020.3.2/**.h",
+        fbxSDKDir .. "2020.3.2/**.cpp",
+        fbxSDKDir .. "2020.3.2/**.cxx"
+    }
+
+    -- libdirs {
+    --     fbxSDKDir .. "2020.3.2/lib/vs2019/x64/debug"
+    -- }
+
+    -- links {
+    --     "libfbxsdk-md",
+    --     "libxml2-md",
+    --     "zlib-md"
+    -- }
+
+    filter "system:windows"
+    buildoptions "/MD"
+    message = message .. " as NORMAL"
+    print(message)
+end
+
+function includeFBXSDK(projectDir)
+
+    local originalScope
+    local fbxSDKDir = projectDir .. "fbx_sdk/"
+
+    includedirs {
+        os.realpath(fbxSDKDir .. "2020.3.2/include")
+    }
+
+    -- links {
+    --     "libfbxsdk"
+    -- }
+
+    -- local config = filter()
+
+    -- print("--Included FBX SDK")
+
+    -- filter "configurations:Debug"
+    -- libdirs {
+    --     fbxSDKDir .. "2020.3.2/lib/vs2019/x64/debug/"
+    -- }
+
+    -- filter "configurations:Release"
+    -- libdirs {
+    --     fbxSDKDir .. "2020.3.2/lib/vs2019/x64/release/"
+    -- }
+
+    -- filter(config)
+
+end
+
+function includeEntt(projectDir)
+    local enttDir = projectDir .. "entt/"
+    if readSettings().use_single_include then
+        includedirs {
+            enttDir .. "single_include/"
+        }
+    else
+        includedirs {
+            enttDir .. "src/"
+        }
+    end
+    print("--Included ENTT")
+end
+
+function includeNlohmann(projectDir)
+    local nlohmannDir = projectDir .. "nlohmann/"
+    if readSettings().use_single_include then
+        includedirs {
+            nlohmannDir .. "single_include/"
+        }
+    else
+        includedirs {
+            nlohmannDir .. "include/"
+        }
+    end
+
+    print("--Included Nlohmann")
+end
 -- External Libraries
 importLibrary = {}
 importLibrary[os.realpath(directory.global_vendor .. "source/entt")] = importEntt
 importLibrary[os.realpath(directory.global_vendor .. "source/nlohmann")] = importNlohmann
+importLibrary[os.realpath(directory.global_vendor .. "source/fbx_sdk")] = importFBXSDK
+
+-- External Includes
+includeLibrary = {}
+includeLibrary[os.realpath(directory.global_vendor .. "source/entt")] = includeEntt
+includeLibrary[os.realpath(directory.global_vendor .. "source/nlohmann")] = includeNlohmann
+includeLibrary[os.realpath(directory.global_vendor .. "source/fbx_sdk")] = includeFBXSDK
 
 function importLibraries(projectDir)
 
     local directories = os.matchdirs(projectDir .. "*")
-
-    for dir, func in pairs(importLibrary) do
-        print(dir)
-    end
 
     for i, directory in ipairs(directories) do
         if importLibrary[os.realpath(directory)] ~= nil then
@@ -49,4 +150,14 @@ function importLibraries(projectDir)
         end
     end
 
+end
+
+function includeLibraries(projectDir)
+    local directories = os.matchdirs(projectDir .. "*")
+
+    for i, directory in ipairs(directories) do
+        if includeLibrary[os.realpath(directory)] ~= nil then
+            includeLibrary[os.realpath(directory)](projectDir)
+        end
+    end
 end

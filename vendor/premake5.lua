@@ -21,6 +21,7 @@ debugdir(directory.global_lib)
 targetname("%{prj.name}_%{cfg.buildcfg}")
 
 importLibraries(directory.global_vendor .. "source/")
+includeLibraries(directory.global_vendor .. "source/")
 
 libdirs {
     directory.global_lib,

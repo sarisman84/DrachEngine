@@ -1,3 +1,5 @@
+include "../Premake/vendor_common.lua"
+
 local source = os.realpath(directory.editor_vendor .. "source/")
 
 local foundFiles = os.matchfiles(os.realpath(source .. "/*"))
@@ -55,6 +57,8 @@ if #foundFiles > 0 or #foundDirectories > 0 then
         source .. "imgui/",
         source .. "imguizmo/"
     }
+
+    includeLibraries(directory.global_vendor .. "source/")
 
     libdirs {
         directory.editor_lib,

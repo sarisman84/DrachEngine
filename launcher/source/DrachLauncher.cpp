@@ -12,6 +12,15 @@
 #include <iostream>
 #include <chrono>
 
+#ifdef _DEBUG
+#define ENGINE_DLL L"\\engine\\Engine_Debug.dll"
+#endif
+#include <cassert>
+#ifdef _RELEASE
+#define ENGINE_DLL L"\\engine\\Engine_Release.dll"
+#endif
+
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -43,17 +52,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	EngineInterface* engineAPI = nullptr;
 	InterfaceCallback callback;
 	HINSTANCE hDLL;
-	hDLL = LoadLibrary(L"engine/Engine_Debug");
 
-	if (NULL != hDLL)
-	{
+	wchar_t buffer[500];
+	GetCurrentDirectory(500, buffer);
+	std::wstring wMessage(buffer);
+	wMessage += ENGINE_DLL;
 
-		callback = (InterfaceCallback)GetProcAddress(hDLL, "ExportInterface");
-		if (callback)
-			engineAPI = callback();
-	}
+	
+	hDLL = /*LoadLibrary(ENGINE_DLL)*/ LoadLibrary(wMessage.c_str());
+	auto error = GetLastError();
 
-
+	assert(hDLL != NULL && "Could not find Engine_[Version].dll");
+	callback = (InterfaceCallback)GetProcAddress(hDLL, "ExportInterface");
+	assert(callback != NULL && "Could not find ExportInterface method");
+	engineAPI = callback();
 
 
 	// Start
@@ -203,9 +215,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
 		case IDM_EXIT:
-			if (interface)
-				delete interface;
-			interface = nullptr;
 			DestroyWindow(hWnd);
 			break;
 		default:

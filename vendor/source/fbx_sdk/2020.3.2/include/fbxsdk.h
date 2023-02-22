@@ -37,7 +37,6 @@
   * reads FBX files created with FiLMBOX version 2.5 and later and writes FBX 
   * files compatible with MotionBuilder version 6.0 and up. 
   */
-
 #include <fbxsdk/fbxsdk_def.h>
 
 #ifndef FBXSDK_NAMESPACE_USING

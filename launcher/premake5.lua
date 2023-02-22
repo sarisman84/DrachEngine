@@ -1,5 +1,3 @@
-include "../Premake/common.lua"
-
 project "Launcher"
 location "."
 kind "WindowedApp"
@@ -28,6 +26,7 @@ files {
     "**.h",
     "**.rc"
 }
+
 
 flags {
     "MultiProcessorCompile"
