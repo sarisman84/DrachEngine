@@ -52,6 +52,9 @@ libdirs {
     directory.global_lib
 }
 
+
+includeLibraries(directory.global_vendor .. "source/")
+
 includedirs {
     directory.editor_vendor .. "source/",
     directory.engine_vendor .. "source/",
@@ -82,3 +85,6 @@ filter "configurations:Release"
 defines "_RELEASE"
 runtime "Release"
 optimize "on"
+
+filter "system:windows"
+buildoptions "/MD"

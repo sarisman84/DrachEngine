@@ -63,8 +63,6 @@ function importFBXSDK(projectDir)
     --     "zlib-md"
     -- }
 
-    filter "system:windows"
-    buildoptions "/MD"
     message = message .. " as NORMAL"
     print(message)
 end
@@ -74,29 +72,11 @@ function includeFBXSDK(projectDir)
     local originalScope
     local fbxSDKDir = projectDir .. "fbx_sdk/"
 
+    print("--Included FBX SDK")
+
     includedirs {
         os.realpath(fbxSDKDir .. "2020.3.2/include")
     }
-
-    -- links {
-    --     "libfbxsdk"
-    -- }
-
-    -- local config = filter()
-
-    -- print("--Included FBX SDK")
-
-    -- filter "configurations:Debug"
-    -- libdirs {
-    --     fbxSDKDir .. "2020.3.2/lib/vs2019/x64/debug/"
-    -- }
-
-    -- filter "configurations:Release"
-    -- libdirs {
-    --     fbxSDKDir .. "2020.3.2/lib/vs2019/x64/release/"
-    -- }
-
-    -- filter(config)
 
 end
 

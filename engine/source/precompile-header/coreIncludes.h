@@ -4,6 +4,17 @@
 
 #define NOMINMAX
 
+//Libary Links
+#ifdef _DEBUG
+#pragma comment(lib, "..\\vendor\\source\\fbx_sdk\\2020.3.2\\lib\\vs2019\\x64\\debug\\libfbxsdk-md.lib")
+#pragma comment(lib, "..\\vendor\\source\\fbx_sdk\\2020.3.2\\lib\\vs2019\\x64\\debug\\libxml2-md.lib")
+#pragma comment(lib, "..\\vendor\\source\\fbx_sdk\\2020.3.2\\lib\\vs2019\\x64\\debug\\zlib-md.lib")
+#else
+#pragma comment(lib, "..\\vendor\\source\\fbx_sdk\\2020.3.2\\lib\\vs2019\\x64\\release\\libfbxsdk-md.lib")
+#pragma comment(lib, "..\\vendor\\source\\fbx_sdk\\2020.3.2\\lib\\vs2019\\x64\\release\\libxml2-md.lib")
+#pragma comment(lib, "..\\vendor\\source\\fbx_sdk\\2020.3.2\\lib\\vs2019\\x64\\release\\zlib-md.lib")
+#endif
+
 //Standard Library includes
 #include <filesystem>
 #include <iostream>
@@ -28,6 +39,6 @@
 
 //3rd party Includes
 #include "entt/entt.hpp"
-//#include "fbxsdk.h"
-//#include "fbxsdk/core/fbxmanager.h"
+#include "fbxsdk.h"
+#include "fbxsdk/core/fbxmanager.h"
 #include "nlohmann/single_include/nlohmann/json.hpp"

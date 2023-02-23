@@ -39,7 +39,6 @@ if #foundFiles > 0 then
     }
 end
 
-
 includeLibraries(directory.global_vendor .. "source/")
 
 includedirs {
@@ -48,8 +47,6 @@ includedirs {
     "source/"
 }
 
-
-
 files {
     "source/**.h",
     "source/**.hpp",
@@ -57,7 +54,6 @@ files {
     "source/**.hlsl",
     "source/**.hlsli"
 }
-
 
 precompileHeader("coreIncludes", directory.engine)
 
@@ -90,9 +86,12 @@ shaderoptions({
     "/WX"
 })
 
+filter "system:windows"
+buildoptions "/MD"
+filter{}
+
 include "vendor"
 -- Global Vendor vvvv
-
 
 filter "configurations:Debug"
 defines "_DEBUG"
@@ -103,3 +102,5 @@ filter "configurations:Release"
 defines "_RELEASE"
 runtime "Release"
 optimize "on"
+
+

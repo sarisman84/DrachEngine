@@ -58,8 +58,6 @@ if #foundFiles > 0 or #foundDirectories > 0 then
         source .. "imguizmo/"
     }
 
-    includeLibraries(directory.global_vendor .. "source/")
-
     libdirs {
         directory.editor_lib,
         source .. "../util/vcpkg/packages/freetype_**/lib/"
@@ -103,6 +101,8 @@ if #foundFiles > 0 or #foundDirectories > 0 then
     defines {
         "_WIN32_WINNT=0x0601"
     }
+
+    includeLibraries(directory.global_vendor .. "source/")
 
 else
     print("No Vendor Libraries found: Skipping building vendor for editor!")
