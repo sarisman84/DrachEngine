@@ -11,7 +11,7 @@ namespace drach
 	{
 	public:
 		MeshRenderer();
-		MeshRenderer(PollingStation& aPollingStation);
+		MeshRenderer(PollingStation& aPollingStation, entt::entity anEntity);
 
 		void Start(InitializeContext& anInitContext);
 		void Update(RuntimeContext& aRuntimeContext);

@@ -64,9 +64,7 @@ if #foundFiles > 0 or #foundDirectories > 0 then
     }
 
     filter "configurations:Debug"
-    defines {
-        "_DEBUG"
-    }
+    defines "_DEBUG"
     runtime "Debug"
     symbols "on"
     filter "configurations:Release"
@@ -97,10 +95,9 @@ if #foundFiles > 0 or #foundDirectories > 0 then
     defines {
         "_WIN32_WINNT=0x0601"
     }
-
-    filter {}
-    --includeLibraries(directory.global_vendor .. "source/")
+    -- includeLibraries(directory.global_vendor .. "source/")
 
 else
     print("No Vendor Libraries found: Skipping building vendor for engine!")
 end
+filter {}

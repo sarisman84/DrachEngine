@@ -86,11 +86,9 @@ shaderoptions({
     "/WX"
 })
 
-filter "system:windows"
-buildoptions "/MD"
-filter{}
 
-include "vendor"
+
+
 -- Global Vendor vvvv
 
 filter "configurations:Debug"
@@ -103,4 +101,5 @@ defines "_RELEASE"
 runtime "Release"
 optimize "on"
 
-
+filter {}
+include "vendor"

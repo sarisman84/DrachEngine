@@ -96,6 +96,9 @@ namespace drach
 		//std::unique_ptr<ecs::Registry> myRegistry;
 		entt::registry myRegistry;
 		entt::entity myActiveCamera = entt::entity(-1);
+
+	private:
+		entt::entity myTestCube = entt::entity(-1);
 	};
 
 

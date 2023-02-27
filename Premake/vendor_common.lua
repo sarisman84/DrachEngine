@@ -78,6 +78,10 @@ function includeFBXSDK(projectDir)
         os.realpath(fbxSDKDir .. "2020.3.2/include")
     }
 
+    -- filter "system:windows"
+    -- buildoptions "/MD"
+    -- filter {}
+
 end
 
 function includeEntt(projectDir)

@@ -11,8 +11,8 @@
 
 drach::MeshRenderer::MeshRenderer() = default;
 
-drach::MeshRenderer::MeshRenderer(PollingStation& aPollingStation)
-	:myPollingStation(&aPollingStation)
+drach::MeshRenderer::MeshRenderer(PollingStation& aPollingStation, entt::entity anEntity)
+	:myPollingStation(&aPollingStation), myEntity(anEntity)
 {
 }
 

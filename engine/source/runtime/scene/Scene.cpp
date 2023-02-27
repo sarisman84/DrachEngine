@@ -32,7 +32,7 @@ void drach::Scene::Start(PollingStation& aPollingStation)
 	cam;
 
 	Transform& transform = myRegistry.get<Transform>(cameraEntity);
-	transform.position = { 0,0,-10 };
+	transform.position = { 0,0,0.0f };
 	transform.size = { 1.0f,1.0f,1.0f };
 	transform.rotation = { 0.0f,0.0f,0.0f };
 
@@ -41,17 +41,17 @@ void drach::Scene::Start(PollingStation& aPollingStation)
 
 
 	auto testCube = myRegistry.create();
+	myTestCube = testCube;
+
 	Transform& cubeTransform = Scene::Emplace<Transform>(*this, testCube, &myRegistry, testCube);
-	cubeTransform.position = { 0,0,10 };
+	cubeTransform.position = { 0,0,1.25f };
 	cubeTransform.size = { 1,1,1 };
 	cubeTransform.rotation = { 0,0,0 };
 
-	MeshRenderer& cubeMesh = Scene::Emplace<MeshRenderer>(*this, testCube, aPollingStation);
+	MeshRenderer& cubeMesh = Scene::Emplace<MeshRenderer>(*this, testCube, aPollingStation, testCube);
 
-	cubeMesh.LoadMesh(PRIMITIVE_CUBE);
+	cubeMesh.LoadMesh("resources/meshes/icosphere.fbx");
 	cubeMesh.LoadShader("Cube");
-
-
 
 	for (auto& callback : mySystems)
 	{
@@ -62,7 +62,13 @@ void drach::Scene::Start(PollingStation& aPollingStation)
 
 void drach::Scene::Update(PollingStation& aPollingStation, const float aDeltaTime)
 {
-	//LOG("Update method called! [Delta: " + std::to_string(aRuntimeContext.myDeltaTime) + "]");
+	static float t = 0.0f;
+	if (aDeltaTime > 0.0f)
+		t += aDeltaTime;
+
+	Transform& cubeTransform = Scene::Get<Transform>(*this, myTestCube);
+	cubeTransform.position.z = std::sinf(t);
+	//LOG("Update method called! [Delta: " + std::to_string(cubeTransform.position.z) + "]");
 
 	static std::vector<BaseSystem*> cpy;
 	cpy = mySystems;

@@ -2,7 +2,7 @@
 #include "MeshFactory.h"
 #include "graphics/GraphicsEngine.h"
 #include "graphics/objects/Mesh.h"
-
+#include "graphics/import/FBXImporter.h"
 #include "logging/Logger.h"
 
 #include <d3d11.h>
@@ -32,7 +32,70 @@ drach::Mesh* drach::MeshFactory::LoadMesh(std::string aName)
 		return GenerateSphere();
 	}
 
+	FBXContext context(*this, aName.c_str());
+
+	if (context.IsValid())
+	{
+		context.GetScene();
+		return myDatabase[aName].get();
+	}
+
+
 	return nullptr;
+}
+
+drach::Mesh* drach::MeshFactory::LoadMesh(FbxMesh* aMesh, std::string aName, const float aSceneScale)
+{
+	assert(aMesh);
+	const auto num_polys{ aMesh->GetPolygonCount() };
+	if (num_polys <= 0) return nullptr;
+
+
+	std::unique_ptr<Mesh>& mesh = myDatabase[aName] = std::make_unique<Mesh>();
+
+	const auto num_vertices{ aMesh->GetControlPointsCount() };
+	FbxVector4* vertices{ aMesh->GetControlPoints() };
+	const auto num_indicies{ aMesh->GetPolygonVertexCount() };
+	int* indicies{ aMesh->GetPolygonVertices() };
+
+	assert(num_vertices > 0 && vertices && num_indicies > 0 && indicies);
+	if (!(num_vertices > 0 && vertices && num_indicies > 0 && indicies)) return nullptr;
+
+	mesh->myIndicesAmm = num_indicies;
+
+	std::vector<Vertex> vertices_v;
+	std::vector<uint32_t> indices = std::vector<uint32_t>(num_indicies);
+
+
+	std::vector<uint32_t> vertex_ref(num_vertices, uint32_t(-1));
+
+	for (size_t i = 0; i < num_indicies; ++i)
+	{
+		const uint32_t v_idx{ static_cast<uint32_t>(indicies[i]) };
+
+		if (vertex_ref[v_idx] != uint32_t(-1))
+		{
+			indices[i] = vertex_ref[v_idx];
+		}
+		else
+		{
+			FbxVector4 v = vertices[v_idx] * aSceneScale;
+			indices[i] = static_cast<uint32_t>(vertices_v.size());
+			Vertex vertex;
+			vertex.myPosition = { static_cast<float>(v[0]), static_cast<float>(v[1]), static_cast<float>(v[2]) };
+			vertices_v.push_back(vertex);
+		}
+	}
+
+	if (!ParseVertices(mesh->myVertexBuffer, vertices_v))
+		return nullptr;
+
+	if (!ParseIndices(mesh->myIndexBuffer, indices))
+		return nullptr;
+
+	LOG("Loaded Mesh: " + aName);
+
+	return mesh.get();
 }
 
 drach::Mesh* drach::MeshFactory::GenerateCube()
