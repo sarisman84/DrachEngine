@@ -50,9 +50,6 @@ void drach::FBXContext::GetScene(FbxNode* aRoot)
 
 	const int num_nodes{ aRoot->GetChildCount() };
 
-	LOG(std::to_string(aRoot->GetChildCount()));
-	LOG(aRoot->GetName());
-
 	if (num_nodes <= 0) return;
 
 	for (int i = 0; i < num_nodes; ++i)
@@ -96,10 +93,15 @@ void drach::FBXContext::LoadFBXFromFile(const char* aFile)
 		return;
 
 	FbxImporter* importer{ FbxImporter::Create(myFBXManager, "Importer") };
-	if (!importer &&
+	if (!(importer &&
 		importer->Initialize(aFile, -1, myFBXManager->GetIOSettings()) &&
-		importer->Import(myFBXScene))
+		importer->Import(myFBXScene)))
+	{
+		LOG_ERROR(importer->GetStatus().GetErrorString());
+		importer->Destroy();
 		return;
+	}
+
 
 	importer->Destroy();
 

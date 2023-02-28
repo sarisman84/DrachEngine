@@ -36,6 +36,7 @@
 #include <d3d11shader.h>
 #include <d3dcompiler.h>
 #include <d3dcommon.h>
+#include "DirectXTex/DDSTextureLoader/DDSTextureLoader11.h"
 
 //3rd party Includes
 #include "entt/entt.hpp"
