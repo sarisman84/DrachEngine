@@ -40,6 +40,8 @@ namespace drach
 			return myID;
 		}
 
+		operator bool();
+
 	private:
 		StringID myID;
 	};
@@ -52,7 +54,8 @@ namespace drach
 		ShaderFactory(GraphicsEngine& anEngine);
 
 	public:
-		Shader GetShaderFromFile(std::string aFilePath, const ShaderType aType = ShaderType::All);
+		Shader GetShaderFromFile(const std::string& aShaderFile);
+		Shader GetShaderFromFile(const std::string& aVertexShaderFile, const std::string& aPixelShaderFile);
 		
 		ShaderDataSet GetShaders();
 	private:

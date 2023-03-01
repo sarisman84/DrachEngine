@@ -18,13 +18,13 @@ DXGI_FORMAT GetDXGIFormat(const D3D11_SIGNATURE_PARAMETER_DESC& desc)
 		switch (desc.ComponentType)
 		{
 		case D3D_REGISTER_COMPONENT_UINT32:
-			LOG("Format found to be unsigned int of 1 value");
+			//LOG("Format found to be unsigned int of 1 value");
 			return DXGI_FORMAT_R32_UINT;
 		case D3D_REGISTER_COMPONENT_SINT32:
-			LOG("Format found to be signed int of 1 value");
+			//LOG("Format found to be signed int of 1 value");
 			return DXGI_FORMAT_R32_SINT;
 		case D3D_REGISTER_COMPONENT_FLOAT32:
-			LOG("Format found to be float of 1 value");
+			//LOG("Format found to be float of 1 value");
 			return DXGI_FORMAT_R32_FLOAT;
 		default:
 			break;
@@ -34,13 +34,13 @@ DXGI_FORMAT GetDXGIFormat(const D3D11_SIGNATURE_PARAMETER_DESC& desc)
 		switch (desc.ComponentType)
 		{
 		case D3D_REGISTER_COMPONENT_UINT32:
-			LOG("Format found to be unsigned int of 2 values");
+			//LOG("Format found to be unsigned int of 2 values");
 			return DXGI_FORMAT_R32G32_UINT;
 		case D3D_REGISTER_COMPONENT_SINT32:
-			LOG("Format found to be signed int of 2 values");
+			//LOG("Format found to be signed int of 2 values");
 			return DXGI_FORMAT_R32G32_SINT;
 		case D3D_REGISTER_COMPONENT_FLOAT32:
-			LOG("Format found to be float of 2 values");
+			//LOG("Format found to be float of 2 values");
 			return DXGI_FORMAT_R32G32_FLOAT;
 		default:
 			break;
@@ -51,13 +51,13 @@ DXGI_FORMAT GetDXGIFormat(const D3D11_SIGNATURE_PARAMETER_DESC& desc)
 		switch (desc.ComponentType)
 		{
 		case D3D_REGISTER_COMPONENT_UINT32:
-			LOG("Format found to be unsigned int of 3 values");
+			//LOG("Format found to be unsigned int of 3 values");
 			return DXGI_FORMAT_R32G32B32_UINT;
 		case D3D_REGISTER_COMPONENT_SINT32:
-			LOG("Format found to be signed int of 3 values");
+			//LOG("Format found to be signed int of 3 values");
 			return DXGI_FORMAT_R32G32B32_SINT;
 		case D3D_REGISTER_COMPONENT_FLOAT32:
-			LOG("Format found to be float of 3 values");
+			//LOG("Format found to be float of 3 values");
 			return DXGI_FORMAT_R32G32B32_FLOAT;
 		default:
 			break;
@@ -68,13 +68,13 @@ DXGI_FORMAT GetDXGIFormat(const D3D11_SIGNATURE_PARAMETER_DESC& desc)
 		switch (desc.ComponentType)
 		{
 		case D3D_REGISTER_COMPONENT_UINT32:
-			LOG("Format found to be unsigned int of 4 values");
+			//LOG("Format found to be unsigned int of 4 values");
 			return DXGI_FORMAT_R32G32B32A32_UINT;
 		case D3D_REGISTER_COMPONENT_SINT32:
-			LOG("Format found to be signed int of 4 values");
+			//LOG("Format found to be signed int of 4 values");
 			return DXGI_FORMAT_R32G32B32A32_SINT;
 		case D3D_REGISTER_COMPONENT_FLOAT32:
-			LOG("Format found to be float of 4 values");
+			//LOG("Format found to be float of 4 values");
 			return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		default:
 			break;
@@ -97,13 +97,18 @@ drach::ShaderFactory::ShaderFactory(drach::GraphicsEngine& anEngine) : myGraphic
 
 }
 
-drach::Shader drach::ShaderFactory::GetShaderFromFile(std::string aFileName, const ShaderType aType)
+drach::Shader drach::ShaderFactory::GetShaderFromFile(const std::string& aShaderFile)
 {
-	if (aFileName.empty())
+	return GetShaderFromFile(aShaderFile, aShaderFile);
+}
+
+drach::Shader drach::ShaderFactory::GetShaderFromFile(const std::string& aVertexShaderFile, const std::string& aPixelShaderFile)
+{
+	if (aVertexShaderFile.empty() || aPixelShaderFile.empty())
 		return Shader(StringID());
 
 	//Then hash it with a value for comparison
-	StringID id(aFileName);
+	StringID id(aVertexShaderFile + aPixelShaderFile);
 
 	//Check if we already have the value in our database. If we do, fetch the data.
 	if (myShaders.count(id) > 0)
@@ -123,8 +128,8 @@ drach::Shader drach::ShaderFactory::GetShaderFromFile(std::string aFileName, con
 	Blob pixelData;
 
 
-	std::filesystem::path vsPath("resources/shaders/" + aFileName + "_VS.cso");
-	std::filesystem::path psPath("resources/shaders/" + aFileName + "_PS.cso");
+	std::filesystem::path vsPath("resources/shaders/" + aVertexShaderFile + "_VS.cso");
+	std::filesystem::path psPath("resources/shaders/" + aPixelShaderFile + "_PS.cso");
 
 	result = D3DReadFileToBlob(vsPath.wstring().c_str(), &vertexData);
 	if (FAILED(result))
@@ -132,42 +137,42 @@ drach::Shader drach::ShaderFactory::GetShaderFromFile(std::string aFileName, con
 		LOG_ERROR("Failed to read vertex shader file: " + vsPath.string() + ".");
 		return Shader(id);
 	}
-	LOG("Read File: " + vsPath.string());
+	//LOG("Read File: " + vsPath.string());
 	result = D3DReadFileToBlob(psPath.wstring().c_str(), &pixelData);
 	if (FAILED(result))
 	{
 		LOG_ERROR("Failed to read pixel shader file: " + psPath.string() + ".");
 		return Shader(id);
 	}
-	LOG("Read File: " + psPath.string());
+	//LOG("Read File: " + psPath.string());
 	result = context->CreateVertexShader(vertexData->GetBufferPointer(), vertexData->GetBufferSize(), NULL, &vs);
 	if (FAILED(result))
 	{
 		LOG_ERROR("Failed to create vertex shader from file: " + vsPath.string() + ".");
 		return Shader(id);
 	}
-	LOG("Created Vertex Shader: " + vsPath.string());
+	//LOG("Created Vertex Shader: " + vsPath.string());
 	result = context->CreatePixelShader(pixelData->GetBufferPointer(), pixelData->GetBufferSize(), NULL, &ps);
 	if (FAILED(result))
 	{
 		LOG_ERROR("Failed to read pixel shader from file: " + psPath.string() + ".");
 		return Shader(id);
 	}
-	LOG("Created Pixel Shader: " + psPath.string());
+	//LOG("Created Pixel Shader: " + psPath.string());
 	result = LoadInputLayout(vertexData, il);
 	if (FAILED(result))
 	{
 		LOG_ERROR("Failed to load input layout from vertex file: " + vsPath.string());
 		return Shader(id);
 	}
-	LOG("Parsed Vertex Shader Input Layout: " + vsPath.string());
+	//LOG("Parsed Vertex Shader Input Layout: " + vsPath.string());
 	//Finally, store the data and the id into the database.
 	myShaders[id] = std::make_tuple(vs, ps, il);
 
 
 
 
-	LOG("Initialized Shader: " + aFileName);
+	LOG("Initialized Shader: [VS:" + aVertexShaderFile + ", PS:" + aPixelShaderFile + "]");
 	//Whenever or not i created or fetch the data, return the shader struct with an id and this factory as a result.
 	return Shader(id);
 }
@@ -215,7 +220,7 @@ HRESULT drach::ShaderFactory::LoadInputLayout(Blob& someVertexData, InputLayout&
 		elementDesc.InstanceDataStepRate = 0;
 
 		std::string wName = paramDesc.SemanticName;
-		LOG("Element Found: " + wName);
+		//LOG("Element Found: " + wName);
 		inputLayoutDesc.push_back(elementDesc);
 	}
 
@@ -243,7 +248,7 @@ void drach::Shader::Bind(GraphicsEngine& anEngine, ShaderFactory& aFactory)
 	context->IASetInputLayout(GetInputLayout(aFactory).Get());
 	context->VSSetShader(GetVertexShader(aFactory).Get(), nullptr, 0);
 	context->PSSetShader(GetPixelShader(aFactory).Get(), nullptr, 0);
-	
+
 
 }
 
@@ -260,4 +265,9 @@ VertexShader& drach::Shader::GetVertexShader(ShaderFactory& aFactory)
 InputLayout& drach::Shader::GetInputLayout(ShaderFactory& aFactory)
 {
 	return std::get<InputLayout>(aFactory.myShaders[myID]);
+}
+
+drach::Shader::operator bool()
+{
+	return myID != StringID();
 }

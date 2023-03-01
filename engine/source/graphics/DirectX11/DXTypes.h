@@ -22,3 +22,4 @@ typedef ComPtr<ID3D11InputLayout> InputLayout;
 typedef ComPtr<ID3D11Texture2D> GTexture;
 typedef ComPtr<ID3DBlob> Blob;
 typedef ComPtr<ID3D11ShaderReflection> ShaderInfo;
+typedef ComPtr<ID3D11SamplerState> SamplerState;

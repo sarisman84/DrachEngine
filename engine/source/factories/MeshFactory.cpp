@@ -87,6 +87,25 @@ drach::Mesh* drach::MeshFactory::LoadMesh(FbxMesh* aMesh, std::string aName, con
 		}
 	}
 
+
+	FbxStringList uv_names;
+	aMesh->GetUVSetNames(uv_names);
+	const int uv_set_count = uv_names.GetCount();
+
+	for (int i = 0; i < uv_set_count; ++i)
+	{
+		FbxArray<FbxVector2> uvs;
+		if (aMesh->GetPolygonVertexUVs(uv_names.GetStringAt(i), uvs))
+		{
+			const int num_uvs {uvs.Size()};
+			for (int j = 0; j < num_uvs; ++j)
+			{
+				vertices_v[j].myUV = Vector2f(static_cast<float>(uvs[j][0]), static_cast<float>(uvs[j][1]));
+			}
+		}
+	}
+
+
 	if (!ParseVertices(mesh->myVertexBuffer, vertices_v))
 		return nullptr;
 

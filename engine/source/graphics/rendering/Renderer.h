@@ -7,6 +7,7 @@
 #include "graphics/constant-buffers/ConstantBuffer.h"
 #include "util/Transform.h"
 #include "graphics/objects/Mesh.h"
+#include "graphics/objects/Texture.h"
 #include "factories/ShaderFactory.h"
 
 namespace drach
@@ -16,11 +17,6 @@ namespace drach
 	class GraphicsEngine;
 	class Scene;
 	class Model;
-
-
-
-
-
 
 	struct RenderContext
 	{
@@ -34,6 +30,7 @@ namespace drach
 		Mesh myMesh;
 		Transform myTransform;
 		Shader myShader;
+		Texture myTexture;
 	};
 
 	class Renderer
@@ -44,13 +41,12 @@ namespace drach
 		void Init();
 		//Renders a scene containing entites with models. 
 		void Render(RenderContext& someContext);
-		void Submit(Mesh& aMesh, Transform& aTransform, Shader& aShader);
-	private:
-		const bool FetchManagers(GraphicsEngine*& anEngine, ShaderFactory*& aShaderFactory);
+		void Submit(Mesh& aMesh, Transform& aTransform, Shader& aShader, Texture& aTexture);
 	private:
 		std::vector<RenderInstruction> myRenderInstructions;
 	private:
 		ShaderFactory* myShaderFactory;
+		TextureFactory* myTextureFactory;
 		GraphicsEngine* myGraphicsEngine;
 		ConstantBuffer myBufferManager;
 		RenderTarget myRenderTarget;

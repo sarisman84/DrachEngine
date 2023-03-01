@@ -7,7 +7,7 @@ struct VertexInputType
 struct PixelInputType
 {
     float4 myPosition : SV_POSITION;
-    float4 myColor : COLOR;
+    float2 myUV : TEXCOORD;
 };
 
 struct PixelOutput

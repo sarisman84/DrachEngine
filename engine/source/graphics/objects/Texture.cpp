@@ -6,15 +6,24 @@
 
 drach::Texture::Texture() = default;
 
-drach::Texture::Texture(TextureFactory& aFactory, const uint32_t anID)
-	:myFactory(&aFactory), myID(anID)
+drach::Texture::Texture(TextureFactory& aFactory, const StringID anID, const StringID aSamplerID)
+	:myID(anID), mySamplerID(aSamplerID)
 {
+	auto info = aFactory.myTextures[myID];
+	myResolution = Vector2f(info.myWidth, info.myHeight);
 }
 
-void drach::Texture::Bind(GraphicsEngine& aGraphicsEngine, const uint32_t aSlot)
+void drach::Texture::Bind(GraphicsEngine& aGraphicsEngine, TextureFactory& aFactory, const uint32_t aSlot)
 {
+
 	ID3D11DeviceContext* context = aGraphicsEngine.GetContext();
-	context->PSSetShaderResources(aSlot, 1, myFactory->myTextures[myID].GetAddressOf());
+	context->PSSetSamplers(aSlot, 1, aFactory.mySamplers[mySamplerID].GetAddressOf());
+	context->PSSetShaderResources(aSlot, 1, aFactory.myTextures[myID].myResource.GetAddressOf());
+}
+
+const drach::Vector2f drach::Texture::Resolution()
+{
+	return myResolution;
 }
 
 const bool drach::Texture::operator==(const Texture& someOtherTexture)
@@ -25,4 +34,9 @@ const bool drach::Texture::operator==(const Texture& someOtherTexture)
 const bool drach::Texture::operator!=(const Texture& someOtherTexture)
 {
 	return !(*this == someOtherTexture);
+}
+
+drach::Texture::operator bool()
+{
+	return myID != StringID();
 }

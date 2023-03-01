@@ -10,7 +10,7 @@ PixelInputType main(VertexInputType someInput)
     float4 vertexClipPos = mul(myViewMatrix, vertexWorldPos);
     
     result.myPosition = vertexClipPos;
-    result.myColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    result.myUV = someInput.myUV;
     
     return result;
 }

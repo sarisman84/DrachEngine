@@ -44,14 +44,15 @@ void drach::Scene::Start(PollingStation& aPollingStation)
 	myTestCube = testCube;
 
 	Transform& cubeTransform = Scene::Emplace<Transform>(*this, testCube, &myRegistry, testCube);
-	cubeTransform.position = { 0,0,1.25f };
+	cubeTransform.position = { 0,0, 1.1f };
 	cubeTransform.size = { 1,1,1 };
 	cubeTransform.rotation = { 0,0,0 };
 
 	MeshRenderer& cubeMesh = Scene::Emplace<MeshRenderer>(*this, testCube, aPollingStation, testCube);
 
 	cubeMesh.LoadMesh("resources/meshes/icosphere.fbx");
-	cubeMesh.LoadShader("Cube");
+	cubeMesh.LoadShader("Default", "Unlit");
+	cubeMesh.LoadTexture("resources/textures/CanardPolicierAnglais.dds");
 
 	for (auto& callback : mySystems)
 	{
@@ -67,7 +68,7 @@ void drach::Scene::Update(PollingStation& aPollingStation, const float aDeltaTim
 		t += aDeltaTime;
 
 	Transform& cubeTransform = Scene::Get<Transform>(*this, myTestCube);
-	cubeTransform.position.z = std::sinf(t);
+	cubeTransform.position.z = std::sinf(t) + 1.0f;
 	//LOG("Update method called! [Delta: " + std::to_string(cubeTransform.position.z) + "]");
 
 	static std::vector<BaseSystem*> cpy;

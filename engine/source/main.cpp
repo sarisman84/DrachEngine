@@ -14,6 +14,7 @@
 #include "graphics/GraphicsEngine.h"
 #include "factories/ShaderFactory.h"
 #include "factories/MeshFactory.h"
+#include "factories/TextureFactory.h"
 #include "util/other/PollingStation.h"
 #include "runtime/Context.h"
 #include "runtime/scene/Scene.h"
@@ -79,6 +80,7 @@ void Engine::OnStart(StartContext& const someData)
 	myGraphicsEngine = std::make_shared<drach::GraphicsEngine>(someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, 120);
 	myShaderFactory = std::make_shared<drach::ShaderFactory>(*myGraphicsEngine);
 	myMeshFactory = std::make_shared<drach::MeshFactory>(*myGraphicsEngine);
+	myTextureFactory = std::make_shared<drach::TextureFactory>(*myGraphicsEngine);
 	myRenderer = std::make_shared<drach::Renderer>(*myPollingStation);
 
 
@@ -90,6 +92,8 @@ void Engine::OnStart(StartContext& const someData)
 	LOG("PollingStation -> Registered Shader Factory");
 	myPollingStation->myMeshFactoryPtr = myMeshFactory.get();
 	LOG("PollingStation -> Registered Mesh Factory");
+	myPollingStation->myTextureFactory = myTextureFactory.get();
+	LOG("PollingStation -> Registered Texture Factory");
 	myPollingStation->myRendererPtr = myRenderer.get();
 	LOG("PollingStation -> Registered Renderer");
 

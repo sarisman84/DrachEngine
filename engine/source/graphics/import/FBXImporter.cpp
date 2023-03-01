@@ -105,7 +105,7 @@ void drach::FBXContext::LoadFBXFromFile(const char* aFile)
 
 	importer->Destroy();
 
-	mySceneScale = myFBXScene->GetGlobalSettings().GetSystemUnit().GetConversionFactorTo(FbxSystemUnit::m);
+	mySceneScale = myFBXScene->GetGlobalSettings().GetSystemUnit().GetConversionFactorTo(FbxSystemUnit::cm);
 
 
 }

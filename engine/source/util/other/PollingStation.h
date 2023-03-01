@@ -9,6 +9,7 @@ namespace drach
 	class GraphicsEngine;
 	class Renderer;
 	class MeshFactory;
+	class TextureFactory;
 
 	class PollingStation
 	{
@@ -18,10 +19,12 @@ namespace drach
 		inline ShaderFactory* GetShaderFactory() noexcept { return myShaderFactoryPtr; }
 		inline Renderer* GetRenderer() noexcept { return myRendererPtr; }
 		inline MeshFactory* GetMeshFactory() noexcept { return myMeshFactoryPtr; }
+		inline TextureFactory* GetTextureFactory() noexcept { return myTextureFactory; }
 	private:
 		ShaderFactory* myShaderFactoryPtr;
 		GraphicsEngine* myGraphicsEnginePtr;
 		Renderer* myRendererPtr;
 		MeshFactory* myMeshFactoryPtr;
+		TextureFactory* myTextureFactory;
 	};
 }

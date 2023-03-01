@@ -26,6 +26,7 @@ void drach::Renderer::Init()
 {
 	myGraphicsEngine = myPollingStation->GetGraphicsEngine();
 	myShaderFactory = myPollingStation->GetShaderFactory();
+	myTextureFactory = myPollingStation->GetTextureFactory();
 
 	myBufferManager = ConstantBuffer(*myGraphicsEngine);
 	ConstantBuffer::Initialize<ObjectBuffer>(myBufferManager);
@@ -41,17 +42,21 @@ void drach::Renderer::Render(RenderContext& someContext)
 	myGraphicsEngine->DrawToBackBuffer({ 0.25f,0.25f,0.5f,1 });
 	FrameBuffer fBuffer(someContext.myCamera.ViewMatrix());
 	ConstantBuffer::Bind<FrameBuffer, BindType::Vertex>(myBufferManager, fBuffer, 0);
+
 	std::sort(myRenderInstructions.begin(), myRenderInstructions.end(),
 		[](RenderInstruction& a, RenderInstruction& b)
 		{
 			return a.myShader.GetID() < b.myShader.GetID();
 		});
+
 	static StringID previousShader;
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	for (auto& renderInstruction : myRenderInstructions)
 	{
 		Shader& shader = renderInstruction.myShader;
 		Mesh& mesh = renderInstruction.myMesh;
+		Texture& texture = renderInstruction.myTexture;
+
 		mesh.Bind(*myGraphicsEngine);
 
 		if (previousShader != shader.GetID())
@@ -60,6 +65,8 @@ void drach::Renderer::Render(RenderContext& someContext)
 			previousShader = shader.GetID();
 		}
 
+		if (texture)
+			texture.Bind(*myGraphicsEngine, *myTextureFactory, 0);
 
 		Transform& transform = renderInstruction.myTransform;
 
@@ -76,18 +83,15 @@ void drach::Renderer::Render(RenderContext& someContext)
 	myRenderInstructions.clear();
 }
 
-void drach::Renderer::Submit(Mesh& aModel, Transform& aTransform, Shader& aShader)
+void drach::Renderer::Submit(Mesh& aModel, Transform& aTransform, Shader& aShader, Texture& aTexture)
 {
-	RenderInstruction instruction(aModel, aTransform, aShader);
+	RenderInstruction instruction(aModel, aTransform, aShader, aTexture);
 	myRenderInstructions.push_back(instruction);
 
 
 }
 
-const bool drach::Renderer::FetchManagers(GraphicsEngine*& anEngine, ShaderFactory*& aShaderFactory)
-{
-	return true;
-}
+
 
 
 

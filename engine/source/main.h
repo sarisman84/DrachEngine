@@ -11,6 +11,7 @@ namespace drach
 	class GraphicsEngine;
 	class ShaderFactory;
 	class MeshFactory;
+	class TextureFactory;
 	class PollingStation;
 	class Renderer;
 }
@@ -30,8 +31,10 @@ private:
 	std::shared_ptr<drach::GraphicsEngine> myGraphicsEngine;
 	std::shared_ptr<drach::ShaderFactory> myShaderFactory;
 	std::shared_ptr<drach::MeshFactory> myMeshFactory;
+	std::shared_ptr<drach::TextureFactory> myTextureFactory;
 	std::shared_ptr<drach::PollingStation> myPollingStation;
 	std::shared_ptr<drach::Renderer> myRenderer;
+
 };
 
 

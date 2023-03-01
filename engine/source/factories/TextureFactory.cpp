@@ -1,22 +1,41 @@
 #include "precompile-header/coreIncludes.h"
 #include "TextureFactory.h"
+
 #include <xhash>
-
-
 #include "logging/Logger.h"
 #include "graphics/GraphicsEngine.h"
+#include "graphics/objects/Texture.h"
+#include "DirectXTex/DDSTextureLoader/DDSTextureLoader11.cpp"
 
 drach::TextureFactory::TextureFactory(GraphicsEngine& aGraphicsEngine)
+	:myEngine(&aGraphicsEngine)
 {
+	D3D11_SAMPLER_DESC samplerDesc;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	AddSamplerState(SAMPLER_DEFAULT_WRAP, samplerDesc);
 }
 
-drach::Texture drach::TextureFactory::GetTexture(const std::string_view& aFile)
+drach::Texture drach::TextureFactory::GetTexture(const std::string_view& aFile, const std::string_view& aSamplerName)
 {
-	size_t key = std::hash<std::string_view>()(aFile);
+	StringID key(aFile.data());
+	StringID samplerKey(aSamplerName.data());
 
 	if (myTextures.count(key) > 0)
 	{
-		Texture result(*this, static_cast<uint32_t>(key));
+		Texture result(*this, key, samplerKey);
 		return result;
 	}
 
@@ -24,7 +43,7 @@ drach::Texture drach::TextureFactory::GetTexture(const std::string_view& aFile)
 
 	filePath path(aFile);
 
-	TextureInitContext context{ path.filename().string(), path, key };
+	TextureInitContext context{ path.filename().string(), path, key, samplerKey };
 
 
 	if (path.extension().compare("dds"))
@@ -36,20 +55,23 @@ drach::Texture drach::TextureFactory::GetTexture(const std::string_view& aFile)
 		return LoadPNG(context);
 	}
 
-	return Texture(*this, uint32_t(-1));
+	return Texture(*this, StringID(), samplerKey);
+}
+
+const bool drach::TextureFactory::AddSamplerState(const std::string_view& aName, D3D11_SAMPLER_DESC& aDesc)
+{
+	ID3D11Device* device = myEngine->GetDevice();
+	HRESULT result = device->CreateSamplerState(&aDesc, &mySamplers[StringID(aName.data())]);
+	return SUCCEEDED(result);
 }
 
 
-struct DDSInfo
-{
-	RenderResource myResource;
-	uint32_t myWidth;
-	uint32_t myHeight;
-};
 
 
 
-HRESULT CreateDDSTextureFromFile(DDSInfo& someInfo, drach::TextureInitContext& someData, drach::GraphicsEngine& anEngine)
+
+
+HRESULT CreateDDSTextureFromFile(drach::TextureData& someInfo, drach::TextureInitContext& someData, drach::GraphicsEngine& anEngine)
 {
 	ID3D11Device* device = anEngine.GetDevice();
 
@@ -75,30 +97,25 @@ HRESULT CreateDDSTextureFromFile(DDSInfo& someInfo, drach::TextureInitContext& s
 	return S_OK;
 }
 
-
-
 drach::Texture drach::TextureFactory::LoadDDS(TextureInitContext& someData)
 {
 
 	ID3D11Device* device = myEngine->GetDevice();
 	RenderResource resource;
-	DDSInfo info;
+	TextureData info;
 
-	
+
 
 	HRESULT r = CreateDDSTextureFromFile(info, someData, *myEngine);
 	if (FAILED(r))
 	{
 		LOG_ERROR("Failed to load dds file from file: " + someData.myName);
-		return Texture(*this, uint32_t(-1));
+		return Texture(*this, StringID(), someData.mySamplerID);
 	}
 
-
-	someData.myWidth = info.myWidth;
-	someData.myHeight = info.myHeight;
-	myTextures[someData.myID] = info.myResource;
-	LOG("Loaded texture: " + someData.myName);
-	return Texture(*this, someData.myID);
+	myTextures[someData.myID] = info;
+	LOG("Loaded texture: " + someData.myName + " [Resolution: " + std::to_string(someData.myWidth) + " x " + std::to_string(someData.myHeight) + "]");
+	return Texture(*this, someData.myID, someData.mySamplerID);
 }
 
 drach::Texture drach::TextureFactory::LoadPNG(TextureInitContext& someData)
@@ -129,3 +146,4 @@ RenderResource drach::TextureFactory::ConstructShaderResource(const D3D11_TEXTUR
 
 	return resource;
 }
+

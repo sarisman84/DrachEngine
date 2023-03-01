@@ -17,11 +17,15 @@ namespace drach
 		void Update(RuntimeContext& aRuntimeContext);
 
 		void LoadMesh(std::string_view aFilePath);
-		void LoadShader(std::string_view aShaderName);
+		void LoadShader(const std::string_view& aShaderName);
+		void LoadShader(const std::string_view& aVertexShader, const std::string_view& aPixelShader);
+		void LoadTexture(std::string_view aTexturePath);
 	private:
 		entt::entity myEntity;
 		std::string myMeshName;
-		std::string myShaderName;
+		std::string myVertexShader;
+		std::string myPixelShader;
+		std::string myTextureName;
 		PollingStation* myPollingStation = nullptr;
 
 	};
