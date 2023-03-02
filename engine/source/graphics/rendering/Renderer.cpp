@@ -80,6 +80,11 @@ void drach::Renderer::Render(RenderContext& someContext)
 
 
 	myGraphicsEngine->Present();
+	
+}
+
+void drach::Renderer::EndFrame()
+{
 	myRenderInstructions.clear();
 }
 

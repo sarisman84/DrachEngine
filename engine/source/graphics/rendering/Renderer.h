@@ -41,6 +41,7 @@ namespace drach
 		void Init();
 		//Renders a scene containing entites with models. 
 		void Render(RenderContext& someContext);
+		void EndFrame();
 		void Submit(Mesh& aMesh, Transform& aTransform, Shader& aShader, Texture& aTexture);
 	private:
 		std::vector<RenderInstruction> myRenderInstructions;

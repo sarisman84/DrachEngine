@@ -14,10 +14,12 @@
 
 #ifdef _DEBUG
 #define ENGINE_DLL L"\\engine\\Engine_Debug.dll"
+#define EDITOR_DLL L"\\editor\\Editor_Debug.dll"
 #endif
 #include <cassert>
 #ifdef _RELEASE
 #define ENGINE_DLL L"\\engine\\Engine_Release.dll"
+#define EDITOR_DLL L"\\editor\\Editor_Release.dll"
 #endif
 
 
@@ -49,80 +51,97 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	LoadStringW(hInstance, IDC_DRACHLAUNCHER, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
 
-	EngineInterface* engineAPI = nullptr;
-	InterfaceCallback callback;
-	HINSTANCE hDLL;
-
-	wchar_t buffer[500];
-	GetCurrentDirectory(500, buffer);
-	std::wstring wMessage(buffer);
-	wMessage += ENGINE_DLL;
-
-	
-	hDLL = /*LoadLibrary(ENGINE_DLL)*/ LoadLibrary(wMessage.c_str());
-	auto error = GetLastError();
-
-	assert(hDLL != NULL && "Could not find Engine_[Version].dll");
-	callback = (InterfaceCallback)GetProcAddress(hDLL, "ExportInterface");
-	assert(callback != NULL && "Could not find ExportInterface method");
-	engineAPI = callback();
-
-
-	// Start
-	// Perform application initialization:
-	HWND winIns;
-	if (!InitInstance(hInstance, nCmdShow, winIns))
-	{
-		return FALSE;
-	}
-	StartContext data = { winIns };
-
-	RECT clientRect;
-	GetClientRect(winIns, &clientRect);
-
-	data.myWindowWidth = clientRect.right - clientRect.left;
-	data.myWindowHeight = clientRect.bottom - clientRect.top;
-
-	if (engineAPI)
-		engineAPI->OnStart(data);
-
-	SetWindowLongPtr(winIns, GWLP_USERDATA, (LONG_PTR)(engineAPI));
-
-	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DRACHLAUNCHER));
-
-
-
-	// Update
-	// Main message loop:
-
 	MSG msg;
-
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	auto prevTime = currentTime;
-	std::chrono::duration<float> deltaTime;
-	bool running = true;
-	while (running)
 	{
-		currentTime = std::chrono::high_resolution_clock::now();
-		if (engineAPI)
-			running = engineAPI->OnUpdate(deltaTime.count());
+		bool running = true;
 
-		if (!running)break;
+		EngineInterface* engineAPI = nullptr;
+		EngineAPI fetchEngineAPI;
+		EditorAPI fetchEditorAPI;
+		HINSTANCE hDLL;
 
-		deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTime - prevTime);
-		prevTime = currentTime;
+		wchar_t buffer[500];
+		GetCurrentDirectory(500, buffer);
+
+		std::wstring workingPath = std::wstring(buffer);
+
+		std::wstring enginePath(workingPath + ENGINE_DLL);
+		hDLL = /*LoadLibrary(ENGINE_DLL)*/ LoadLibrary(enginePath.c_str());
+		auto error = GetLastError();
+
+		assert(hDLL != NULL && "Could not find Engine_[Version].dll");
+		fetchEngineAPI = (EngineAPI)GetProcAddress(hDLL, "ExportInterface");
+		assert(fetchEngineAPI != NULL && "Could not find ExportInterface method");
+		engineAPI = fetchEngineAPI();
 
 
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		std::wstring editorPath(workingPath + EDITOR_DLL);
+		hDLL = LoadLibrary(editorPath.c_str());
+		fetchEditorAPI = (EditorAPI)GetProcAddress(hDLL, "ExportInterface");
+
+
+		// Start
+		// Perform application initialization:
+		HWND winIns;
+		if (!InitInstance(hInstance, nCmdShow, winIns))
 		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			return FALSE;
 		}
+		StartContext data = { winIns };
 
-		if (msg.message == WM_QUIT)
-			running = false;
+		RECT clientRect;
+		GetClientRect(winIns, &clientRect);
 
+		data.myWindowWidth = clientRect.right - clientRect.left;
+		data.myWindowHeight = clientRect.bottom - clientRect.top;
+
+
+
+		if (engineAPI)
+			running = engineAPI->OnStart(data, fetchEditorAPI ? fetchEditorAPI() : nullptr);
+
+		SetWindowLongPtr(winIns, GWLP_USERDATA, (LONG_PTR)(engineAPI));
+
+		HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DRACHLAUNCHER));
+
+
+
+		// Update
+		// Main message loop:
+
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		auto prevTime = currentTime;
+		std::chrono::duration<float> deltaTime;
+
+		while (running)
+		{
+			currentTime = std::chrono::high_resolution_clock::now();
+			if (engineAPI)
+			{
+				RuntimeContext context{ deltaTime.count() };
+				running = engineAPI->OnUpdate(context);
+			}
+
+
+			if (!running)break;
+
+			deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTime - prevTime);
+			prevTime = currentTime;
+
+
+			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+
+			if (msg.message == WM_QUIT)
+				running = false;
+
+		}
 	}
+
+
 	//if (engineAPI)
 	//	delete engineAPI;
 	//engineAPI = nullptr;

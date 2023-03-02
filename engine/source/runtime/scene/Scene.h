@@ -6,7 +6,7 @@
 #include <memory>
 #include <tuple>
 #include <functional>
-
+#include <queue>
 
 #include "entt/single_include/entt/entt.hpp"
 
@@ -89,9 +89,15 @@ namespace drach
 
 		template<typename Type>
 		static Type& Get(Scene& aScene, entt::entity anEntity);
+
+		static void Destroy(Scene& aScene, entt::entity anEntityToDelete);
+
 		inline entt::registry& GetRegistry() { return myRegistry; }
 	private:
+		void CreateActiveCamera();
+	private:
 		std::vector<BaseSystem*> mySystems;
+		std::queue<entt::entity> myGarbageCollection;
 	private:
 		//std::unique_ptr<ecs::Registry> myRegistry;
 		entt::registry myRegistry;

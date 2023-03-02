@@ -1,6 +1,7 @@
 #pragma once
 #define NOMINMAX
-#include "interface/EngineInterface.h"
+#include "interfaces/EngineInterface.h"
+#include "interfaces/EditorInterface.h"
 #include <memory>
 
 
@@ -20,13 +21,18 @@ namespace drach
 class Engine : public EngineInterface
 {
 public:
-	const bool OnUpdate(const float aDeltaTime) override;
-	void OnStart(StartContext& const someData) override;
+	bool OnUpdate(RuntimeContext& someContext) override;
+	bool OnStart(StartContext& someData, EditorInterface* anEditorAPI) override;
 	void OnWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override;
+public:
+	inline const drach::PollingStation& GetPollingStation() { return *myPollingStation; }
+	inline const drach::Scene& GetScene() { return *myTestScene; }
 private:
 	void InitConsole();
 private:
-	std::unique_ptr<drach::Scene> myTestScene;
+	EditorInterface* myEditorInterface;
+private:
+	std::shared_ptr<drach::Scene> myTestScene;
 private:
 	std::shared_ptr<drach::GraphicsEngine> myGraphicsEngine;
 	std::shared_ptr<drach::ShaderFactory> myShaderFactory;

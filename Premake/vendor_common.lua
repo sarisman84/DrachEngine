@@ -112,6 +112,30 @@ function includeNlohmann(projectDir)
 
     print("--Included Nlohmann")
 end
+
+function includeImgui(projectDir)
+    local imguiDir = projectDir .. "imgui/"
+    includedirs {
+        imguiDir,
+        imguiDir .. "backends/",
+        imguiDir .. "misc/"
+    }
+end
+
+function includeImguizmo(projectDir)
+    local imguiDir = projectDir .. "imguizmo/"
+    includedirs {
+        imguiDir
+    }
+end
+
+function includeImnodes(projectDir)
+    local imguiDir = projectDir .. "imnodes/"
+    includedirs {
+        imguiDir
+    }
+end
+
 -- External Libraries
 importLibrary = {}
 importLibrary[os.realpath(directory.global_vendor .. "source/entt")] = importEntt
@@ -123,6 +147,9 @@ includeLibrary = {}
 includeLibrary[os.realpath(directory.global_vendor .. "source/entt")] = includeEntt
 includeLibrary[os.realpath(directory.global_vendor .. "source/nlohmann")] = includeNlohmann
 includeLibrary[os.realpath(directory.global_vendor .. "source/fbx_sdk")] = includeFBXSDK
+includeLibrary[os.realpath(directory.editor_vendor .. "source/imgui")] = includeImgui
+includeLibrary[os.realpath(directory.editor_vendor .. "source/imguizmo")] = includeImguizmo
+includeLibrary[os.realpath(directory.editor_vendor .. "source/imnodes")] = includeImnodes
 
 function importLibraries(projectDir)
 

@@ -52,11 +52,12 @@ libdirs {
     directory.global_lib
 }
 
-
 includeLibraries(directory.global_vendor .. "source/")
+includeLibraries(directory.editor_vendor .. "source/")
 
 includedirs {
     directory.editor_vendor .. "source/",
+    directory.engine .. "source/",
     directory.engine_vendor .. "source/",
     directory.global_vendor .. "source/",
     "source/"

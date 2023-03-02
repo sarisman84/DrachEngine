@@ -1,5 +1,7 @@
 #pragma once
 #include "resource.h"
-#include "interfaces/EngineInterface.h"
+#include "../../vendor/source/interfaces/EditorInterface.h"
+#include "../../vendor/source/interfaces/EngineInterface.h"
 
-typedef EngineInterface* (*InterfaceCallback)();
+typedef EngineInterface* (*EngineAPI)();
+typedef EditorInterface* (*EditorAPI)();

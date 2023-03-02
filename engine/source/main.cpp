@@ -20,23 +20,27 @@
 #include "runtime/scene/Scene.h"
 #include "graphics/rendering/Renderer.h"
 #include "util/Transform.h"
-namespace drach
+
+
+
+
+
+
+bool Engine::OnUpdate(RuntimeContext& someContext)
 {
-	class Camera
+	myRenderer->EndFrame();
+
+	if (myEditorInterface)
 	{
+		EditorRuntimeContext context{someContext.myDeltaTime, *this};
+		myEditorInterface->OnUpdate(context);
+	}
+	else
+	{
+		myTestScene->Update(*myPollingStation, someContext.myDeltaTime);
+	}
 
-	};
-}
-
-
-
-
-
-const bool Engine::OnUpdate(const float aDeltaTime)
-{
-	myTestScene->Update(*myPollingStation, aDeltaTime);
 	myTestScene->Render(*myRenderer);
-
 	return true;
 }
 
@@ -70,8 +74,9 @@ void TestECS()
 	std::cout << reg.Get<TestComponent>(A) << std::endl;
 }
 
-void Engine::OnStart(StartContext& const someData)
+bool Engine::OnStart(StartContext& someData, EditorInterface* anEditorAPI)
 {
+	myEditorInterface = anEditorAPI;
 	InitConsole();
 
 	myPollingStation.reset(new drach::PollingStation());
@@ -103,12 +108,23 @@ void Engine::OnStart(StartContext& const someData)
 
 
 	myRenderer->Init();
+	myTestScene = std::make_shared<drach::Scene>();
 
-	myTestScene.reset(new drach::Scene());
+
+
+	if (myEditorInterface)
+	{
+		EditorContext context{ someData.myWindowsInstance, someData.myWindowWidth, someData.myWindowHeight, myGraphicsEngine->GetDevice(), myGraphicsEngine->GetContext() };
+
+		myEditorInterface->OnStart(context);
+
+		LOG("Editor found!");
+	}
+
 	myTestScene->Start(*myPollingStation);
 
 	//TestECS();
-
+	return true;
 
 }
 

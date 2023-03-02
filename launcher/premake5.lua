@@ -1,3 +1,5 @@
+include "../Premake/common.lua"
+
 project "Launcher"
 location "."
 kind "WindowedApp"
@@ -17,6 +19,7 @@ dependson {
     "Editor",
     "Engine"
 }
+
 files {
     "source/**.h",
     "source/**.hpp",
@@ -27,6 +30,10 @@ files {
     "**.rc"
 }
 
+includedirs
+{
+    directory.global_vendor .. "source/"
+}
 
 flags {
     "MultiProcessorCompile"
